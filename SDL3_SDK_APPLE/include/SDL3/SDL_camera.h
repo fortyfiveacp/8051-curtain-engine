@@ -1,0 +1,1 @@
+../../Cellar/sdl3@3.3.2/3.3.2/include/SDL3/SDL_camera.h
