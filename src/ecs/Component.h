@@ -62,5 +62,13 @@ struct Health {
     int currentHealth{};
 };
 
+// Controls pre-scripted events at specific times.
+struct Timeline {
+    float currentTime = 0;
+
+    // Timeline elements have a float (time to trigger the action) and function (the action to trigger)
+    std::vector<std::pair<float, std::function<void()>>> timeline{};
+};
+
 struct PlayerTag{};
 struct ProjectileTag{};
