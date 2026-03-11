@@ -108,6 +108,35 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 		e.addComponent<ProjectileTag>();
 	});
 
+	// Add timeline object (experimental, this will actually spawn enemy convoys later).
+	auto& timelineManager(world.createEntity());
+	auto& debugTimeline = timelineManager.addComponent<Timeline>();
+
+	debugTimeline.timeline.emplace_back(1.0, [] {
+		std::cout << "Hello" << std::endl;
+	});
+	debugTimeline.timeline.emplace_back(2.0, [] {
+		std::cout << "World" << std::endl;
+	});
+	debugTimeline.timeline.emplace_back(4.0, [] {
+		std::cout << "Welcome ";
+	});
+	debugTimeline.timeline.emplace_back(4.5, [] {
+		std::cout << "to ";
+	});
+	debugTimeline.timeline.emplace_back(5.0, [] {
+		std::cout << "Touhou ";
+	});
+	debugTimeline.timeline.emplace_back(5.5, [] {
+		std::cout << "Miko ";
+	});
+	debugTimeline.timeline.emplace_back(6.0, [] {
+		std::cout << "Warfare";
+	});
+	debugTimeline.timeline.emplace_back(6.0, [] {
+		std::cout << "!!" << std::endl;
+	});
+
 	// Add scene state
 	auto& state(world.createEntity());
 	state.addComponent<SceneState>();
