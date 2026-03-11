@@ -12,6 +12,11 @@ public:
             if (entity->hasComponent<Timeline>()) {
                 auto &[currentTime, timeline] = entity->getComponent<Timeline>();
 
+                // Skip this timeline since it has already finished playing. Assuming actions are ordered by time.
+                if (currentTime > timeline.back().first) {
+                    continue;
+                }
+
                 const float timeBeforeThisFrame = currentTime;
                 currentTime += dt;
 
