@@ -15,6 +15,7 @@
 #include "MovementSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
+#include "TimelineSystem.h"
 #include "scene/SceneType.h"
 
 class World {
@@ -29,6 +30,7 @@ class World {
     CameraSystem cameraSystem;
     EventManager eventManager;
     SpawnTimerSystem spawnTimerSystem;
+    TimelineSystem timelineSystem;
     DestructionSystem destructionSystem;
     MainMenuSystem mainMenuSystem;
 
@@ -50,6 +52,7 @@ public:
             animationSystem.update(entities, dt);
             cameraSystem.update(entities);
             spawnTimerSystem.update(entities, dt);
+            timelineSystem.update(entities, dt);
             destructionSystem.update(entities);
         }
 
