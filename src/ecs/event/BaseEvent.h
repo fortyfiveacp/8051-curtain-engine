@@ -4,6 +4,7 @@
 enum class EventType {
     Collision,
     PlayerAction,
+    Audio
 };
 
 struct BaseEvent {
