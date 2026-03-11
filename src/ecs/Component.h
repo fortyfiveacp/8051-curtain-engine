@@ -53,7 +53,7 @@ struct TimedSpawner {
     float timer{};
 };
 
-// Our game state, might have multiple scenes
+// Our game state, might have multiple scenes.
 struct SceneState {
     int coinsCollected = 0;
 };
@@ -66,7 +66,7 @@ struct Health {
 struct Timeline {
     float currentTime = 0;
 
-    // Timeline elements have a float (time to trigger the action) and function (the action to trigger)
+    // Timeline elements have a float (time to trigger the action) and function (the action to trigger).
     std::vector<std::pair<float, std::function<void()>>> timeline{};
 };
 

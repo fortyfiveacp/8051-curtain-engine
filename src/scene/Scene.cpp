@@ -108,7 +108,7 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 		e.addComponent<ProjectileTag>();
 	});
 
-	// Add timeline object (experimental, this will actually spawn enemy convoys later)
+	// Add timeline object (experimental, this will actually spawn enemy convoys later).
 	auto& timelineManager(world.createEntity());
 	auto& debugTimeline = timelineManager.addComponent<Timeline>();
 
