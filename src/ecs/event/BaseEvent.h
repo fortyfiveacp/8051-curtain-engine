@@ -32,3 +32,35 @@ struct PlayerActionEvent : BaseEvent {
         type = EventType::PlayerAction;
     }
 };
+
+enum class SoundID {
+    PlayerShot
+};
+
+enum class MusicID {
+    StageTheme
+};
+
+struct AudioEvent : BaseEvent {
+    SoundID sound;
+
+    AudioEvent(SoundID sound) : sound(sound) {
+        type = EventType::Audio;
+    }
+};
+
+// might not be needed
+enum class MusicAction {
+    Play,
+    Stop
+};
+
+struct MusicEvent : BaseEvent {
+    MusicID music;
+    MusicAction action;
+    bool loop;
+
+    MusicEvent(MusicID music, MusicAction action, bool loop = true) : music(music), action(action), loop(loop) {
+        type = EventType::Audio;
+    }
+};

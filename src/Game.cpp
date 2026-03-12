@@ -25,10 +25,17 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	}
 
 	// Initialize SDL library
-	if (SDL_InitSubSystem(SDL_INIT_VIDEO) == 1) {
+	if (SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_AUDIO) == 1) {
+		if (!MIX_Init()) {
+			std::cerr << "SDL3_mixer init failed: " << SDL_GetError() << std::endl;
+			return;
+		} else {
+			std::cout << "Mixer initialized" << std::endl;
+		}
+
 		std::cout << "Subsystem initialized..." << std::endl;
 		window = SDL_CreateWindow(title, width, height, flags);
-		
+
 		if (window) {
 			std::cout << "Window created..." << std::endl;
 		}
@@ -53,6 +60,10 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	// Load assets
 	AssetManager::loadAnimation("player", "../asset/animations/fox_animations.xml");
 	AssetManager::loadAnimation("enemy", "../asset/animations/bird_animations.xml");
+
+	AssetManager::loadSound(SoundID::PlayerShot, "../asset/audio/sfx/generic_shot.mp3");
+	// AssetManager::loadMusic(MusicID::StageTheme, "../asset/audio/music/10. The Primal Scene of Japan the Girl Saw.mp3");
+	AssetManager::loadMusic(MusicID::StageTheme, "../asset/audio/music/Interdimensional Voyage of a Ghostly Passenger Ship.wav");
 
 	// Load scenes
 	sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, width, height);

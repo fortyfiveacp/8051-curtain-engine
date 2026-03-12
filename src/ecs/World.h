@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "AnimationSystem.h"
+#include "AudioSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
 #include "DestructionSystem.h"
@@ -34,6 +35,7 @@ class World {
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
+    AudioSystem audioSystem{*this};
 
 public:
     World() = default;

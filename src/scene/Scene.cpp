@@ -18,6 +18,9 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 		SDL_FRect menuSrc {0, 0, (float)windowWidth, (float)windowHeight};
 		SDL_FRect menuDst {menuTransform.position.x, menuTransform.position.y, menuSrc.w, menuSrc.h};
 		menu.addComponent<Sprite>(texture, menuSrc, menuDst);
+		world.getEventManager().emit(
+			MusicEvent(MusicID::StageTheme, MusicAction::Play, true)
+		);
 		return;
 	}
 
