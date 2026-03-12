@@ -62,8 +62,8 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	AssetManager::loadAnimation("enemy", "../asset/animations/bird_animations.xml");
 
 	AssetManager::loadSound(SoundID::PlayerShot, "../asset/audio/sfx/generic_shot.mp3");
-	// AssetManager::loadMusic(MusicID::StageTheme, "../asset/audio/music/10. The Primal Scene of Japan the Girl Saw.mp3");
-	AssetManager::loadMusic(MusicID::StageTheme, "../asset/audio/music/Interdimensional Voyage of a Ghostly Passenger Ship.wav");
+	AssetManager::loadMusic(MusicID::StageTheme, "../asset/audio/music/10. The Primal Scene of Japan the Girl Saw.mp3");
+	// AssetManager::loadMusic(MusicID::StageTheme, "../asset/audio/music/Interdimensional Voyage of a Ghostly Passenger Ship.wav");
 
 	// Load scenes
 	sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, width, height);
