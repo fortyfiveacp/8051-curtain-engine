@@ -20,7 +20,7 @@ int main()
     int actualFrameTime;
 
     game = new Game();
-    game->init("8051 TUTORIAL ENGINE", 800, 600, false);
+    game->init("東方巫女戦場 ～ Double Prayer Duel", 800, 600, false);
 
     // Game loop
     while (game->running()) {

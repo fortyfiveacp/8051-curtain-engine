@@ -2,7 +2,7 @@
 
 An ECS C++ game engine specializing in 2D bullet hell games.
 
-## *Touhou: Miko Warfare*
+## 「東方巫女戦場 ～ Double Prayer Duel」
 
 A Touhou fan game made using Curtain Engine, featuring the series' signature danmaku 2D shoot'em up gameplay.
 

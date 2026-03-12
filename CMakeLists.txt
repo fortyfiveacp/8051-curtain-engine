@@ -47,6 +47,7 @@ set(SRC_FILES
         src/ecs/system/MainMenuSystem.cpp
         src/ecs/system/AudioSystem.h
         src/ecs/system/AudioSystem.cpp
+        src/ecs/system/TimelineSystem.h
         #add all new source files here
 )
 
