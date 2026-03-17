@@ -28,29 +28,29 @@ EventResponseSystem::EventResponseSystem(World &world) {
     });
 
     world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
-        if (e.type != EventType::MouseInteraction) {
+        if (e.type != EventType::KeyboardInteraction) {
             return;
         }
 
-        const auto& mouseInteractionEvent = static_cast<const MouseInteractionEvent&>(e);
-        onMouseInteraction(mouseInteractionEvent);
+        const auto& keyboardInteractionEvent = static_cast<const KeyboardInteractionEvent&>(e);
+        onKeyboardInteraction(keyboardInteractionEvent);
     });
 }
 
-void EventResponseSystem::onMouseInteraction(const MouseInteractionEvent& e) {
-    if (!e.entity->hasComponent<Clickable>()) return;
+void EventResponseSystem::onKeyboardInteraction(const KeyboardInteractionEvent& e) {
+    if (!e.entity->hasComponent<Selectable>()) return;
 
-    auto& clickable = e.entity->getComponent<Clickable>();
+    auto& selectable = e.entity->getComponent<Selectable>();
 
     switch (e.state) {
-        case MouseInteractionState::Pressed:
-            clickable.onPresssed();
+        case KeyboardInteractionState::Pressed:
+            selectable.onPresssed();
             break;
-        case MouseInteractionState::Released:
-            clickable.onReleased();
+        case KeyboardInteractionState::Released:
+            selectable.onReleased();
             break;
-        case MouseInteractionState::Cancel:
-            clickable.onCancel();
+        case KeyboardInteractionState::Selected:
+            selectable.onSelect();
             break;
         default:
             break;

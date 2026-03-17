@@ -46,7 +46,6 @@ set(SRC_FILES
         src/ecs/system/MainMenuSystem.h
         src/ecs/system/MainMenuSystem.cpp
         src/ecs/system/TimelineSystem.h
-        src/ecs/system/MouseInputSystem.cpp
         #add all new source files here
 )
 

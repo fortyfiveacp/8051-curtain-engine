@@ -28,7 +28,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	menu.addComponent<Sprite>(texture, menuSrc, menuDst);
 
 	auto& settingsOverlay = createSettingsOverlay(windowWidth, windowHeight);
-	createCogButton(windowWidth, windowHeight, settingsOverlay);
+	//createCogButton(windowWidth, windowHeight, settingsOverlay);
 }
 
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
@@ -161,6 +161,14 @@ Entity& Scene::createSettingsOverlay(int windowWidth, int windowHeight) {
 	overlay.addComponent<Transform>(Vector2D(overlayDest.x, overlayDest.y), 0.0f, 1.0f);
 	overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDest, RenderLayer::UI, false);
 	createSettingsUComponents(overlay);
+
+	overlay.addComponent<Toggleable>(
+	Toggleable{
+		[this, &overlay]() {
+			toggleSettingsOverlayVisibility(overlay);
+		}
+	}
+);
 	return overlay;
 }
 
@@ -173,17 +181,19 @@ Entity& Scene::createCogButton(int windowWidth, int windowHeight, Entity& overla
 	SDL_FRect cogDst {cogTransform.position.x, cogTransform.position.y, cogSrc.w, cogSrc.h};
 	cog.addComponent<Sprite>(texture, cogSrc, cogDst, RenderLayer::UI);
 	cog.addComponent<Collider>("ui", cogDst);
-	auto& clickable = cog.addComponent<Clickable>();
-	clickable.onPresssed = [&cogTransform] {
-		cogTransform.scale = 0.5f;
-	};
+	auto& selectable = cog.addComponent<Selectable>();
+	selectable.selected = true;
 
-	clickable.onReleased = [this, &cogTransform, &overlay] {
-		cogTransform.scale = 1.0f;
+	selectable.onPresssed = [this, &selectable, &overlay] {
 		toggleSettingsOverlayVisibility(overlay);
+		selectable.selected = false;
 	};
 
-	clickable.onCancel = [&cogTransform] {
+	selectable.onReleased = [&cogTransform] {
+		cogTransform.scale = 0.75f;
+	};
+
+	selectable.onSelect = [&cogTransform] {
 		cogTransform.scale = 1.0f;
 	};
 
@@ -210,23 +220,59 @@ void Scene::createSettingsUComponents(Entity& overlay) {
 	closeButton.addComponent<Sprite>(texture, closeSrc, closeDst, RenderLayer::UI, false);
 	closeButton.addComponent<Collider>("ui", closeDst);
 
-	auto& clickable = closeButton.addComponent<Clickable>();
-	clickable.onPresssed = [&closeTransform] {
-		closeTransform.scale = 0.5f;
-	};
+	auto& selectable = closeButton.addComponent<Selectable>();
 
-	clickable.onReleased = [this, &overlay, &closeTransform] {
-		closeTransform.scale = 1.0f;
+	selectable.onPresssed = [this, &overlay, &closeTransform] {
 		toggleSettingsOverlayVisibility(overlay);
+		std::cout << "button 1 pressed" << std::endl;
+		closeTransform.scale = 1.0f;
 	};
 
-	clickable.onCancel = [&closeTransform] {
+	selectable.onReleased = [&closeTransform] {
 		closeTransform.scale = 1.0f;
+	};
+
+	selectable.onSelect = [&closeTransform] {
+		closeTransform.scale = 1.25f;
 	};
 
 	closeButton.addComponent<Parent>(&overlay);
 	auto& parentChildren = overlay.getComponent<Children>();
 	parentChildren.children.push_back(&closeButton);
+
+	// Second close button for testing.
+	auto& closeButton2 = world.createEntity();
+	auto& closeTransform2 = closeButton2.addComponent<Transform>(Vector2D(baseX + overlaySprite.dst.w - 40, baseY + 50), 0.0f, 1.0f);
+	SDL_FRect closeSrc2 {0, 0, 32, 32};
+	SDL_FRect closeDst2 {closeTransform2.position.x, closeTransform2.position.y, closeSrc2.w, closeSrc2.h};
+	closeButton2.addComponent<Sprite>(texture, closeSrc2, closeDst2, RenderLayer::UI, false);
+	closeButton2.addComponent<Collider>("ui", closeDst2);
+
+	auto& selectable2 = closeButton2.addComponent<Selectable>();
+
+	selectable2.onPresssed = [this, &overlay, &closeTransform2] {
+		toggleSettingsOverlayVisibility(overlay);
+		std::cout << "button 2 pressed" << std::endl;
+		closeTransform2.scale = 1.0f;
+	};
+
+	selectable2.onReleased = [&closeTransform2] {
+		closeTransform2.scale = 1.0f;
+	};
+
+	selectable2.onSelect = [&closeTransform2] {
+		closeTransform2.scale = 1.25f;
+	};
+
+	closeButton2.addComponent<Parent>(&overlay);
+	parentChildren.children.push_back(&closeButton2);
+
+	// Set up selection doubly linked list.
+	selectable.next = &selectable2;
+	selectable.previous = &selectable2;
+
+	selectable2.next = &selectable;
+	selectable2.previous = &selectable;
 }
 
 void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
@@ -245,6 +291,20 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
 			if (child && child->hasComponent<Collider>()) {
 				child->getComponent<Collider>().enabled = newVisibility;
 			}
+
+			if (child && child->hasComponent<Selectable>()) {
+				// Make sure all entities aren't selected.
+				auto& selectable = child->getComponent<Selectable>();
+				selectable.selected = false;
+				selectable.onReleased();
+			}
+		}
+
+		// Set the first selectable entity as the default selected, if visible.
+		if (newVisibility) {
+			auto& selected = c.children.front()->getComponent<Selectable>();
+			selected.selected = true;
+			selected.onSelect();
 		}
 	}
 }

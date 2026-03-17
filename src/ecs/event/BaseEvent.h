@@ -4,7 +4,7 @@
 enum class EventType {
     Collision,
     PlayerAction,
-    MouseInteraction
+    KeyboardInteraction
 };
 
 struct BaseEvent {
@@ -33,12 +33,12 @@ struct PlayerActionEvent : BaseEvent {
     }
 };
 
-enum class MouseInteractionState {Pressed, Released, Cancel};
+enum class KeyboardInteractionState {Pressed, Released, Selected};
 
-struct MouseInteractionEvent : BaseEvent {
+struct KeyboardInteractionEvent : BaseEvent {
     Entity* entity = nullptr;
-    MouseInteractionState state{};
-    MouseInteractionEvent(Entity* entity, MouseInteractionState state) : entity(entity), state(state) {
-        type = EventType::MouseInteraction;
+    KeyboardInteractionState state{};
+    KeyboardInteractionEvent(Entity* entity, KeyboardInteractionState state) : entity(entity), state(state) {
+        type = EventType::KeyboardInteraction;
     }
 };

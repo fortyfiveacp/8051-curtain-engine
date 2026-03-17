@@ -19,5 +19,5 @@ private:
     void onPlayerAction(const PlayerActionEvent& e,
         const std::function<void(Entity* play6er, PlayerAction action)>& callback);
 
-    void onMouseInteraction(const MouseInteractionEvent& e);
+    void onKeyboardInteraction(const KeyboardInteractionEvent& e);
 };

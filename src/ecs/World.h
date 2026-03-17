@@ -12,8 +12,8 @@
 #include "KeyboardInputSystem.h"
 #include "MainMenuSystem.h"
 #include "Map.h"
-#include "MouseInputSystem.h"
 #include "MovementSystem.h"
+#include "UIInteractionSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
 #include "TimelineSystem.h"
@@ -36,7 +36,7 @@ class World {
     DestructionSystem destructionSystem;
     MainMenuSystem mainMenuSystem;
     UIRenderSystem uiRenderSystem;
-    MouseInputSystem mouseInputSystem; // TODO temp
+    UIInteractionSystem pauseMenuSystem;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -60,7 +60,7 @@ public:
             destructionSystem.update(entities);
         }
 
-        mouseInputSystem.update(*this, event);
+        pauseMenuSystem.update(entities, event);
 
         synchronizeEntities();
         cleanup();
