@@ -78,6 +78,9 @@ struct RadialSpawner {
     // Delay before starting spawns.
     float delay{};
 
+    // Number of bullets in each burst.
+    int bulletsPerBurst{};
+
     // Invoked when spawning, once per bullet. Params: direction, bulletEmissionSpeed, bulletEmissionRotation, duration.
     std::function<void(Vector2D, float, float, float)> spawnCallback{};
 
