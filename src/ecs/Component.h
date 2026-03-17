@@ -22,6 +22,11 @@ struct Velocity {
     float speed{};
 };
 
+// Rotation over time, which modifies the direction property of the Velocity.
+struct AngularVelocity {
+    float rotationOverTime{};
+};
+
 struct Sprite {
     SDL_Texture* texture = nullptr;
     SDL_FRect src{};
