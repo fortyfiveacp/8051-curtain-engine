@@ -33,12 +33,12 @@ struct PlayerActionEvent : BaseEvent {
     }
 };
 
-enum class KeyboardInteractionState {Pressed, Released, Selected};
+enum class UIInteractionState {Pressed, Released, Selected};
 
-struct KeyboardInteractionEvent : BaseEvent {
+struct UIInteractionEvent : BaseEvent {
     Entity* entity = nullptr;
-    KeyboardInteractionState state{};
-    KeyboardInteractionEvent(Entity* entity, KeyboardInteractionState state) : entity(entity), state(state) {
+    UIInteractionState state{};
+    UIInteractionEvent(Entity* entity, UIInteractionState state) : entity(entity), state(state) {
         type = EventType::KeyboardInteraction;
     }
 };

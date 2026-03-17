@@ -32,8 +32,8 @@ private:
     void initMainMenu(int windowWidth, int windowHeight);
     void initGameplay(const char* mapPath, int windowWidth, int windowHeight);
 
-    Entity& createSettingsOverlay(int windowWidth, int windowHeight);
+    Entity& createPauseMenuOverlay(int windowWidth, int windowHeight);
     Entity& createCogButton(int windowWidth, int windowHeight, Entity& overlay);
-    void createSettingsUComponents(Entity& overlay);
-    void toggleSettingsOverlayVisibility(Entity& overlay);
+    void createPauseMenuUComponents(Entity& overlay);
+    void togglePauseMenuOverlayVisibility(Entity& overlay);
 };

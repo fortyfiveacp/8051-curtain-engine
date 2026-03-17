@@ -71,16 +71,15 @@ struct Health {
     int currentHealth{};
 };
 
-struct Selectable {
-    std::function<void()> onPresssed{};
+struct SelectableUI {
+    std::function<void()> onPressed{};
     std::function<void()> onReleased{};
     std::function<void()> onSelect{};
-    bool pressed = false;
     bool selected = false;
 
-    // The UI elements are a doubly linked list.
-    Selectable* next = nullptr;
-    Selectable* previous = nullptr;
+    // The selectable UI elements are a doubly linked list.
+    SelectableUI* next = nullptr;
+    SelectableUI* previous = nullptr;
 };
 
 struct Toggleable {

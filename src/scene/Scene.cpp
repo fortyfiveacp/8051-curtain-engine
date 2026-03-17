@@ -14,11 +14,11 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 }
 
 void Scene::initMainMenu(int windowWidth, int windowHeight) {
-	// Camera
+	// Camera.
 	auto& cam = world.createEntity();
 	cam.addComponent<Camera>();
 
-	// Menu
+	// Menu.
 	auto& menu(world.createEntity());
 	auto menuTransform = menu.addComponent<Transform>(Vector2D(0, 0), 0.0f, 1.0f);
 
@@ -26,13 +26,10 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	SDL_FRect menuSrc {0, 0, (float)windowWidth, (float)windowHeight};
 	SDL_FRect menuDst {menuTransform.position.x, menuTransform.position.y, menuSrc.w, menuSrc.h};
 	menu.addComponent<Sprite>(texture, menuSrc, menuDst);
-
-	auto& settingsOverlay = createSettingsOverlay(windowWidth, windowHeight);
-	//createCogButton(windowWidth, windowHeight, settingsOverlay);
 }
 
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
-	// Load our map
+	// Load our map.
 	world.getMap().load(mapPath, TextureManager::load("../asset/tileset.png"));
 	for (auto& collider : world.getMap().colliders) {
 		auto& e = world.createEntity();
@@ -50,10 +47,10 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		e.addComponent<Sprite>(tex, colSrc, colDst);
 	}
 
-	// Player
+	// Player.
 	// player = new GameObject("../asset/ball.png", 0, 0);
 
-	// Add entities
+	// Add entities.
 	for (auto& itemCollider : world.getMap().itemColliders) {
 		auto& e = world.createEntity();
 		e.addComponent<Transform>(Vector2D(itemCollider.rect.x, itemCollider.rect.y), 0.0f, 1.0f);
@@ -71,8 +68,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	auto& cam = world.createEntity();
 	SDL_FRect camView{};
-	camView.w = windowWidth; // width of the window
-	camView.h = windowHeight; // height of the window
+	camView.w = windowWidth; // width of the window.
+	camView.h = windowHeight; // height of the window.
 	cam.addComponent<Camera>(camView, world.getMap().width * 32.0f, world.getMap().height * 32.0f);
 
 	auto& player (world.createEntity());
@@ -83,7 +80,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	player.addComponent<Animation>(anim);
 
 	SDL_Texture* texture = TextureManager::load("../asset/animations/fox_anim.png");
-	// SDL_FRect playerSrc {0, 0, 32, 44}; // for Mario
+	// SDL_FRect playerSrc {0, 0, 32, 44}; // for Mario.
 	SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
 	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, 64, 64};
 
@@ -99,7 +96,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	auto& spawner(world.createEntity());
 	Transform t = spawner.addComponent<Transform>(Vector2D(windowWidth / 2, windowHeight - 5), 0.0f, 1.0f);
 	spawner.addComponent<TimedSpawner>(2.0f, [this, t] {
-		// Create the projectile (birds)
+		// Create the projectile (birds).
 		auto& e(world.createDeferredEntity());
 		e.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
 		e.addComponent<Velocity>(Vector2D(0, -1), 100.0f);
@@ -148,59 +145,36 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		std::cout << "!!" << std::endl;
 	});
 
-	// Add scene state
+	// Add scene state.
 	auto& state(world.createEntity());
 	state.addComponent<SceneState>();
+
+	// Pause menu overlay.
+	createPauseMenuOverlay(windowWidth, windowHeight);
 }
 
-Entity& Scene::createSettingsOverlay(int windowWidth, int windowHeight) {
+Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
 	auto &overlay(world.createEntity());
 	SDL_Texture *overlayTex = TextureManager::load("../asset/ui/settings.jpg");
 	SDL_FRect overlaySrc {0, 0, windowWidth * 0.85f, windowHeight  * 0.85f};
 	SDL_FRect overlayDest {(float)windowWidth / 2 - overlaySrc.w / 2, (float)windowHeight / 2 - overlaySrc.h / 2, overlaySrc.w, overlaySrc.h};
 	overlay.addComponent<Transform>(Vector2D(overlayDest.x, overlayDest.y), 0.0f, 1.0f);
 	overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDest, RenderLayer::UI, false);
-	createSettingsUComponents(overlay);
 
+	createPauseMenuUComponents(overlay);
+
+	// Toggleable component so escape key can toggle the pause menu.
 	overlay.addComponent<Toggleable>(
-	Toggleable{
-		[this, &overlay]() {
-			toggleSettingsOverlayVisibility(overlay);
+		Toggleable{
+			[this, &overlay]() {
+				togglePauseMenuOverlayVisibility(overlay);
+			}
 		}
-	}
-);
+	);
 	return overlay;
 }
 
-Entity& Scene::createCogButton(int windowWidth, int windowHeight, Entity& overlay) {
-	auto &cog(world.createEntity());
-	auto & cogTransform = cog.addComponent<Transform>(Vector2D((float) windowWidth - 50, (float) windowHeight - 50), 0.0f, 1.0f);
-
-	SDL_Texture* texture = TextureManager::load("../asset/ui/cog.png");
-	SDL_FRect cogSrc {0, 0, 32, 32};
-	SDL_FRect cogDst {cogTransform.position.x, cogTransform.position.y, cogSrc.w, cogSrc.h};
-	cog.addComponent<Sprite>(texture, cogSrc, cogDst, RenderLayer::UI);
-	cog.addComponent<Collider>("ui", cogDst);
-	auto& selectable = cog.addComponent<Selectable>();
-	selectable.selected = true;
-
-	selectable.onPresssed = [this, &selectable, &overlay] {
-		toggleSettingsOverlayVisibility(overlay);
-		selectable.selected = false;
-	};
-
-	selectable.onReleased = [&cogTransform] {
-		cogTransform.scale = 0.75f;
-	};
-
-	selectable.onSelect = [&cogTransform] {
-		cogTransform.scale = 1.0f;
-	};
-
-	return cog;
-}
-
-void Scene::createSettingsUComponents(Entity& overlay) {
+void Scene::createPauseMenuUComponents(Entity& overlay) {
 	if (!overlay.hasComponent<Children>()) {
 		overlay.addComponent<Children>();
 	}
@@ -220,10 +194,10 @@ void Scene::createSettingsUComponents(Entity& overlay) {
 	closeButton.addComponent<Sprite>(texture, closeSrc, closeDst, RenderLayer::UI, false);
 	closeButton.addComponent<Collider>("ui", closeDst);
 
-	auto& selectable = closeButton.addComponent<Selectable>();
+	auto& selectable = closeButton.addComponent<SelectableUI>();
 
-	selectable.onPresssed = [this, &overlay, &closeTransform] {
-		toggleSettingsOverlayVisibility(overlay);
+	selectable.onPressed = [this, &overlay, &closeTransform] {
+		togglePauseMenuOverlayVisibility(overlay);
 		std::cout << "button 1 pressed" << std::endl;
 		closeTransform.scale = 1.0f;
 	};
@@ -248,10 +222,10 @@ void Scene::createSettingsUComponents(Entity& overlay) {
 	closeButton2.addComponent<Sprite>(texture, closeSrc2, closeDst2, RenderLayer::UI, false);
 	closeButton2.addComponent<Collider>("ui", closeDst2);
 
-	auto& selectable2 = closeButton2.addComponent<Selectable>();
+	auto& selectable2 = closeButton2.addComponent<SelectableUI>();
 
-	selectable2.onPresssed = [this, &overlay, &closeTransform2] {
-		toggleSettingsOverlayVisibility(overlay);
+	selectable2.onPressed = [this, &overlay, &closeTransform2] {
+		togglePauseMenuOverlayVisibility(overlay);
 		std::cout << "button 2 pressed" << std::endl;
 		closeTransform2.scale = 1.0f;
 	};
@@ -275,7 +249,7 @@ void Scene::createSettingsUComponents(Entity& overlay) {
 	selectable2.previous = &selectable;
 }
 
-void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
+void Scene::togglePauseMenuOverlayVisibility(Entity& overlay) {
 	auto& sprite = overlay.getComponent<Sprite>();
 	bool newVisibility = !sprite.visible;
 	sprite.visible = newVisibility;
@@ -292,9 +266,9 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
 				child->getComponent<Collider>().enabled = newVisibility;
 			}
 
-			if (child && child->hasComponent<Selectable>()) {
+			if (child && child->hasComponent<SelectableUI>()) {
 				// Make sure all entities aren't selected.
-				auto& selectable = child->getComponent<Selectable>();
+				auto& selectable = child->getComponent<SelectableUI>();
 				selectable.selected = false;
 				selectable.onReleased();
 			}
@@ -302,7 +276,7 @@ void Scene::toggleSettingsOverlayVisibility(Entity& overlay) {
 
 		// Set the first selectable entity as the default selected, if visible.
 		if (newVisibility) {
-			auto& selected = c.children.front()->getComponent<Selectable>();
+			auto& selected = c.children.front()->getComponent<SelectableUI>();
 			selected.selected = true;
 			selected.onSelect();
 		}

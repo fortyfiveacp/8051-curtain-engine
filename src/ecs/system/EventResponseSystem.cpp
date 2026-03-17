@@ -32,24 +32,24 @@ EventResponseSystem::EventResponseSystem(World &world) {
             return;
         }
 
-        const auto& keyboardInteractionEvent = static_cast<const KeyboardInteractionEvent&>(e);
-        onKeyboardInteraction(keyboardInteractionEvent);
+        const auto& keyboardInteractionEvent = static_cast<const UIInteractionEvent&>(e);
+        onUIInteraction(keyboardInteractionEvent);
     });
 }
 
-void EventResponseSystem::onKeyboardInteraction(const KeyboardInteractionEvent& e) {
-    if (!e.entity->hasComponent<Selectable>()) return;
+void EventResponseSystem::onUIInteraction(const UIInteractionEvent& e) {
+    if (!e.entity->hasComponent<SelectableUI>()) return;
 
-    auto& selectable = e.entity->getComponent<Selectable>();
+    auto& selectable = e.entity->getComponent<SelectableUI>();
 
     switch (e.state) {
-        case KeyboardInteractionState::Pressed:
-            selectable.onPresssed();
+        case UIInteractionState::Pressed:
+            selectable.onPressed();
             break;
-        case KeyboardInteractionState::Released:
+        case UIInteractionState::Released:
             selectable.onReleased();
             break;
-        case KeyboardInteractionState::Selected:
+        case UIInteractionState::Selected:
             selectable.onSelect();
             break;
         default:

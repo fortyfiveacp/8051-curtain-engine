@@ -13,7 +13,7 @@
 #include "MainMenuSystem.h"
 #include "Map.h"
 #include "MovementSystem.h"
-#include "UIInteractionSystem.h"
+#include "PauseMenuSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
 #include "TimelineSystem.h"
@@ -36,7 +36,7 @@ class World {
     DestructionSystem destructionSystem;
     MainMenuSystem mainMenuSystem;
     UIRenderSystem uiRenderSystem;
-    UIInteractionSystem pauseMenuSystem;
+    PauseMenuSystem pauseMenuSystem;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -50,6 +50,7 @@ public:
             mainMenuSystem.update(event);
         }
         else {
+            pauseMenuSystem.update(entities, event);
             keyboardInputSystem.update(entities, event);
             movementSystem.update(entities, dt);
             collisionSystem.update(*this);
@@ -59,8 +60,6 @@ public:
             timelineSystem.update(entities, dt);
             destructionSystem.update(entities);
         }
-
-        pauseMenuSystem.update(entities, event);
 
         synchronizeEntities();
         cleanup();
