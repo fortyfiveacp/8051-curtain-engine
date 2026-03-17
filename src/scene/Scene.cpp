@@ -164,13 +164,9 @@ Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
 	createPauseMenuUComponents(overlay);
 
 	// Toggleable component so escape key can toggle the pause menu.
-	overlay.addComponent<Toggleable>(
-		Toggleable{
-			[this, &overlay]() {
-				toggleOverlayVisibility(overlay);
-			}
-		}
-	);
+	overlay.addComponent<Toggleable>([this, &overlay]() {
+		toggleOverlayVisibility(overlay);
+	});
 
 	overlay.addComponent<PauseMenuTag>();
 
