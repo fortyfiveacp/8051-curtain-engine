@@ -4,7 +4,7 @@
 enum class EventType {
     Collision,
     PlayerAction,
-    KeyboardInteraction
+    UIInteraction
 };
 
 struct BaseEvent {
@@ -39,6 +39,6 @@ struct UIInteractionEvent : BaseEvent {
     Entity* entity = nullptr;
     UIInteractionState state{};
     UIInteractionEvent(Entity* entity, UIInteractionState state) : entity(entity), state(state) {
-        type = EventType::KeyboardInteraction;
+        type = EventType::UIInteraction;
     }
 };

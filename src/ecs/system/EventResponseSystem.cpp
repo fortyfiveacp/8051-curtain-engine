@@ -4,7 +4,7 @@
 #include "World.h"
 
 EventResponseSystem::EventResponseSystem(World &world) {
-    // Subscriptions
+    // Subscriptions.
     world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
         if (e.type != EventType::Collision) {
             return;
@@ -28,7 +28,7 @@ EventResponseSystem::EventResponseSystem(World &world) {
     });
 
     world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
-        if (e.type != EventType::KeyboardInteraction) {
+        if (e.type != EventType::UIInteraction) {
             return;
         }
 
@@ -101,7 +101,7 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
         }
 
         // This logic is simple and direct.
-        // Ideally, we would only operate on data in an update function (transient entities)
+        // Ideally, we would only operate on data in an update function (transient entities).
         auto& health = player->getComponent<Health>();
         health.currentHealth--;
 
@@ -112,7 +112,7 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
         if (health.currentHealth == 0) {
             player->destroy();
 
-            // Change scene (deferred)
+            // Change scene (deferred).
             Game::onSceneChangeRequest("gameover");
         }
     }
