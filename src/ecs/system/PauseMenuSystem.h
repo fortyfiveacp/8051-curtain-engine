@@ -12,20 +12,19 @@ public:
         // Bring up pause menu with escape.
         if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
             for (auto& e : entities) {
-                if (e->hasComponent<Toggleable>()) {
-
+                if (e->hasComponent<PauseMenuTag>() && e->hasComponent<Toggleable>()) {
                     e->getComponent<Toggleable>().toggle();
                     break;
                 }
             }
         }
 
+        // Find currently selected UI.
         for (auto& e : entities) {
-            // Find currently selected entity.
             if (e->hasComponent<SelectableUI>()) {
-                auto& s = e->getComponent<SelectableUI>();
-                if (s.selected) {
-                    currentlySelected = &s;
+                auto& selectableUI = e->getComponent<SelectableUI>();
+                if (selectableUI.selected) {
+                    currentlySelected = &selectableUI;
                     break;
                 }
             }

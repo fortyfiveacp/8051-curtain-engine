@@ -35,5 +35,5 @@ private:
     Entity& createPauseMenuOverlay(int windowWidth, int windowHeight);
     Entity& createCogButton(int windowWidth, int windowHeight, Entity& overlay);
     void createPauseMenuUComponents(Entity& overlay);
-    void togglePauseMenuOverlayVisibility(Entity& overlay);
+    void toggleOverlayVisibility(Entity& overlay);
 };

@@ -167,10 +167,13 @@ Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
 	overlay.addComponent<Toggleable>(
 		Toggleable{
 			[this, &overlay]() {
-				togglePauseMenuOverlayVisibility(overlay);
+				toggleOverlayVisibility(overlay);
 			}
 		}
 	);
+
+	overlay.addComponent<PauseMenuTag>();
+
 	return overlay;
 }
 
@@ -197,7 +200,7 @@ void Scene::createPauseMenuUComponents(Entity& overlay) {
 	auto& selectable = closeButton.addComponent<SelectableUI>();
 
 	selectable.onPressed = [this, &overlay, &closeTransform] {
-		togglePauseMenuOverlayVisibility(overlay);
+		toggleOverlayVisibility(overlay);
 		std::cout << "button 1 pressed" << std::endl;
 		closeTransform.scale = 1.0f;
 	};
@@ -225,7 +228,7 @@ void Scene::createPauseMenuUComponents(Entity& overlay) {
 	auto& selectable2 = closeButton2.addComponent<SelectableUI>();
 
 	selectable2.onPressed = [this, &overlay, &closeTransform2] {
-		togglePauseMenuOverlayVisibility(overlay);
+		toggleOverlayVisibility(overlay);
 		std::cout << "button 2 pressed" << std::endl;
 		closeTransform2.scale = 1.0f;
 	};
@@ -249,7 +252,7 @@ void Scene::createPauseMenuUComponents(Entity& overlay) {
 	selectable2.previous = &selectable;
 }
 
-void Scene::togglePauseMenuOverlayVisibility(Entity& overlay) {
+void Scene::toggleOverlayVisibility(Entity& overlay) {
 	auto& sprite = overlay.getComponent<Sprite>();
 	bool newVisibility = !sprite.visible;
 	sprite.visible = newVisibility;

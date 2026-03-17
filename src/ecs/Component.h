@@ -103,4 +103,5 @@ struct Timeline {
 };
 
 struct PlayerTag{};
+struct PauseMenuTag{};
 struct ProjectileTag{};
