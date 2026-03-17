@@ -12,10 +12,12 @@
 #include "KeyboardInputSystem.h"
 #include "MainMenuSystem.h"
 #include "Map.h"
+#include "MouseInputSystem.h"
 #include "MovementSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
 #include "TimelineSystem.h"
+#include "UIRenderSystem.h"
 #include "scene/SceneType.h"
 
 class World {
@@ -33,6 +35,8 @@ class World {
     TimelineSystem timelineSystem;
     DestructionSystem destructionSystem;
     MainMenuSystem mainMenuSystem;
+    UIRenderSystem uiRenderSystem;
+    MouseInputSystem mouseInputSystem; // TODO temp
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -56,6 +60,8 @@ public:
             destructionSystem.update(entities);
         }
 
+        mouseInputSystem.update(*this, event);
+
         synchronizeEntities();
         cleanup();
     }
@@ -69,6 +75,7 @@ public:
         }
 
         renderSystem.render(entities);
+        uiRenderSystem.render(entities);
     }
 
     Entity& createEntity() {

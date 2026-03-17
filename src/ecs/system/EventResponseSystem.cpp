@@ -26,6 +26,35 @@ EventResponseSystem::EventResponseSystem(World &world) {
 
         // TODO: onPlayerAction
     });
+
+    world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
+        if (e.type != EventType::MouseInteraction) {
+            return;
+        }
+
+        const auto& mouseInteractionEvent = static_cast<const MouseInteractionEvent&>(e);
+        onMouseInteraction(mouseInteractionEvent);
+    });
+}
+
+void EventResponseSystem::onMouseInteraction(const MouseInteractionEvent& e) {
+    if (!e.entity->hasComponent<Clickable>()) return;
+
+    auto& clickable = e.entity->getComponent<Clickable>();
+
+    switch (e.state) {
+        case MouseInteractionState::Pressed:
+            clickable.onPresssed();
+            break;
+        case MouseInteractionState::Released:
+            clickable.onReleased();
+            break;
+        case MouseInteractionState::Cancel:
+            clickable.onCancel();
+            break;
+        default:
+            break;
+    }
 }
 
 void EventResponseSystem::onCollision(const CollisionEvent& e, const char* otherTag, World& world) {
