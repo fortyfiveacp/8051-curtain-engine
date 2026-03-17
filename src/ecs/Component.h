@@ -23,6 +23,7 @@ struct Velocity {
 };
 
 // Rotation over time, which modifies the direction property of the Velocity.
+// TODO: Implement the actual rotation.
 struct AngularVelocity {
     float rotationOverTime{};
 };
@@ -56,6 +57,32 @@ struct TimedSpawner {
     float spawnInterval{};
     std::function<void()> spawnCallback{};
     float timer{};
+};
+
+struct RadialSpawner {
+    // The spawner's rotation speed.
+    float rotationSpeed{};
+
+    // The frequency (sec) that one burst of bullets is emitted.
+    float frequency{};
+
+    // Bullet emission speed.
+    float bulletEmissionSpeed{};
+
+    // Bullet emission angular velocity (rotation over time).
+    float bulletEmissionRotation{};
+
+    // Duration of spawner. Spawner turns off when duration expires.
+    float duration{};
+
+    // Delay before starting spawns.
+    float delay{};
+
+    // Invoked when spawning, once per bullet. Params: direction, bulletEmissionSpeed, bulletEmissionRotation, duration.
+    std::function<void(Vector2D, float, float, float)> spawnCallback{};
+
+    // The actual timer, which triggers spawn when it hits zero then resets.
+    float spawnTimer{};
 };
 
 // Our game state, might have multiple scenes.
