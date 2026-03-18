@@ -4,7 +4,7 @@
 #include "World.h"
 
 EventResponseSystem::EventResponseSystem(World &world) {
-    // Subscriptions
+    // Subscriptions.
     world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
         if (e.type != EventType::Collision) {
             return;
@@ -26,6 +26,35 @@ EventResponseSystem::EventResponseSystem(World &world) {
 
         // TODO: onPlayerAction
     });
+
+    world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
+        if (e.type != EventType::UIInteraction) {
+            return;
+        }
+
+        const auto& keyboardInteractionEvent = static_cast<const UIInteractionEvent&>(e);
+        onUIInteraction(keyboardInteractionEvent);
+    });
+}
+
+void EventResponseSystem::onUIInteraction(const UIInteractionEvent& e) {
+    if (!e.entity->hasComponent<SelectableUI>()) return;
+
+    auto& selectable = e.entity->getComponent<SelectableUI>();
+
+    switch (e.state) {
+        case UIInteractionState::Pressed:
+            selectable.onPressed();
+            break;
+        case UIInteractionState::Released:
+            selectable.onReleased();
+            break;
+        case UIInteractionState::Selected:
+            selectable.onSelect();
+            break;
+        default:
+            break;
+    }
 }
 
 void EventResponseSystem::onCollision(const CollisionEvent& e, const char* otherTag, World& world) {
@@ -72,7 +101,7 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
         }
 
         // This logic is simple and direct.
-        // Ideally, we would only operate on data in an update function (transient entities)
+        // Ideally, we would only operate on data in an update function (transient entities).
         auto& health = player->getComponent<Health>();
         health.currentHealth--;
 
@@ -83,7 +112,7 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
         if (health.currentHealth == 0) {
             player->destroy();
 
-            // Change scene (deferred)
+            // Change scene (deferred).
             Game::onSceneChangeRequest("gameover");
         }
     }

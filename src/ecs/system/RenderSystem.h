@@ -11,7 +11,7 @@ public:
     void render(std::vector<std::unique_ptr<Entity>>& entities) {
         Entity* cameraEntity = nullptr;
 
-        // Find camera
+        // Find camera.
         for (auto& e : entities) {
             if (e->hasComponent<Camera>()) {
                 cameraEntity = e.get();
@@ -19,7 +19,7 @@ public:
             }
         }
 
-        // No camera = no rendering
+        // No camera = no rendering.
         if (!cameraEntity) {
             return;
         }
@@ -30,6 +30,11 @@ public:
             if (entity->hasComponent<Transform>() && entity->hasComponent<Sprite>()) {
                 auto& t = entity->getComponent<Transform>();
                 auto& sprite = entity->getComponent<Sprite>();
+
+                // Only render sprites on the World layer.
+                if (sprite.renderLayer != RenderLayer::World) {
+                    continue;
+                }
 
                 // We are converting from world space to screen space.
                 sprite.dst.x = t.position.x - cam.view.x;

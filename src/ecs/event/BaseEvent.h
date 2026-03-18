@@ -4,7 +4,8 @@
 enum class EventType {
     Collision,
     PlayerAction,
-    Audio
+    Audio,
+    UIInteraction
 };
 
 struct BaseEvent {
@@ -62,5 +63,14 @@ struct MusicEvent : BaseEvent {
 
     MusicEvent(MusicID music, MusicAction action, bool loop = true) : music(music), action(action), loop(loop) {
         type = EventType::Audio;
+    }
+};
+enum class UIInteractionState {Pressed, Released, Selected};
+
+struct UIInteractionEvent : BaseEvent {
+    Entity* entity = nullptr;
+    UIInteractionState state{};
+    UIInteractionEvent(Entity* entity, UIInteractionState state) : entity(entity), state(state) {
+        type = EventType::UIInteraction;
     }
 };

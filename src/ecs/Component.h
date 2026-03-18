@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "AnimationClip.h"
+#include "Entity.h"
 
 struct Transform {
     Vector2D position{};
@@ -22,15 +23,23 @@ struct Velocity {
     float speed{};
 };
 
+enum class RenderLayer {
+    World,
+    UI
+};
+
 struct Sprite {
     SDL_Texture* texture = nullptr;
     SDL_FRect src{};
     SDL_FRect dst{};
+    RenderLayer renderLayer = RenderLayer::World;
+    bool visible = true;
 };
 
 struct Collider {
     std::string tag;
     SDL_FRect rect{};
+    bool enabled = true;
 };
 
 struct Animation {
@@ -62,6 +71,29 @@ struct Health {
     int currentHealth{};
 };
 
+struct SelectableUI {
+    std::function<void()> onPressed{};
+    std::function<void()> onReleased{};
+    std::function<void()> onSelect{};
+    bool selected = false;
+
+    // The selectable UI elements are a doubly linked list.
+    SelectableUI* next = nullptr;
+    SelectableUI* previous = nullptr;
+};
+
+struct Toggleable {
+    std::function<void()> toggle;
+};
+
+struct Parent {
+    Entity* parent = nullptr;
+};
+
+struct Children {
+    std::vector<Entity*> children{};
+};
+
 // Controls pre-scripted events at specific times.
 struct Timeline {
     float currentTime = 0;
@@ -71,4 +103,5 @@ struct Timeline {
 };
 
 struct PlayerTag{};
+struct PauseMenuTag{};
 struct ProjectileTag{};
