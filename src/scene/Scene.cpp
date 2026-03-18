@@ -111,8 +111,11 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 	// Radial danmaku spawner
 	auto& radialDanmaku(world.createEntity());
 	auto radialDanmakuTransform = radialDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
+
 	float rotationSpeed = 40.0f;
-	float frequency = 1.0f;
+	radialDanmaku.addComponent<AngularVelocity>(rotationSpeed);
+
+	float frequency = 0.3f;
 	float bulletEmissionSpeed = 50.0f;
 	float bulletEmissionAngularVelocity = 10.0f;
 	float duration = 10.0f;
@@ -127,8 +130,8 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 			e.addComponent<Transform>(Vector2D(radialDanmakuTransform.position.x, radialDanmakuTransform.position.y), 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, bulletEmissionSpeed);
 
-			// TODO: Actually do the rotation
-			e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
+			// TODO: Actually do the rotation on bullets using local space.
+			// e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
 
 			// Use the bird sprites for now.
 			// Animation anim = AssetManager::getAnimation("enemy");

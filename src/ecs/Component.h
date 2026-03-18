@@ -20,10 +20,11 @@ struct Transform {
 struct Velocity {
     Vector2D direction{};
     float speed{};
+
+    // TODO: local space
 };
 
-// Rotation over time, which modifies the direction property of the Velocity.
-// TODO: Implement the actual rotation.
+// Rotation over time, which modifies the rotation property of the Transform.
 struct AngularVelocity {
     float rotationOverTime{};
 };
