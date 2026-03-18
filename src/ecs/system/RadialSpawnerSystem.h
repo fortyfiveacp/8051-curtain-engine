@@ -15,7 +15,6 @@ public:
                 spawner.spawnTimer -= dt;
 
                 if (spawner.spawnTimer <= 0) {
-                    std::cout << "Spawn" << std::endl;
                     spawner.spawnTimer += spawner.frequency;
 
                     float angleBetweenBullets = 360.0f / spawner.bulletsPerBurst;

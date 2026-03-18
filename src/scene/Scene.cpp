@@ -112,7 +112,7 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 	auto& radialDanmaku(world.createEntity());
 	auto radialDanmakuTransform = radialDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
 	float rotationSpeed = 40.0f;
-	float frequency = 0.2f;
+	float frequency = 1.0f;
 	float bulletEmissionSpeed = 50.0f;
 	float bulletEmissionAngularVelocity = 10.0f;
 	float duration = 10.0f;
