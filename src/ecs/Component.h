@@ -73,6 +73,9 @@ struct RadialSpawner {
     // Bullet emission angular velocity (rotation over time).
     float bulletEmissionAngularVelocity{};
 
+    // Inner radius of bullet pattern emitters.
+    float radius{};
+
     // Duration of spawner. Spawner turns off when duration expires.
     float duration{};
 

@@ -112,22 +112,26 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 	auto& radialDanmaku(world.createEntity());
 	auto radialDanmakuTransform = radialDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
 
-	float rotationSpeed = 40.0f;
+	float rotationSpeed = 50.0f;
 	radialDanmaku.addComponent<AngularVelocity>(rotationSpeed);
 
 	float frequency = 0.3f;
-	float bulletEmissionSpeed = 50.0f;
+	float bulletEmissionSpeed = 100.0f;
 	float bulletEmissionAngularVelocity = 10.0f;
+	float radius = 30.0f;
 	float duration = 10.0f;
 	float delay = 2.0f;
-	int bulletsPerBurst = 5;
+	int bulletsPerBurst = 17;
 
 	// RadialSpawner component takes a callback which spawns individual bullets.
 	radialDanmaku.addComponent<RadialSpawner>(rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
-		duration, delay, bulletsPerBurst,
-		[this, radialDanmakuTransform, bulletEmissionSpeed, bulletEmissionAngularVelocity](Vector2D direction) {
+		radius, duration, delay, bulletsPerBurst,
+		[this, radialDanmakuTransform, bulletEmissionSpeed, bulletEmissionAngularVelocity, radius](Vector2D direction) {
 			auto& e(world.createDeferredEntity());
-			e.addComponent<Transform>(Vector2D(radialDanmakuTransform.position.x, radialDanmakuTransform.position.y), 0.0f, 1.0f);
+
+			Vector2D bulletSpawnPositionOffset = direction * radius;
+
+			e.addComponent<Transform>(radialDanmakuTransform.position + bulletSpawnPositionOffset, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, bulletEmissionSpeed);
 
 			// TODO: Actually do the rotation on bullets using local space.
