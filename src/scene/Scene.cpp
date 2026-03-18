@@ -116,12 +116,12 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 	radialDanmaku.addComponent<AngularVelocity>(rotationSpeed);
 
 	float frequency = 0.3f;
-	float bulletEmissionSpeed = 100.0f;
-	float bulletEmissionAngularVelocity = 10.0f;
+	float bulletEmissionSpeed = 150.0f;
+	float bulletEmissionAngularVelocity = 20.0f;
 	float radius = 30.0f;
 	float duration = 10.0f;
 	float delay = 2.0f;
-	int bulletsPerBurst = 17;
+	int bulletsPerBurst = 1;
 
 	// RadialSpawner component takes a callback which spawns individual bullets.
 	radialDanmaku.addComponent<RadialSpawner>(rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
@@ -132,14 +132,10 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 			Vector2D bulletSpawnPositionOffset = direction * radius;
 
 			e.addComponent<Transform>(radialDanmakuTransform.position + bulletSpawnPositionOffset, 0.0f, 1.0f);
-			e.addComponent<Velocity>(direction, bulletEmissionSpeed);
+			e.addComponent<Velocity>(direction, bulletEmissionSpeed, true);
 
 			// TODO: Actually do the rotation on bullets using local space.
-			// e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
-
-			// Use the bird sprites for now.
-			// Animation anim = AssetManager::getAnimation("enemy");
-			// e.addComponent<Animation>(anim);
+			e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
 
 			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
 			SDL_FRect src { 0, 0, 32, 32 };

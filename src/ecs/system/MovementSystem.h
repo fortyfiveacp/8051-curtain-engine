@@ -35,6 +35,16 @@ private:
         // Normalize.
         directionVector.normalize();
 
+        // If local space is on, add rotation to the direction.
+        if (v.isLocalSpace) {
+            float rotationRadians = std::atan2(directionVector.y, directionVector.x);
+            rotationRadians += t.rotation * (std::numbers::pi / 180.0f);
+            std::fmod(rotationRadians, 360.0f);
+
+            directionVector.x = std::cos(rotationRadians);
+            directionVector.y = std::sin(rotationRadians);
+        }
+
         // Vector2D needs an operator function to multiply a float.
         Vector2D velocityVector = directionVector * v.speed;
 

@@ -21,7 +21,8 @@ struct Velocity {
     Vector2D direction{};
     float speed{};
 
-    // TODO: local space
+    // If true, the direction is influenced by Transform.rotation.
+    bool isLocalSpace{};
 };
 
 // Rotation over time, which modifies the rotation property of the Transform.
