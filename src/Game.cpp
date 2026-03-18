@@ -61,7 +61,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	AssetManager::loadAnimation("player", "../asset/animations/fox_animations.xml");
 	AssetManager::loadAnimation("enemy", "../asset/animations/bird_animations.xml");
 
-	AssetManager::loadSound(SoundID::PlayerShot, "../asset/audio/sfx/generic_shot.mp3");
+	// AssetManager::loadSound(SoundID::PlayerShot, "../asset/audio/sfx/generic_shot.mp3");
 	AssetManager::loadMusic(MusicID::StageTheme, "../asset/audio/music/Stage Theme.mp3");
 
 	// Load scenes
