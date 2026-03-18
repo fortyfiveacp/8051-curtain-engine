@@ -108,6 +108,44 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 		e.addComponent<ProjectileTag>();
 	});
 
+	// Radial danmaku spawner
+	auto& radialDanmaku(world.createEntity());
+	auto radialDanmakuTransform = radialDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
+	float rotationSpeed = 40.0f;
+	float frequency = 0.2f;
+	float bulletEmissionSpeed = 50.0f;
+	float bulletEmissionAngularVelocity = 10.0f;
+	float duration = 10.0f;
+	float delay = 2.0f;
+	int bulletsPerBurst = 5;
+
+	// RadialSpawner component takes a callback which spawns individual bullets.
+	radialDanmaku.addComponent<RadialSpawner>(rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
+		duration, delay, bulletsPerBurst,
+		[this, radialDanmakuTransform, bulletEmissionSpeed, bulletEmissionAngularVelocity](Vector2D direction) {
+			auto& e(world.createDeferredEntity());
+			e.addComponent<Transform>(Vector2D(radialDanmakuTransform.position.x, radialDanmakuTransform.position.y), 0.0f, 1.0f);
+			e.addComponent<Velocity>(direction, bulletEmissionSpeed);
+
+			// TODO: Actually do the rotation
+			e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
+
+			// Use the bird sprites for now.
+			// Animation anim = AssetManager::getAnimation("enemy");
+			// e.addComponent<Animation>(anim);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
+			SDL_FRect src { 0, 0, 32, 32 };
+			SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 32 };
+			e.addComponent<Sprite>(tex, src, dest);
+
+			Collider c = e.addComponent<Collider>("projectile");
+			c.rect.w = dest.w;
+			c.rect.h = dest.h;
+
+			e.addComponent<ProjectileTag>();
+		});
+
 	// Add timeline object (experimental, this will actually spawn enemy convoys later).
 	auto& timelineManager(world.createEntity());
 	auto& debugTimeline = timelineManager.addComponent<Timeline>();

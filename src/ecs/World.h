@@ -13,6 +13,7 @@
 #include "MainMenuSystem.h"
 #include "Map.h"
 #include "MovementSystem.h"
+#include "RadialSpawnerSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
 #include "TimelineSystem.h"
@@ -30,6 +31,7 @@ class World {
     CameraSystem cameraSystem;
     EventManager eventManager;
     SpawnTimerSystem spawnTimerSystem;
+    RadialSpawnerSystem radialSpawnerSystem;
     TimelineSystem timelineSystem;
     DestructionSystem destructionSystem;
     MainMenuSystem mainMenuSystem;
@@ -52,6 +54,7 @@ public:
             animationSystem.update(entities, dt);
             cameraSystem.update(entities);
             spawnTimerSystem.update(entities, dt);
+            radialSpawnerSystem.update(entities, dt);
             timelineSystem.update(entities, dt);
             destructionSystem.update(entities);
         }

@@ -70,7 +70,7 @@ struct RadialSpawner {
     float bulletEmissionSpeed{};
 
     // Bullet emission angular velocity (rotation over time).
-    float bulletEmissionRotation{};
+    float bulletEmissionAngularVelocity{};
 
     // Duration of spawner. Spawner turns off when duration expires.
     float duration{};
@@ -81,11 +81,14 @@ struct RadialSpawner {
     // Number of bullets in each burst.
     int bulletsPerBurst{};
 
-    // Invoked when spawning, once per bullet. Params: direction, bulletEmissionSpeed, bulletEmissionRotation, duration.
-    std::function<void(Vector2D, float, float, float)> spawnCallback{};
+    // Invoked when spawning, once per bullet, with param direction.
+    std::function<void(Vector2D)> spawnCallback{};
 
     // The actual timer, which triggers spawn when it hits zero then resets.
-    float spawnTimer{};
+    float spawnTimer{frequency};
+
+    // TODO: time left before emission starts
+    // TODO: time left before emission ends
 };
 
 // Our game state, might have multiple scenes.

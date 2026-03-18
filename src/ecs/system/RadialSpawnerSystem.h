@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -14,6 +15,7 @@ public:
                 spawner.spawnTimer -= dt;
 
                 if (spawner.spawnTimer <= 0) {
+                    std::cout << "Spawn" << std::endl;
                     spawner.spawnTimer += spawner.frequency;
 
                     float angleBetweenBullets = 360.0f / spawner.bulletsPerBurst;
@@ -23,10 +25,7 @@ public:
 
                     for (int i = 0; i < spawner.bulletsPerBurst; i++) {
                         spawner.spawnCallback(
-                            Vector2D(currentEmissionAngle),
-                            spawner.bulletEmissionSpeed,
-                            spawner.bulletEmissionRotation,
-                            spawner.duration);
+                            Vector2D(currentEmissionAngle));
 
                         currentEmissionAngle += angleBetweenBullets;
                     }
