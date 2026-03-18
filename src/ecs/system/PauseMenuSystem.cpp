@@ -3,7 +3,7 @@
 void PauseMenuSystem::update(const std::vector<std::unique_ptr<Entity>>& entities, const SDL_Event& event) {
     SelectableUI* currentlySelected = nullptr;
 
-    // Bring up pause menu with escape.
+    // Bring up pause menu with the escape key.
     if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE) {
         for (auto& e : entities) {
             if (e->hasComponent<PauseMenuTag>() && e->hasComponent<Toggleable>()) {
