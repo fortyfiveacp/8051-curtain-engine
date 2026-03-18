@@ -18,4 +18,6 @@ private:
     // Player action
     void onPlayerAction(const PlayerActionEvent& e,
         const std::function<void(Entity* play6er, PlayerAction action)>& callback);
+
+    void onUIInteraction(const UIInteractionEvent& e);
 };

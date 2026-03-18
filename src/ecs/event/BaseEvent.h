@@ -4,6 +4,7 @@
 enum class EventType {
     Collision,
     PlayerAction,
+    UIInteraction
 };
 
 struct BaseEvent {
@@ -29,5 +30,15 @@ struct PlayerActionEvent : BaseEvent {
     PlayerAction action{};
     PlayerActionEvent(Entity* player, PlayerAction action) : player(player), action(action) {
         type = EventType::PlayerAction;
+    }
+};
+
+enum class UIInteractionState {Pressed, Released, Selected};
+
+struct UIInteractionEvent : BaseEvent {
+    Entity* entity = nullptr;
+    UIInteractionState state{};
+    UIInteractionEvent(Entity* entity, UIInteractionState state) : entity(entity), state(state) {
+        type = EventType::UIInteraction;
     }
 };
