@@ -49,7 +49,7 @@ struct AudioEvent : BaseEvent {
     }
 };
 
-// might not be needed
+// Might not be needed.
 enum class MusicAction {
     Play,
     Stop
