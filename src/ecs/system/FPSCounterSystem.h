@@ -15,8 +15,6 @@ public:
                 auto& label = e->getComponent<Label>();
                 auto& fpsCounter = e->getComponent<FPSCounter>();
 
-                float fps = 1.0f / dt;
-                fpsCounter.fpsAccumulator += fps;
                 fpsCounter.frameCount++;
                 fpsCounter.timer += dt;
 
@@ -25,7 +23,7 @@ public:
                     return;
                 }
 
-                float averageFPS = fpsCounter.fpsAccumulator / static_cast<float>(fpsCounter.frameCount);
+                float averageFPS = static_cast<float>(fpsCounter.frameCount) / fpsCounter.timer;
 
                 // Update FPS counter label.
                 if (label.type == LabelType::FPSCounter) {
@@ -35,7 +33,6 @@ public:
                     label.dirty = true;
 
                     // Reset frame count and timer.
-                    fpsCounter.fpsAccumulator = 0.0f;
                     fpsCounter.frameCount = 0;
                     fpsCounter.timer = 0.0f;
                 }

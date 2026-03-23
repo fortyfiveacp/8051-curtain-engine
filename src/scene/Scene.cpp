@@ -316,7 +316,7 @@ Entity& Scene::createFPSCounterLabel(int windowWidth, int windowHeight) {
 
 	TextureManager::loadLabel(label);
 	fpsCounterLabel.addComponent<Label>(label);
-	fpsCounterLabel.addComponent<Transform>(Vector2D(windowWidth - 175, windowHeight - 50), 0.0f, 1.0f);
+	fpsCounterLabel.addComponent<Transform>(Vector2D(windowWidth - 170, windowHeight - 40), 0.0f, 1.0f);
 	fpsCounterLabel.addComponent<FPSCounter>();
 
 	return fpsCounterLabel;

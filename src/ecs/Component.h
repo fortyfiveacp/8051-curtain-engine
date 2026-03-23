@@ -122,7 +122,6 @@ struct Label {
 
 struct FPSCounter {
     int frameCount = 0;
-    float fpsAccumulator = 0.0f;
     float timer = 1.0f; // Default start timer at 1 so the first update isn't delayed by 1 second.
 };
 
