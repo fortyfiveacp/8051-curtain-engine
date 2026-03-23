@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <ostream>
+#include <SDL3/SDL_rect.h>
 
 // Doesn't create any extra memory, just grabs the reference of this object
 extern Game* game;
@@ -72,12 +73,31 @@ void TextureManager::updateLabel(Label& label) {
         label.color
     );
 
-    if (!tempSurface) {
+    // Create black outline for font.
+    int outlineSize = 1;
+    TTF_Font* fontOutline = TTF_CopyFont(label.font);
+    TTF_SetFontOutline(fontOutline, outlineSize);
+
+    SDL_Surface* tempOutlineSurface = TTF_RenderText_Blended(
+        fontOutline,
+        label.text.c_str(),
+        label.text.size(),
+        {0, 0, 0, 255}
+    );
+
+    if (!tempSurface || !tempOutlineSurface) {
         std::cout << "Failed to load surface: " << label.textureCacheKey << std::endl;
     }
 
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(game->renderer, tempSurface);
+    SDL_Rect dst = {outlineSize, outlineSize, tempSurface->w, tempSurface->h};
+    SDL_SetSurfaceBlendMode(tempSurface, SDL_BLENDMODE_BLEND);
+    SDL_BlitSurface(tempSurface, nullptr, tempOutlineSurface, &dst);
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(game->renderer, tempOutlineSurface);
+
+    // Clean up temp surfaces.
     SDL_DestroySurface(tempSurface);
+    SDL_DestroySurface(tempOutlineSurface);
 
     if (!texture) {
         std::cout << "Failed to create texture: " << label.textureCacheKey << std::endl;
@@ -92,7 +112,7 @@ void TextureManager::updateLabel(Label& label) {
     label.texture = texture;
     textures[label.textureCacheKey] = texture;
 
-    // Clean texture.
+    // Clean the texture.
     label.dirty = false;
 }
 
