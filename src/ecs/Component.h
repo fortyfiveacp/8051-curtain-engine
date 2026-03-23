@@ -104,7 +104,8 @@ struct Timeline {
 };
 
 enum class LabelType {
-    PlayerPosition
+    PlayerPosition,
+    FPSCounter
 };
 
 struct Label {
@@ -117,6 +118,12 @@ struct Label {
     SDL_FRect dst{};
     bool visible = true;
     bool dirty = false;
+};
+
+struct FPSCounter {
+    int frameCount = 0;
+    float fpsAccumulator = 0.0f;
+    float timer = 1.0f; // Default start timer at 1 so the first update isn't delayed by 1 second.
 };
 
 struct PlayerTag{};

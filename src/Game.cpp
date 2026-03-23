@@ -54,7 +54,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	}
 
 	// Load fonts.
-	AssetManager::loadFont("pop1", "../asset/fonts/pop1-w9.ttf", 24);
+	AssetManager::loadFont("pop1", "../asset/fonts/pop1-w9.ttf", 32);
 
 	// Load assets.
 	AssetManager::loadAnimation("player", "../asset/animations/fox_animations.xml");

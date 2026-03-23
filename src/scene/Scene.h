@@ -33,9 +33,9 @@ private:
     void initGameplay(const char* mapPath, int windowWidth, int windowHeight);
 
     Entity& createPauseMenuOverlay(int windowWidth, int windowHeight);
-    Entity& createCogButton(int windowWidth, int windowHeight, Entity& overlay);
     void createPauseMenuUComponents(Entity& overlay);
     void toggleOverlayVisibility(Entity& overlay);
 
     Entity& createPlayerPosLabel();
+    Entity& createFPSCounterLabel(int windowWidth, int windowHeight);
 };

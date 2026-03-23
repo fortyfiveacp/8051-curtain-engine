@@ -8,6 +8,7 @@
 #include "DestructionSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
+#include "FPSCounterSystem.h"
 #include "HUDSystem.h"
 #include "event/EventManager.h"
 #include "KeyboardInputSystem.h"
@@ -41,6 +42,7 @@ class World {
     UIRenderSystem uiRenderSystem;
     PauseMenuSystem pauseMenuSystem;
     HUDSystem hudSystem;
+    FPSCounterSystem fpsCounterSystem;
     PreRenderSystem preRenderSystem;
 
     // Reactive systems
@@ -66,6 +68,7 @@ public:
             hudSystem.update(entities);
         }
 
+        fpsCounterSystem.update(entities, dt);
         preRenderSystem.update(entities);
 
         synchronizeEntities();
