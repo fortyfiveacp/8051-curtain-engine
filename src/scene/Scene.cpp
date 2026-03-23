@@ -22,7 +22,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	auto& menu(world.createEntity());
 	auto menuTransform = menu.addComponent<Transform>(Vector2D(0, 0), 0.0f, 1.0f);
 
-	SDL_Texture* texture = TextureManager::load("../asset/menu.png");
+	SDL_Texture* texture = TextureManager::load("../asset/main-menu-scaled.png");
 	SDL_FRect menuSrc {0, 0, (float)windowWidth, (float)windowHeight};
 	SDL_FRect menuDst {menuTransform.position.x, menuTransform.position.y, menuSrc.w, menuSrc.h};
 	menu.addComponent<Sprite>(texture, menuSrc, menuDst);
