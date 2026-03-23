@@ -289,7 +289,7 @@ Entity& Scene::createPlayerPosLabel() {
 	Label label = {
 		"Test String",
 		AssetManager::getFont("pop1"),
-		{255, 255, 255, 255},
+		{240, 240, 240, 255},
 		LabelType::PlayerPosition,
 		"playerPos"
 	};
