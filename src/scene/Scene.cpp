@@ -151,6 +151,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// Pause menu overlay.
 	createPauseMenuOverlay(windowWidth, windowHeight);
+
+	createPlayerPosLabel();
 }
 
 Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
@@ -280,4 +282,21 @@ void Scene::toggleOverlayVisibility(Entity& overlay) {
 			selected.onSelect();
 		}
 	}
+}
+
+Entity& Scene::createPlayerPosLabel() {
+	auto& playerPosLabel(world.createEntity());
+	Label label = {
+		"Test String",
+		AssetManager::getFont("pop1"),
+		{255, 255, 255, 255},
+		LabelType::PlayerPosition,
+		"playerPos"
+	};
+
+	TextureManager::loadLabel(label);
+	playerPosLabel.addComponent<Label>(label);
+	playerPosLabel.addComponent<Transform>(Vector2D(10, 10), 0.0f, 1.0f);
+
+	return playerPosLabel;
 }

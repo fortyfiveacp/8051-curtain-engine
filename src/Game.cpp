@@ -24,7 +24,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 		flags = SDL_WINDOW_FULLSCREEN;
 	}
 
-	// Initialize SDL library
+	// Initialize SDL library.
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) == 1) {
 		std::cout << "Subsystem initialized..." << std::endl;
 		window = SDL_CreateWindow(title, width, height, flags);
@@ -33,8 +33,8 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 			std::cout << "Window created..." << std::endl;
 		}
 
-		// Windows will be DirectX
-		// Mac will likely be Metal, OpenGL
+		// Windows will be DirectX.
+		// Mac will likely be Metal, OpenGL.
 		renderer = SDL_CreateRenderer(window, nullptr);
 
 		if (renderer) {
@@ -44,31 +44,37 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 			std::cout << "Renderer could not be created..." << std::endl;
 		}
 
+		if (TTF_Init() != 1) {
+			std::cout << "TTF_Init failed..." << std::endl;
+		}
+
 		isRunning = true;
-	}
-	else {
+	} else {
 		isRunning = false;
 	}
 
-	// Load assets
+	// Load fonts.
+	AssetManager::loadFont("pop1", "../asset/fonts/pop1-w9.ttf", 16);
+
+	// Load assets.
 	AssetManager::loadAnimation("player", "../asset/animations/fox_animations.xml");
 	AssetManager::loadAnimation("enemy", "../asset/animations/bird_animations.xml");
 
-	// Load scenes
+	// Load scenes.
 	sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, width, height);
 	sceneManager.loadScene(SceneType::Gameplay, "level1", "../asset/map.tmx", width, height);
 	sceneManager.loadScene(SceneType::Gameplay, "level2", "../asset/map2.tmx", width, height);
 
-	// Init game data / state
+	// Init game data / state.
 	gameState.playerHealth = 5;
 
-	// Start level 1
+	// Start level 1.
 	sceneManager.changeSceneDeferred("mainmenu");
 
-	// Resolve scene callback
+	// Resolve scene callback.
 	onSceneChangeRequest = [this](std::string sceneName) {
 
-		// Some game state happening here
+		// Some game state happening here.
 		if (sceneManager.currentScene->getName() == "level2" && sceneName == "level2") {
 			std::cout << "You win!" << std::endl;
 			isRunning = false;
@@ -86,14 +92,14 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 }
 
 void Game::handleEvents() {
-	// SDL listens to the OS for input events internally and adds them to a queue
+	// SDL listens to the OS for input events internally and adds them to a queue.
 	// SDL_Event event;
 
-	// Check for next event, if an event is available it will remove from the queue and store in event variable
+	// Check for next event, if an event is available it will remove from the queue and store in event variable.
 	SDL_PollEvent(&event);
 
 	switch (event.type) {
-	case SDL_EVENT_QUIT: // Triggered when user closes window
+	case SDL_EVENT_QUIT: // Triggered when user closes window.
 		isRunning = false;
 		break;
 	default:
@@ -120,15 +126,15 @@ void Game::render() {
 
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
 
-	// Every frame the renderer is cleared with the draw colour
+	// Every frame the renderer is cleared with the draw colour.
 	SDL_RenderClear(renderer);
 
 	// Scene does the rendering now
 	sceneManager.render();
 
-	// Display everything that was just drawn
-	// Draws it in memory first to a back buffer
-	// Swaps the back buffer to the screen
+	// Display everything that was just drawn.
+	// Draws it in memory first to a back buffer.
+	// Swaps the back buffer to the screen.
 	SDL_RenderPresent(renderer);
 }
 

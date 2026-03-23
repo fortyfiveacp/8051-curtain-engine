@@ -36,4 +36,6 @@ private:
     Entity& createCogButton(int windowWidth, int windowHeight, Entity& overlay);
     void createPauseMenuUComponents(Entity& overlay);
     void toggleOverlayVisibility(Entity& overlay);
+
+    Entity& createPlayerPosLabel();
 };
