@@ -81,7 +81,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	Animation anim = AssetManager::getAnimation("player");
 	player.addComponent<Animation>(anim);
 
-	SDL_Texture* texture = TextureManager::load("../asset/animations/fox_anim.png");
+	SDL_Texture* texture = TextureManager::load("../asset/animations/reimu_anim.png");
 	// SDL_FRect playerSrc {0, 0, 32, 44}; // for Mario.
 	SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
 	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, 64, 64};
