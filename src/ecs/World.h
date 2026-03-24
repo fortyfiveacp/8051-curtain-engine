@@ -13,6 +13,7 @@
 #include "MainMenuSystem.h"
 #include "Map.h"
 #include "MovementSystem.h"
+#include "PathSystem.h"
 #include "PauseMenuSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
@@ -24,6 +25,8 @@ class World {
     Map map;
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
+    std::unordered_map<int, Path> pathLibrary;
+    PathSystem pathSystem{&pathLibrary};
     MovementSystem movementSystem;
     RenderSystem renderSystem;
     KeyboardInputSystem keyboardInputSystem;
@@ -52,6 +55,7 @@ public:
         else {
             pauseMenuSystem.update(entities, event);
             keyboardInputSystem.update(entities, event);
+            pathSystem.update(entities, dt);
             movementSystem.update(entities, dt);
             collisionSystem.update(*this);
             animationSystem.update(entities, dt);
@@ -90,6 +94,10 @@ public:
 
     std::vector<std::unique_ptr<Entity>>& getEntities() {
         return entities;
+    }
+
+    std::unordered_map<int, Path>& getPathLibrary() {
+        return pathLibrary;
     }
 
     void cleanup() {

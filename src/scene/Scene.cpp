@@ -31,6 +31,13 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
 	// Load our map.
 	world.getMap().load(mapPath, TextureManager::load("../asset/tileset.png"));
+	world.getPathLibrary()[0] = Path{
+	    {
+	    	Vector2D(100, -50),
+	    	Vector2D(100, windowHeight),
+		}
+	};
+
 	for (auto& collider : world.getMap().colliders) {
 		auto& e = world.createEntity();
 		e.addComponent<Transform>(Vector2D(collider.rect.x, collider.rect.y), 0.0f, 1.0f);
@@ -120,8 +127,20 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	auto& timelineManager(world.createEntity());
 	auto& debugTimeline = timelineManager.addComponent<Timeline>();
 
-	debugTimeline.timeline.emplace_back(1.0, [] {
-		std::cout << "Hello" << std::endl;
+	debugTimeline.timeline.emplace_back(1.0, [this] {
+		auto& e = world.createDeferredEntity();
+
+		e.addComponent<Transform>(Vector2D(100, -50), 0.0f, 1.0f);
+		e.addComponent<PathFollower>(0, 0.0f, 120.0f);
+
+		Animation anim = AssetManager::getAnimation("enemy");
+		e.addComponent<Animation>(anim);
+
+		SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
+		SDL_FRect src {0, 0, 32, 32};
+		SDL_FRect dst {100, -50, 32, 32};
+
+		e.addComponent<Sprite>(tex, src, dst);
 	});
 	debugTimeline.timeline.emplace_back(2.0, [] {
 		std::cout << "World" << std::endl;

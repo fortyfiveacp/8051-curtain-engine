@@ -48,6 +48,7 @@ set(SRC_FILES
         src/ecs/system/TimelineSystem.h
         src/ecs/system/PauseMenuSystem.cpp
         src/ecs/system/UIRenderSystem.cpp
+        src/ecs/system/PathSystem.h
         #add all new source files here
 )
 

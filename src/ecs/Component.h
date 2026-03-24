@@ -102,6 +102,13 @@ struct Timeline {
     std::vector<std::pair<float, std::function<void()>>> timeline{};
 };
 
+struct PathFollower {
+    int pathId{};
+    float distance = 0.0f;
+    float speed = 100.0f;
+    bool active = true;
+};
+
 struct PlayerTag{};
 struct PauseMenuTag{};
 struct ProjectileTag{};
