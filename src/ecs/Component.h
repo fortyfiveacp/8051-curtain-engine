@@ -109,6 +109,13 @@ struct PathFollower {
     bool active = true;
 };
 
+struct Convoy {
+    float speed;
+    std::vector<Vector2D> waypoints;
+    int count;
+    float interval;
+};
+
 struct PlayerTag{};
 struct PauseMenuTag{};
 struct ProjectileTag{};

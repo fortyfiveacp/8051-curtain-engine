@@ -31,12 +31,27 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
 	// Load our map.
 	world.getMap().load(mapPath, TextureManager::load("../asset/tileset.png"));
-	world.getPathLibrary()[0] = Path{
-	    {
-	    	Vector2D(100, -50),
-	    	Vector2D(100, windowHeight),
-		}
-	};
+
+	int pathId = 0;
+	Path zigzagPath;
+
+	float startX = windowWidth / 4.0f;
+	float currentY = -50.0f;
+	float zigzagYStep = 100.0f;
+
+	zigzagPath.points.push_back(Vector2D(startX, currentY));
+	currentY = windowHeight / 3.0f;
+	zigzagPath.points.push_back(Vector2D(startX, currentY));
+
+	while (currentY < windowHeight) {
+		currentY += zigzagYStep;
+		zigzagPath.points.push_back(Vector2D(windowWidth / 2.0f, currentY));
+
+		currentY += zigzagYStep;
+		zigzagPath.points.push_back(Vector2D(10.0f, currentY));
+	}
+
+	world.getPathLibrary()[pathId] = zigzagPath;
 
 	for (auto& collider : world.getMap().colliders) {
 		auto& e = world.createEntity();
@@ -127,20 +142,14 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	auto& timelineManager(world.createEntity());
 	auto& debugTimeline = timelineManager.addComponent<Timeline>();
 
-	debugTimeline.timeline.emplace_back(1.0, [this] {
-		auto& e = world.createDeferredEntity();
+	Convoy birdConvoy;
+	birdConvoy.speed = 120.0f;
+	birdConvoy.count = 5;
+	birdConvoy.interval = 1.0f;
+	birdConvoy.waypoints = world.getPathLibrary()[pathId].points;
 
-		e.addComponent<Transform>(Vector2D(100, -50), 0.0f, 1.0f);
-		e.addComponent<PathFollower>(0, 0.0f, 120.0f);
-
-		Animation anim = AssetManager::getAnimation("enemy");
-		e.addComponent<Animation>(anim);
-
-		SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
-		SDL_FRect src {0, 0, 32, 32};
-		SDL_FRect dst {100, -50, 32, 32};
-
-		e.addComponent<Sprite>(tex, src, dst);
+	debugTimeline.timeline.emplace_back(1.0, [this, birdConvoy] {
+		spawnConvoy(birdConvoy);
 	});
 	debugTimeline.timeline.emplace_back(2.0, [] {
 		std::cout << "World" << std::endl;
@@ -190,6 +199,35 @@ Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
 	overlay.addComponent<PauseMenuTag>();
 
 	return overlay;
+}
+
+void Scene::spawnConvoy(const Convoy& convoy) {
+	static int pathCounter = 100;
+	int currentPathId = pathCounter++;
+	world.getPathLibrary()[currentPathId] = Path{ convoy.waypoints };
+
+	auto& timelineEntity = world.createEntity();
+	auto& timelineComp = timelineEntity.addComponent<Timeline>();
+
+	for (int i = 1; i <= convoy.count; ++i) {
+		float spawnTime = i * convoy.interval;
+
+		timelineComp.timeline.emplace_back(spawnTime, [this, currentPathId, convoy]() {
+			auto& e = world.createDeferredEntity();
+
+			Vector2D startPos = convoy.waypoints[0];
+			e.addComponent<Transform>(startPos, 0.0f, 1.0f);
+			e.addComponent<PathFollower>(currentPathId, 0.0f, convoy.speed);
+
+			Animation anim = AssetManager::getAnimation("enemy");
+			e.addComponent<Animation>(anim);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
+			SDL_FRect src { 0, 0, 32, 32 };
+			SDL_FRect dest { startPos.x, startPos.y, 32, 32 };
+			e.addComponent<Sprite>(tex, src, dest);
+		});
+	}
 }
 
 void Scene::createPauseMenuUComponents(Entity& overlay) {
