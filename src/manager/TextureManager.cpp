@@ -5,40 +5,40 @@
 #include <ostream>
 #include <SDL3/SDL_rect.h>
 
-// Doesn't create any extra memory, just grabs the reference of this object
+// Doesn't create any extra memory, just grabs the reference of this object.
 extern Game* game;
 std::unordered_map<std::string, SDL_Texture*> TextureManager::textures;
 
-// Load our texture with a path
+// Load our texture with a path.
 SDL_Texture* TextureManager::load(const char* path) {
-    // Caching: storing the result of some work so you don't have to repeat the work next time
-    // Check if the texture already exists in the map
+    // Caching: storing the result of some work so you don't have to repeat the work next time.
+    // Check if the texture already exists in the map.
     auto it = textures.find(path);
-    if (it != textures.end()) { // If the iterator is not at the end, it is already cached
+    if (it != textures.end()) { // If the iterator is not at the end, it is already cached.
         return it->second;
     }
 
     // What is a surface?
-    // A surface represents an image in RAM (CPU memory)
-    // Do we want to do anything with the image before we store it in GPU?
+    // A surface represents an image in RAM (CPU memory).
+    // Do we want to do anything with the image before we store it in GPU?.
     SDL_Surface* tempSurface = IMG_Load(path);
     if (!tempSurface) {
         std::cout << "Failed to load image: " << path << std::endl;
     }
 
-    // Texture represents an image in VRAM (GPU memory)
+    // Texture represents an image in VRAM (GPU memory).
     SDL_Texture* texture = SDL_CreateTextureFromSurface(game->renderer, tempSurface);
 
-    // Cleanup the surface
+    // Cleanup the surface.
     SDL_DestroySurface(tempSurface);
 
-    // Check if the texture creation was successful
+    // Check if the texture creation was successful.
     if (!texture) {
         std::cout << "Failed to create texture from: " << path << std::endl;
         return nullptr;
     }
 
-    // Store the new texture in the cache
+    // Store the new texture in the cache.
     textures[path] = texture;
 
     return texture;
@@ -66,14 +66,15 @@ void TextureManager::updateLabel(Label& label) {
         label.texture = nullptr;
     }
 
-    SDL_Surface* tempSurface = TTF_RenderText_Blended(
+    // Create the surface for the fill of the text.
+    SDL_Surface* tempFillSurface = TTF_RenderText_Blended(
         label.font,
         label.text.c_str(),
         label.text.size(),
         label.color
     );
 
-    // Create black outline for font.
+    // Create the surface for the black outline of the text.
     int outlineSize = 1;
     TTF_Font* fontOutline = TTF_CopyFont(label.font);
     TTF_SetFontOutline(fontOutline, outlineSize);
@@ -85,18 +86,20 @@ void TextureManager::updateLabel(Label& label) {
         {0, 0, 0, 255}
     );
 
-    if (!tempSurface || !tempOutlineSurface) {
+    if (!tempFillSurface || !tempOutlineSurface) {
         std::cout << "Failed to load surface: " << label.textureCacheKey << std::endl;
     }
 
-    SDL_Rect dst = {outlineSize, outlineSize, tempSurface->w, tempSurface->h};
-    SDL_SetSurfaceBlendMode(tempSurface, SDL_BLENDMODE_BLEND);
-    SDL_BlitSurface(tempSurface, nullptr, tempOutlineSurface, &dst);
+    // Blit fill surface onto the outline surface to create the outlined text surface.
+    SDL_Rect dst = {outlineSize, outlineSize, tempFillSurface->w, tempFillSurface->h};
+    SDL_SetSurfaceBlendMode(tempFillSurface, SDL_BLENDMODE_BLEND);
+    SDL_BlitSurface(tempFillSurface, nullptr, tempOutlineSurface, &dst);
 
+    // Create the texture.
     SDL_Texture* texture = SDL_CreateTextureFromSurface(game->renderer, tempOutlineSurface);
 
     // Clean up temp surfaces.
-    SDL_DestroySurface(tempSurface);
+    SDL_DestroySurface(tempFillSurface);
     SDL_DestroySurface(tempOutlineSurface);
 
     if (!texture) {
