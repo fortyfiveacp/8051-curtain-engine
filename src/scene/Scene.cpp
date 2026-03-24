@@ -25,7 +25,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	SDL_Texture* texture = TextureManager::load("../asset/main-menu-scaled.png");
 	SDL_FRect menuSrc {0, 0, (float)windowWidth, (float)windowHeight};
 	SDL_FRect menuDst {menuTransform.position.x, menuTransform.position.y, menuSrc.w, menuSrc.h};
-	menu.addComponent<Sprite>(texture, menuSrc, menuDst);
+	menu.addComponent<Sprite>(texture, menuSrc, menuDst, RenderLayer::Background);
 
 	createFPSCounterLabel(windowWidth, windowHeight);
 }

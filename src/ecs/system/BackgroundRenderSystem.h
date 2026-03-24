@@ -30,16 +30,6 @@ public:
                         SDL_FRect scaledDest = RenderUtils::getScaledDest(sprite.dst, transform.scale);
                         TextureManager::draw(sprite.texture, &sprite.src, &scaledDest);
                     }
-                } else if (entity->hasComponent<Label>()) {
-                    auto label = entity->getComponent<Label>();
-
-                    label.dst.x = transform.position.x;
-                    label.dst.y = transform.position.y;
-
-                    if (label.visible) {
-                        SDL_FRect scaledDest = RenderUtils::getScaledDest(label.dst, transform.scale);
-                        TextureManager::draw(label.texture, nullptr, &scaledDest);
-                    }
                 }
             }
         }

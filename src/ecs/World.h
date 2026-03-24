@@ -76,9 +76,18 @@ public:
         cleanup();
     }
 
-    void render() {
+    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) {
         backgroundRenderSystem.render(entities);
-        
+
+        // Set up stage viewport.
+        int stageWidth = windowWidth * 0.6;
+        int stageHeight = windowHeight * 0.93;
+        int paddingX = windowWidth * 0.05;
+        int paddingY = (windowHeight - stageHeight) / 2;
+
+        SDL_Rect stageRect = { paddingX, paddingY, stageWidth, stageHeight };
+        SDL_SetRenderViewport(renderer, &stageRect);
+
         for (auto& entity : entities) {
             if (entity->hasComponent<Camera>()) {
                 map.draw(entity->getComponent<Camera>());
@@ -87,6 +96,10 @@ public:
         }
 
         renderSystem.render(entities);
+
+        // Reset viewport for rendering UI.
+        SDL_SetRenderViewport(renderer, nullptr);
+
         uiRenderSystem.render(entities);
     }
 

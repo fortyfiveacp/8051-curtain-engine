@@ -14,8 +14,8 @@ public:
         world.update(dt, e, type);
     }
 
-    void render() {
-        world.render();
+    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) {
+        world.render(renderer, windowWidth, windowHeight);
     }
 
     World world;

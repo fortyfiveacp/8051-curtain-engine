@@ -130,7 +130,9 @@ void Game::render() {
 	SDL_RenderClear(renderer);
 
 	// Scene does the rendering now
-	sceneManager.render();
+	int width, height;
+	SDL_GetWindowSize(window, &width, &height);
+	sceneManager.render(renderer, width, height);
 
 	// Display everything that was just drawn.
 	// Draws it in memory first to a back buffer.
