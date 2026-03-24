@@ -98,9 +98,10 @@ void TextureManager::updateLabel(Label& label) {
     // Create the texture.
     SDL_Texture* texture = SDL_CreateTextureFromSurface(game->renderer, tempOutlineSurface);
 
-    // Clean up temp surfaces.
+    // Clean up temp surfaces and outline font.
     SDL_DestroySurface(tempFillSurface);
     SDL_DestroySurface(tempOutlineSurface);
+    TTF_CloseFont(fontOutline);
 
     if (!texture) {
         std::cout << "Failed to create texture: " << label.textureCacheKey << std::endl;
