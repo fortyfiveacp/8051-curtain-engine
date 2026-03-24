@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "AnimationSystem.h"
+#include "BackgroundRenderSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
 #include "DestructionSystem.h"
@@ -43,6 +44,7 @@ class World {
     HUDSystem hudSystem;
     FPSCounterSystem fpsCounterSystem;
     PreRenderSystem preRenderSystem;
+    BackgroundRenderSystem backgroundRenderSystem;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -75,6 +77,8 @@ public:
     }
 
     void render() {
+        backgroundRenderSystem.render(entities);
+        
         for (auto& entity : entities) {
             if (entity->hasComponent<Camera>()) {
                 map.draw(entity->getComponent<Camera>());

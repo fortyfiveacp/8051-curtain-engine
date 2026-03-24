@@ -25,6 +25,7 @@ struct Velocity {
 };
 
 enum class RenderLayer {
+    Background,
     World,
     UI
 };

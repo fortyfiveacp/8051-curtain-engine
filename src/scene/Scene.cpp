@@ -31,6 +31,24 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 }
 
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
+	SDL_Texture* backgroundTex = TextureManager::load("../asset/background.png");
+	float texWidth = backgroundTex->w;
+	float texHeight = backgroundTex->h;
+
+	// Calculate how many times to repeat.
+	int cols = (windowWidth + texWidth - 1) / texWidth;
+	int rows = (windowHeight + texHeight - 1) / texHeight;
+
+	for (int y = 0; y < rows; y++) {
+		for (int x = 0; x < cols; x++) {
+			auto& e = world.createEntity();
+			SDL_FRect destRect = { static_cast<float>(x) * texWidth, static_cast<float>(y) * texHeight, texWidth, texHeight };
+			SDL_FRect src {0, 0, texWidth, texHeight};
+			e.addComponent<Transform>(Vector2D(x * texWidth, y * texHeight), 0.0f, 1.0f);
+			e.addComponent<Sprite>(backgroundTex, src, destRect, RenderLayer::Background);
+		}
+	}
+
 	// Load our map.
 	world.getMap().load(mapPath, TextureManager::load("../asset/tileset.png"));
 	for (auto& collider : world.getMap().colliders) {
