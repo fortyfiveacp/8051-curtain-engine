@@ -21,7 +21,6 @@
 #include "TimelineSystem.h"
 #include "UIRenderSystem.h"
 #include "scene/SceneType.h"
-#include "HUDSystem.h"
 #include "PreRenderSystem.h"
 
 class World {
