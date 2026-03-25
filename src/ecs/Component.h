@@ -3,6 +3,7 @@
 
 #include "utils/Vector2D.h"
 #include "SDL3/SDL_render.h"
+#include "SDL3_ttf/SDL_ttf.h"
 
 #include <string>
 #include <unordered_map>
@@ -100,6 +101,28 @@ struct Timeline {
 
     // Timeline elements have a float (time to trigger the action) and function (the action to trigger).
     std::vector<std::pair<float, std::function<void()>>> timeline{};
+};
+
+enum class LabelType {
+    PlayerPosition,
+    FPSCounter
+};
+
+struct Label {
+    std::string text{};
+    TTF_Font* font = nullptr;
+    SDL_Color color{};
+    LabelType type = LabelType::PlayerPosition; // Default to player position for tutorial.
+    std::string textureCacheKey{};
+    SDL_Texture* texture = nullptr;
+    SDL_FRect dst{};
+    bool visible = true;
+    bool dirty = false;
+};
+
+struct FPSCounter {
+    int frameCount = 0;
+    float timer = 1.0f; // Default start timer at 1 so the first update isn't delayed by 1 second.
 };
 
 struct PlayerTag{};
