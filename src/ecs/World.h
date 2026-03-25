@@ -23,6 +23,7 @@
 #include "UIRenderSystem.h"
 #include "scene/SceneType.h"
 #include "PreRenderSystem.h"
+#include "StageBackgroundSystem.h"
 
 class World {
     Map map;
@@ -45,6 +46,7 @@ class World {
     FPSCounterSystem fpsCounterSystem;
     PreRenderSystem preRenderSystem;
     BackgroundRenderSystem backgroundRenderSystem;
+    StageBackgroundSystem stageBackgroundSystem;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -65,6 +67,7 @@ public:
             cameraSystem.update(entities);
             spawnTimerSystem.update(entities, dt);
             timelineSystem.update(entities, dt);
+            stageBackgroundSystem.update(entities, dt);
             destructionSystem.update(entities);
             hudSystem.update(entities);
         }

@@ -38,4 +38,6 @@ private:
 
     Entity& createPlayerPosLabel();
     Entity& createFPSCounterLabel(int windowWidth, int windowHeight);
+
+    Entity& createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath);
 };

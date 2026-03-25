@@ -35,56 +35,72 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	float texWidth = backgroundTex->w;
 	float texHeight = backgroundTex->h;
 
-	// Calculate how many times to repeat.
+	// Calculate how many times to repeat background image.
 	int cols = (windowWidth + texWidth - 1) / texWidth;
 	int rows = (windowHeight + texHeight - 1) / texHeight;
 
+	// Create the tiled background.
 	for (int y = 0; y < rows; y++) {
 		for (int x = 0; x < cols; x++) {
 			auto& e = world.createEntity();
-			SDL_FRect destRect = { static_cast<float>(x) * texWidth, static_cast<float>(y) * texHeight, texWidth, texHeight };
 			SDL_FRect src {0, 0, texWidth, texHeight};
+			SDL_FRect destRect = {static_cast<float>(x) * texWidth, static_cast<float>(y) * texHeight, texWidth, texHeight};
 			e.addComponent<Transform>(Vector2D(x * texWidth, y * texHeight), 0.0f, 1.0f);
 			e.addComponent<Sprite>(backgroundTex, src, destRect, RenderLayer::Background);
 		}
 	}
 
-	// Load our map.
-	world.getMap().load(mapPath, TextureManager::load("../asset/tileset.png"));
-	for (auto& collider : world.getMap().colliders) {
-		auto& e = world.createEntity();
-		e.addComponent<Transform>(Vector2D(collider.rect.x, collider.rect.y), 0.0f, 1.0f);
-		auto& c = e.addComponent<Collider>("no-wall");
-		c.rect.x = collider.rect.x;
-		c.rect.y = collider.rect.y;
-		c.rect.w = collider.rect.w;
-		c.rect.h = collider.rect.h;
+	// Create stage.
+	float stageWidth = windowWidth * 0.6;
+	float stageHeight = windowHeight * 0.93;
+	float backgroundSpeed = 100.0f;
+	float foregroundSpeed = backgroundSpeed + 30.0f;
 
-		// Have a visual of the colliders
-		SDL_Texture* tex = TextureManager::load("../asset/tileset.png");
-		SDL_FRect colSrc {0, 32, 32, 32};
-		SDL_FRect colDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
-		e.addComponent<Sprite>(tex, colSrc, colDst);
-	}
+	// Create backgrounds.
+	createStageBackground(stageWidth, stageHeight, 0, backgroundSpeed, "../asset/stage1.png");
+	createStageBackground(stageWidth, stageHeight, -stageHeight, backgroundSpeed, "../asset/stage1.png");
+
+	// Create foregrounds.
+	createStageBackground(stageWidth, stageHeight, 0, foregroundSpeed, "../asset/foreground1.png");
+	createStageBackground(stageWidth, stageHeight, -stageHeight, foregroundSpeed, "../asset/foreground1.png");
+
+	// TODO purge unused systems.
+	// Load our map.
+	// world.getMap().load(mapPath, TextureManager::load("../asset/tileset.png"));
+	// for (auto& collider : world.getMap().colliders) {
+	// 	auto& e = world.createEntity();
+	// 	e.addComponent<Transform>(Vector2D(collider.rect.x, collider.rect.y), 0.0f, 1.0f);
+	// 	auto& c = e.addComponent<Collider>("no-wall");
+	// 	c.rect.x = collider.rect.x;
+	// 	c.rect.y = collider.rect.y;
+	// 	c.rect.w = collider.rect.w;
+	// 	c.rect.h = collider.rect.h;
+	//
+	// 	// Have a visual of the colliders
+	// 	SDL_Texture* tex = TextureManager::load("../asset/tileset.png");
+	// 	SDL_FRect colSrc {0, 32, 32, 32};
+	// 	SDL_FRect colDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
+	// 	e.addComponent<Sprite>(tex, colSrc, colDst);
+	// }
 
 	// Player.
 	// player = new GameObject("../asset/ball.png", 0, 0);
 
 	// Add entities.
-	for (auto& itemCollider : world.getMap().itemColliders) {
-		auto& e = world.createEntity();
-		e.addComponent<Transform>(Vector2D(itemCollider.rect.x, itemCollider.rect.y), 0.0f, 1.0f);
-		auto& c = e.addComponent<Collider>("item");
-		c.rect.x = itemCollider.rect.x;
-		c.rect.y = itemCollider.rect.y;
-		c.rect.w = itemCollider.rect.w;
-		c.rect.h = itemCollider.rect.h;
-
-		SDL_Texture* itemTex = TextureManager::load("../asset/coin.png");
-		SDL_FRect itemSrc {0, 0, 32, 32};
-		SDL_FRect itemDst {c.rect.x, c.rect.y, 32, 32};
-		e.addComponent<Sprite>(itemTex, itemSrc, itemDst);
-	}
+	// for (auto& itemCollider : world.getMap().itemColliders) {
+	// 	auto& e = world.createEntity();
+	// 	e.addComponent<Transform>(Vector2D(itemCollider.rect.x, itemCollider.rect.y), 0.0f, 1.0f);
+	// 	auto& c = e.addComponent<Collider>("item");
+	// 	c.rect.x = itemCollider.rect.x;
+	// 	c.rect.y = itemCollider.rect.y;
+	// 	c.rect.w = itemCollider.rect.w;
+	// 	c.rect.h = itemCollider.rect.h;
+	//
+	// 	SDL_Texture* itemTex = TextureManager::load("../asset/coin.png");
+	// 	SDL_FRect itemSrc {0, 0, 32, 32};
+	// 	SDL_FRect itemDst {c.rect.x, c.rect.y, 32, 32};
+	// 	e.addComponent<Sprite>(itemTex, itemSrc, itemDst);
+	// }
 
 	auto& cam = world.createEntity();
 	SDL_FRect camView{};
@@ -93,8 +109,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	cam.addComponent<Camera>(camView, world.getMap().width * 32.0f, world.getMap().height * 32.0f);
 
 	auto& player (world.createEntity());
-	auto& playerTransform = player.addComponent<Transform>(Vector2D(0, 0), 0.0f, 1.0f);
-	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 120.0f);
+	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 360.0f);
 
 	Animation anim = AssetManager::getAnimation("player");
 	player.addComponent<Animation>(anim);
@@ -102,7 +117,11 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	SDL_Texture* texture = TextureManager::load("../asset/animations/reimu_anim.png");
 	// SDL_FRect playerSrc {0, 0, 32, 44}; // for Mario.
 	SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
-	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, 64, 64};
+
+	float scaledPlayerWidth = playerSrc.w * 1.75f;
+	float scaledPlayerHeight = playerSrc.h * 1.75f;
+	auto& playerTransform = player.addComponent<Transform>(Vector2D(stageWidth / 2 - scaledPlayerWidth / 2, stageHeight - scaledPlayerHeight), 0.0f, 1.0f);
+	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, scaledPlayerWidth, scaledPlayerHeight};
 
 	player.addComponent<Sprite>(texture, playerSrc, playerDst);
 
@@ -172,7 +191,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	// Pause menu overlay.
 	createPauseMenuOverlay(windowWidth, windowHeight);
 
-	createPlayerPosLabel();
+	//createPlayerPosLabel(); TODO purge
 	createFPSCounterLabel(windowWidth, windowHeight);
 }
 
@@ -338,4 +357,18 @@ Entity& Scene::createFPSCounterLabel(int windowWidth, int windowHeight) {
 	fpsCounterLabel.addComponent<FPSCounter>();
 
 	return fpsCounterLabel;
+}
+
+Entity& Scene::createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath) {
+	SDL_Texture* tex = TextureManager::load(texturePath);
+	SDL_FRect src {0, 0, static_cast<float>(tex->w), static_cast<float>(tex->h)};
+	SDL_FRect dst = {0, 0, stageWidth, stageHeight};
+
+	// Create backgrounds.
+	auto& stageBackground = world.createEntity();
+	stageBackground.addComponent<Transform>(Vector2D(0, startingY), 0.0f, 1.0f);
+	stageBackground.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
+	stageBackground.addComponent<StageBackground>(stageWidth, stageHeight, scrollSpeedY, 0.0f,tex);
+
+	return stageBackground;
 }
