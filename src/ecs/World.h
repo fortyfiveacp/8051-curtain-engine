@@ -10,6 +10,7 @@
 #include "EventResponseSystem.h"
 #include "event/EventManager.h"
 #include "KeyboardInputSystem.h"
+#include "LinearSpawnerSystem.h"
 #include "MainMenuSystem.h"
 #include "Map.h"
 #include "MovementSystem.h"
@@ -32,6 +33,7 @@ class World {
     EventManager eventManager;
     SpawnTimerSystem spawnTimerSystem;
     RadialSpawnerSystem radialSpawnerSystem;
+    LinearSpawnerSystem linearSpawnerSystem;
     TimelineSystem timelineSystem;
     DestructionSystem destructionSystem;
     MainMenuSystem mainMenuSystem;
@@ -55,6 +57,7 @@ public:
             cameraSystem.update(entities);
             spawnTimerSystem.update(entities, dt);
             radialSpawnerSystem.update(entities, dt);
+            linearSpawnerSystem.update(entities, dt);
             timelineSystem.update(entities, dt);
             destructionSystem.update(entities);
         }
