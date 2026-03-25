@@ -373,6 +373,7 @@ Entity& Scene::createStaticLabel(int x, int y, SDL_Color colour, const char* fon
 		LabelType::Static,
 		text
 	};
+
 	// Immediately mark the label as dirty so it renders.
 	label.dirty = true;
 
@@ -384,7 +385,7 @@ Entity& Scene::createStaticLabel(int x, int y, SDL_Color colour, const char* fon
 }
 
 void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight) {
-	char* staticLabelFont = "DFPPOPCorn";
+	const char* staticLabelFont = "DFPPOPCorn";
 
 	int paddingX = windowWidth * 0.05;
 	int paddingY = (windowHeight - stageHeight) / 2 * 3;
@@ -398,7 +399,7 @@ void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, 
 	SDL_Color hotPink = {180, 85, 172, 255};
 
 	createStaticLabel(leftPadding, paddingY, grey, staticLabelFont, "HiScore");
-	createStaticLabel(leftPadding, fontHeight + paddingY, grey, staticLabelFont, "Score");
+	createStaticLabel(leftPadding, (fontHeight + leading) + paddingY, grey, staticLabelFont, "Score");
 
 	createStaticLabel(leftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont, "Player");
 	createStaticLabel(leftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont, "Bomb");
@@ -420,7 +421,7 @@ Entity& Scene::createStageBackground(float stageWidth, float stageHeight, float 
 	stageBackground.addComponent<Transform>(Vector2D(0, startingY), 0.0f, 1.0f);
 	stageBackground.addComponent<Velocity>(Vector2D(0, 1), scrollSpeedY);
 	stageBackground.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
-	stageBackground.addComponent<StageBackground>(stageWidth, stageHeight, scrollSpeedY, 0.0f,tex);
+	stageBackground.addComponent<StageBackground>(stageWidth, stageHeight, scrollSpeedY, 0.0f, tex);
 
 	return stageBackground;
 }
