@@ -125,7 +125,7 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 
 	// RadialSpawner component takes a callback which spawns individual bullets.
 	radialDanmaku.addComponent<RadialSpawner>(rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
-		radius, duration, delay, bulletsPerBurst,
+		radius, duration, 40.0f, bulletsPerBurst,
 		[this, radialDanmakuTransform, bulletEmissionSpeed, bulletEmissionAngularVelocity, radius](Vector2D direction) {
 			auto& e(world.createDeferredEntity());
 
@@ -149,6 +149,38 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 		});
 
 	// Linear danmaku spawner
+	auto& linearDanmaku(world.createEntity());
+	linearDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
+
+	bool isFanPattern = true;
+	float bulletEmissionSpeedMultiplier = 0.0f;
+
+	std::vector<Vector2D> bulletSpawnPositions;
+	bulletSpawnPositions.emplace_back(Vector2D(0, -30));
+	bulletSpawnPositions.emplace_back(Vector2D(10, -20));
+	bulletSpawnPositions.emplace_back(Vector2D(-10, -20));
+	bulletSpawnPositions.emplace_back(Vector2D(40, 10));
+
+	linearDanmaku.addComponent<LinearSpawner>(isFanPattern, bulletEmissionSpeed, bulletEmissionSpeedMultiplier,
+		bulletSpawnPositions, frequency, duration, delay,
+		[this](Vector2D position, Vector2D direction, float speed) {
+			auto& e(world.createDeferredEntity());
+
+			e.addComponent<Transform>(position, 0.0f, 1.0f);
+			e.addComponent<Velocity>(direction, speed, false);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
+			SDL_FRect src { 0, 0, 32, 32 };
+			SDL_FRect dest { position.x, position.y, 32, 32 };
+			e.addComponent<Sprite>(tex, src, dest);
+
+			Collider c = e.addComponent<Collider>("projectile");
+			c.rect.w = dest.w;
+			c.rect.h = dest.h;
+
+			e.addComponent<ProjectileTag>();
+		});
+
 
 	// Add timeline object (experimental, this will actually spawn enemy convoys later).
 	auto& timelineManager(world.createEntity());
