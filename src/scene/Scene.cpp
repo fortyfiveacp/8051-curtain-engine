@@ -108,7 +108,7 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 		e.addComponent<ProjectileTag>();
 	});
 
-	// Radial danmaku spawner
+	// Radial danmaku spawner.
 	auto& radialDanmaku(world.createEntity());
 	auto radialDanmakuTransform = radialDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
 
@@ -148,7 +148,7 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 			e.addComponent<ProjectileTag>();
 		});
 
-	// Linear danmaku spawner
+	// Linear danmaku spawner.
 	auto& linearDanmaku(world.createEntity());
 	linearDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
 

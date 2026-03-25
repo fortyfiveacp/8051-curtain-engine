@@ -31,8 +31,7 @@ public:
                     // std::cout << "Spawner Emission Angle: " << currentEmissionAngle << std::endl;
 
                     for (int i = 0; i < spawner.bulletsPerBurst; i++) {
-                        spawner.spawnCallback(
-                            Vector2D(currentEmissionAngle));
+                        spawner.spawnCallback(Vector2D(currentEmissionAngle));
 
                         currentEmissionAngle += angleBetweenBullets;
                     }
