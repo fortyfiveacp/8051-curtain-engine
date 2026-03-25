@@ -89,11 +89,11 @@ struct RadialSpawner {
     // Invoked when spawning, once per bullet, with param direction.
     std::function<void(Vector2D)> spawnCallback{};
 
-    // The actual timer, which triggers spawn when it hits zero then resets.
+    // The actual spawn countdown, which triggers spawn when it hits zero then resets.
     float spawnTimer{frequency};
 
-    // TODO: time left before emission starts
-    // TODO: time left before emission ends
+    // Time since the spawner was first updated. Used for timing emission start and end.
+    float lifetime{};
 };
 
 // Our game state, might have multiple scenes.
