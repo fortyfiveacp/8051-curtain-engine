@@ -54,6 +54,7 @@ set(SRC_FILES
         src/utils/EnemyFactory.h
         src/ecs/system/ConvoySystem.cpp
         src/scene/StageLoader.cpp
+        src/utils/EnemyFactory.cpp
         #add all new source files here
 )
 

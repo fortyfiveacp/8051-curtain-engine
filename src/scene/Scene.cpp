@@ -35,6 +35,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	// Load our map.
 	world.getMap().load(mapPath, TextureManager::load("../asset/tileset.png"));
 
+	// Load all paths and convoys.
 	StageLoader::loadStage("../asset/stage/stage1.xml", world);
 
 	for (auto& collider : world.getMap().colliders) {

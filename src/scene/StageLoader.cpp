@@ -7,10 +7,14 @@ void StageLoader::loadStage(const char *path, World &world) {
     auto* root = doc.FirstChildElement("Stage");
 
     auto* pathsRoot = root->FirstChildElement("Paths");
-    for (auto* pathElem = pathsRoot->FirstChildElement("Path"); pathElem; pathElem = pathElem->NextSiblingElement("Path")) {
+    for (auto* pathElem = pathsRoot->FirstChildElement("Path");
+        pathElem;
+        pathElem = pathElem->NextSiblingElement("Path")) {
         int id = pathElem->IntAttribute("id");
         Path path;
-        for (auto* pt = pathElem->FirstChildElement("Point"); pt; pt = pt->NextSiblingElement("Point")) {
+        for (auto* pt = pathElem->FirstChildElement("Point");
+            pt;
+            pt = pt->NextSiblingElement("Point")) {
             path.points.push_back(Vector2D(pt->FloatAttribute("x"), pt->FloatAttribute("y")));
         }
         world.getPathLibrary()[id] = path;
@@ -20,7 +24,9 @@ void StageLoader::loadStage(const char *path, World &world) {
     auto& timelineComp = timelineEntity.addComponent<Timeline>();
 
     auto* wavesRoot = root->FirstChildElement("Waves");
-    for (auto* convoyElement = wavesRoot->FirstChildElement("Convoy"); convoyElement; convoyElement = convoyElement->NextSiblingElement("Convoy")) {
+    for (auto* convoyElement = wavesRoot->FirstChildElement("Convoy");
+        convoyElement;
+        convoyElement = convoyElement->NextSiblingElement("Convoy")) {
         float startTime = convoyElement->FloatAttribute("start");
 
         Convoy data;
@@ -38,7 +44,13 @@ void StageLoader::loadStage(const char *path, World &world) {
 }
 
 EnemyType StageLoader::stringToEnemyType(const std::string &name) {
-    if (name == "SmallFairy") return EnemyType::SmallFairy;
-    if (name == "LargeFairy") return EnemyType::LargeFairy;
+    if (name == "SmallFairy") {
+        return EnemyType::SmallFairy;
+    }
+
+    if (name == "LargeFairy") {
+        return EnemyType::LargeFairy;
+    }
+
     return EnemyType::Boss;
 }

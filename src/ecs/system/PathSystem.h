@@ -8,32 +8,31 @@ class PathSystem {
     std::unordered_map<int, Path>* pathLibrary;
 
 public:
-    PathSystem(std::unordered_map<int, Path>* lib)
-        : pathLibrary(lib) {}
+    PathSystem(std::unordered_map<int, Path>* lib) : pathLibrary(lib) {}
 
     float getPathLength(const Path& path) {
-        float total = 0.0f;
+        float totalLength = 0.0f;
         for (size_t i = 0; i < path.points.size() - 1; i++) {
-            total += (path.points[i+1] - path.points[i]).getLength();
+            totalLength += (path.points[i+1] - path.points[i]).getLength();
         }
-        return total;
+        return totalLength;
     }
 
-    Vector2D evaluate(const Path& path, float distance) {
-        float remaining = distance;
+    Vector2D evaluatePath(const Path& path, float distance) {
+        float remainingPoints = distance;
 
         for (size_t i = 0; i < path.points.size() - 1; i++) {
             auto a = path.points[i];
             auto b = path.points[i + 1];
 
-            float len = (b - a).getLength();
+            float length = (b - a).getLength();
 
-            if (remaining <= len) {
-                float t = remaining / len;
+            if (remainingPoints <= length) {
+                float t = remainingPoints / length;
                 return a + (b - a) * t;
             }
 
-            remaining -= len;
+            remainingPoints -= length;
         }
 
         return path.points.back();
@@ -58,7 +57,7 @@ public:
 
             tf.oldPosition = tf.position;
             pf.distance += pf.speed * dt;
-            tf.position = evaluate(path, pf.distance);
+            tf.position = evaluatePath(path, pf.distance);
         }
     }
 };

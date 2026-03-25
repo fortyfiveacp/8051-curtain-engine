@@ -104,7 +104,7 @@ struct Timeline {
 
 
 struct Path {
-    std::vector<Vector2D> points;
+    std::vector<Vector2D> points{};
 };
 
 struct PathFollower {
