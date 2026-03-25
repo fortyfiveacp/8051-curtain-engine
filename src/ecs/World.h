@@ -90,13 +90,14 @@ public:
 
         SDL_Rect stageRect = { paddingX, paddingY, stageWidth, stageHeight };
         SDL_SetRenderViewport(renderer, &stageRect);
-
-        for (auto& entity : entities) {
-            if (entity->hasComponent<Camera>()) {
-                map.draw(entity->getComponent<Camera>());
-                break;
-            }
-        }
+        
+        // TODO: purge.
+        // for (auto& entity : entities) {
+        //     if (entity->hasComponent<Camera>()) {
+        //         map.draw(entity->getComponent<Camera>());
+        //         break;
+        //     }
+        // }
 
         renderSystem.render(entities);
 
