@@ -51,9 +51,8 @@ public:
 
             const Path& path = (*pathLibrary)[pf.pathId];
 
-            // Check if we have finished the path
             if (pf.distance >= getPathLength(path)) {
-                e->destroy(); // Mark for removal by World::cleanup()
+                e->destroy();
                 continue;
             }
 
