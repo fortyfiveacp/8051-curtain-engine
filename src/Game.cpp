@@ -55,9 +55,10 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 
 	// Load fonts.
 	AssetManager::loadFont("pop1", "../asset/fonts/pop1-w9.ttf", 32);
+	AssetManager::loadFont("DFPPOPCorn", "../asset/fonts/DFPPOPCORN-W12.ttf", 32);
 
 	// Load assets.
-	AssetManager::loadAnimation("player", "../asset/animations/fox_animations.xml");
+	AssetManager::loadAnimation("player", "../asset/animations/reimu_animations.xml");
 	AssetManager::loadAnimation("enemy", "../asset/animations/bird_animations.xml");
 
 	// Load scenes.
@@ -114,15 +115,16 @@ void Game::update(float deltaTime) {
 }
 
 void Game::render() {
-	// r = 100;
-	// g = 255;
-	// b = 50;
-	// a = 255;
-
-	r = (frameCount / 120 * 15) % 255;
-	g = (frameCount / 120 * 36) % 255;
-	b = (frameCount / 120 * 55) % 255;
+	r = 100;
+	g = 255;
+	b = 50;
 	a = 255;
+
+	// TODO: purge
+	// r = (frameCount / 120 * 15) % 255;
+	// g = (frameCount / 120 * 36) % 255;
+	// b = (frameCount / 120 * 55) % 255;
+	// a = 255;
 
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
 
@@ -130,7 +132,9 @@ void Game::render() {
 	SDL_RenderClear(renderer);
 
 	// Scene does the rendering now
-	sceneManager.render();
+	int width, height;
+	SDL_GetWindowSize(window, &width, &height);
+	sceneManager.render(renderer, width, height);
 
 	// Display everything that was just drawn.
 	// Draws it in memory first to a back buffer.

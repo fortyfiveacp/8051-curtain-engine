@@ -25,6 +25,7 @@ struct Velocity {
 };
 
 enum class RenderLayer {
+    Background,
     World,
     UI
 };
@@ -132,7 +133,8 @@ struct Convoy {
 
 enum class LabelType {
     PlayerPosition,
-    FPSCounter
+    FPSCounter,
+    Static
 };
 
 struct Label {
@@ -150,6 +152,14 @@ struct Label {
 struct FPSCounter {
     int frameCount = 0;
     float timer = 1.0f; // Default start timer at 1 so the first update isn't delayed by 1 second.
+};
+
+struct StageBackground {
+    float baseWidth{};
+    float baseHeight{};
+    float scrollSpeedY = 100.0f;
+    float offsetY = 0.0f;
+    SDL_Texture* texture{};
 };
 
 struct PlayerTag{};

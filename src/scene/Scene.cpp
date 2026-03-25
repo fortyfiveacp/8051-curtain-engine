@@ -28,52 +28,85 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	SDL_Texture* texture = TextureManager::load("../asset/main-menu-scaled.png");
 	SDL_FRect menuSrc {0, 0, (float)windowWidth, (float)windowHeight};
 	SDL_FRect menuDst {menuTransform.position.x, menuTransform.position.y, menuSrc.w, menuSrc.h};
-	menu.addComponent<Sprite>(texture, menuSrc, menuDst);
+	menu.addComponent<Sprite>(texture, menuSrc, menuDst, RenderLayer::Background);
 
 	createFPSCounterLabel(windowWidth, windowHeight);
 }
 
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
-	// Load our map.
-	world.getMap().load(mapPath, TextureManager::load("../asset/tileset.png"));
+	SDL_Texture* backgroundTex = TextureManager::load("../asset/background.png");
+	float texWidth = backgroundTex->w;
+	float texHeight = backgroundTex->h;
 
-	// Load all paths and convoys.
+	// Calculate how many times to repeat background image.
+	int cols = (windowWidth + texWidth - 1) / texWidth;
+	int rows = (windowHeight + texHeight - 1) / texHeight;
+
+	// Create the tiled background.
+	for (int y = 0; y < rows; y++) {
+		for (int x = 0; x < cols; x++) {
+			auto& e = world.createEntity();
+			SDL_FRect src {0, 0, texWidth, texHeight};
+			SDL_FRect destRect = {static_cast<float>(x) * texWidth, static_cast<float>(y) * texHeight, texWidth, texHeight};
+			e.addComponent<Transform>(Vector2D(x * texWidth, y * texHeight), 0.0f, 1.0f);
+			e.addComponent<Sprite>(backgroundTex, src, destRect, RenderLayer::Background);
+		}
+	}
+
+	// Create stage.
+	float stageWidth = windowWidth * 0.6;
+	float stageHeight = windowHeight * 0.93;
+	float backgroundSpeed = 60.0f;
+	float foregroundSpeed = backgroundSpeed + backgroundSpeed * 0.25f;
+
+	// Create backgrounds.
+	// The backgrounds are 1 pixel taller to make an overlap that hides the seam between backgrounds.
+	createStageBackground(stageWidth, stageHeight + 1, 0, backgroundSpeed, "../asset/stage1.png");
+	createStageBackground(stageWidth, stageHeight + 1, -stageHeight, backgroundSpeed, "../asset/stage1.png");
+
+	// Create foregrounds.
+	createStageBackground(stageWidth, stageHeight, 0, foregroundSpeed, "../asset/foreground1.png");
+	createStageBackground(stageWidth, stageHeight, -stageHeight, foregroundSpeed, "../asset/foreground1.png");
+
 	StageLoader::loadStage("../asset/stage/stage1.xml", world);
 
-	for (auto& collider : world.getMap().colliders) {
-		auto& e = world.createEntity();
-		e.addComponent<Transform>(Vector2D(collider.rect.x, collider.rect.y), 0.0f, 1.0f);
-		auto& c = e.addComponent<Collider>("no-wall");
-		c.rect.x = collider.rect.x;
-		c.rect.y = collider.rect.y;
-		c.rect.w = collider.rect.w;
-		c.rect.h = collider.rect.h;
-
-		// Have a visual of the colliders
-		SDL_Texture* tex = TextureManager::load("../asset/tileset.png");
-		SDL_FRect colSrc {0, 32, 32, 32};
-		SDL_FRect colDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
-		e.addComponent<Sprite>(tex, colSrc, colDst);
-	}
+	// TODO: purge unused systems.
+	// Load our map.
+	// world.getMap().load(mapPath, TextureManager::load("../asset/tileset.png"));
+	// for (auto& collider : world.getMap().colliders) {
+	// 	auto& e = world.createEntity();
+	// 	e.addComponent<Transform>(Vector2D(collider.rect.x, collider.rect.y), 0.0f, 1.0f);
+	// 	auto& c = e.addComponent<Collider>("no-wall");
+	// 	c.rect.x = collider.rect.x;
+	// 	c.rect.y = collider.rect.y;
+	// 	c.rect.w = collider.rect.w;
+	// 	c.rect.h = collider.rect.h;
+	//
+	// 	// Have a visual of the colliders
+	// 	SDL_Texture* tex = TextureManager::load("../asset/tileset.png");
+	// 	SDL_FRect colSrc {0, 32, 32, 32};
+	// 	SDL_FRect colDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
+	// 	e.addComponent<Sprite>(tex, colSrc, colDst);
+	// }
 
 	// Player.
 	// player = new GameObject("../asset/ball.png", 0, 0);
 
 	// Add entities.
-	for (auto& itemCollider : world.getMap().itemColliders) {
-		auto& e = world.createEntity();
-		e.addComponent<Transform>(Vector2D(itemCollider.rect.x, itemCollider.rect.y), 0.0f, 1.0f);
-		auto& c = e.addComponent<Collider>("item");
-		c.rect.x = itemCollider.rect.x;
-		c.rect.y = itemCollider.rect.y;
-		c.rect.w = itemCollider.rect.w;
-		c.rect.h = itemCollider.rect.h;
-
-		SDL_Texture* itemTex = TextureManager::load("../asset/coin.png");
-		SDL_FRect itemSrc {0, 0, 32, 32};
-		SDL_FRect itemDst {c.rect.x, c.rect.y, 32, 32};
-		e.addComponent<Sprite>(itemTex, itemSrc, itemDst);
-	}
+	// for (auto& itemCollider : world.getMap().itemColliders) {
+	// 	auto& e = world.createEntity();
+	// 	e.addComponent<Transform>(Vector2D(itemCollider.rect.x, itemCollider.rect.y), 0.0f, 1.0f);
+	// 	auto& c = e.addComponent<Collider>("item");
+	// 	c.rect.x = itemCollider.rect.x;
+	// 	c.rect.y = itemCollider.rect.y;
+	// 	c.rect.w = itemCollider.rect.w;
+	// 	c.rect.h = itemCollider.rect.h;
+	//
+	// 	SDL_Texture* itemTex = TextureManager::load("../asset/coin.png");
+	// 	SDL_FRect itemSrc {0, 0, 32, 32};
+	// 	SDL_FRect itemDst {c.rect.x, c.rect.y, 32, 32};
+	// 	e.addComponent<Sprite>(itemTex, itemSrc, itemDst);
+	// }
 
 	auto& cam = world.createEntity();
 	SDL_FRect camView{};
@@ -82,16 +115,19 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	cam.addComponent<Camera>(camView, world.getMap().width * 32.0f, world.getMap().height * 32.0f);
 
 	auto& player (world.createEntity());
-	auto& playerTransform = player.addComponent<Transform>(Vector2D(0, 0), 0.0f, 1.0f);
-	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 120.0f);
+	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 380.0f);
 
 	Animation anim = AssetManager::getAnimation("player");
 	player.addComponent<Animation>(anim);
 
-	SDL_Texture* texture = TextureManager::load("../asset/animations/fox_anim.png");
+	SDL_Texture* texture = TextureManager::load("../asset/animations/reimu_anim.png");
 	// SDL_FRect playerSrc {0, 0, 32, 44}; // for Mario.
 	SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
-	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, 64, 64};
+
+	float scaledPlayerWidth = playerSrc.w * 1.75f;
+	float scaledPlayerHeight = playerSrc.h * 1.75f;
+	auto& playerTransform = player.addComponent<Transform>(Vector2D(stageWidth / 2 - scaledPlayerWidth / 2, stageHeight - scaledPlayerHeight), 0.0f, 1.0f);
+	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, scaledPlayerWidth, scaledPlayerHeight};
 
 	player.addComponent<Sprite>(texture, playerSrc, playerDst);
 
@@ -161,8 +197,11 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	// Pause menu overlay.
 	createPauseMenuOverlay(windowWidth, windowHeight);
 
-	createPlayerPosLabel();
+	// Create FPS counter label.
 	createFPSCounterLabel(windowWidth, windowHeight);
+
+	// Create UI labels.
+	createUILabels(windowWidth, windowHeight, stageWidth, stageHeight);
 }
 
 Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
@@ -294,6 +333,7 @@ void Scene::toggleOverlayVisibility(Entity& overlay) {
 	}
 }
 
+// TODO: purge.
 Entity& Scene::createPlayerPosLabel() {
 	auto& playerPosLabel(world.createEntity());
 	Label label = {
@@ -327,4 +367,66 @@ Entity& Scene::createFPSCounterLabel(int windowWidth, int windowHeight) {
 	fpsCounterLabel.addComponent<FPSCounter>();
 
 	return fpsCounterLabel;
+}
+
+Entity& Scene::createStaticLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text) {
+	auto& fpsCounterLabel(world.createEntity());
+	Label label = {
+		text,
+		AssetManager::getFont(fontName),
+		colour,
+		LabelType::Static,
+		text
+	};
+
+	// Immediately mark the label as dirty so it renders.
+	label.dirty = true;
+
+	TextureManager::loadLabel(label);
+	fpsCounterLabel.addComponent<Label>(label);
+	fpsCounterLabel.addComponent<Transform>(Vector2D(x, y), 0.0f, 1.0f);
+
+	return fpsCounterLabel;
+}
+
+void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight) {
+	const char* staticLabelFont = "DFPPOPCorn";
+
+	int paddingX = windowWidth * 0.05;
+	int paddingY = (windowHeight - stageHeight) / 2 * 3;
+
+	int fontHeight = TTF_GetFontSize(AssetManager::getFont(staticLabelFont));
+	int leading = 5;
+	int leftPadding = stageWidth + paddingX + 50;
+
+	SDL_Color grey = {171, 166, 169, 255};
+	SDL_Color lightPink = {170, 126, 176, 255};
+	SDL_Color hotPink = {180, 85, 172, 255};
+
+	createStaticLabel(leftPadding, paddingY, grey, staticLabelFont, "HiScore");
+	createStaticLabel(leftPadding, (fontHeight + leading) + paddingY, grey, staticLabelFont, "Score");
+
+	createStaticLabel(leftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont, "Player");
+	createStaticLabel(leftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont, "Bomb");
+
+	createStaticLabel(leftPadding, (fontHeight + leading) * 4 + paddingY * 2, hotPink, staticLabelFont, "Power");
+	createStaticLabel(leftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont, "Graze");
+	createStaticLabel(leftPadding, (fontHeight + leading) * 6 + paddingY * 2, hotPink, staticLabelFont, "Point");
+
+	// TODO: dynamic labels.
+}
+
+Entity& Scene::createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath) {
+	SDL_Texture* tex = TextureManager::load(texturePath);
+	SDL_FRect src {0, 0, static_cast<float>(tex->w), static_cast<float>(tex->h)};
+	SDL_FRect dst = {0, 0, stageWidth, stageHeight};
+
+	// Create backgrounds.
+	auto& stageBackground = world.createEntity();
+	stageBackground.addComponent<Transform>(Vector2D(0, startingY), 0.0f, 1.0f);
+	stageBackground.addComponent<Velocity>(Vector2D(0, 1), scrollSpeedY);
+	stageBackground.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
+	stageBackground.addComponent<StageBackground>(stageWidth, stageHeight, scrollSpeedY, 0.0f, tex);
+
+	return stageBackground;
 }

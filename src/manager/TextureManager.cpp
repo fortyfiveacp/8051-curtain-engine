@@ -75,7 +75,7 @@ void TextureManager::updateLabel(Label& label) {
     );
 
     // Create the surface for the black outline of the text.
-    int outlineSize = 1;
+    int outlineSize = 2;
     TTF_Font* fontOutline = TTF_CopyFont(label.font);
     TTF_SetFontOutline(fontOutline, outlineSize);
 
