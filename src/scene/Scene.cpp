@@ -57,8 +57,9 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	float foregroundSpeed = backgroundSpeed + backgroundSpeed * 0.25f;
 
 	// Create backgrounds.
-	createStageBackground(stageWidth, stageHeight, 0, backgroundSpeed, "../asset/stage1.png");
-	createStageBackground(stageWidth, stageHeight, -stageHeight, backgroundSpeed, "../asset/stage1.png");
+	// The backgrounds are 1 pixel taller to make an overlap that hides the seam between backgrounds.
+	createStageBackground(stageWidth, stageHeight + 1, 0, backgroundSpeed, "../asset/stage1.png");
+	createStageBackground(stageWidth, stageHeight + 1, -stageHeight, backgroundSpeed, "../asset/stage1.png");
 
 	// Create foregrounds.
 	createStageBackground(stageWidth, stageHeight, 0, foregroundSpeed, "../asset/foreground1.png");
