@@ -106,7 +106,8 @@ struct Timeline {
 
 enum class LabelType {
     PlayerPosition,
-    FPSCounter
+    FPSCounter,
+    Static
 };
 
 struct Label {

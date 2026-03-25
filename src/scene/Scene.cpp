@@ -65,7 +65,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	createStageBackground(stageWidth, stageHeight, 0, foregroundSpeed, "../asset/foreground1.png");
 	createStageBackground(stageWidth, stageHeight, -stageHeight, foregroundSpeed, "../asset/foreground1.png");
 
-	// TODO purge unused systems.
+	// TODO: purge unused systems.
 	// Load our map.
 	// world.getMap().load(mapPath, TextureManager::load("../asset/tileset.png"));
 	// for (auto& collider : world.getMap().colliders) {
@@ -110,7 +110,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	cam.addComponent<Camera>(camView, world.getMap().width * 32.0f, world.getMap().height * 32.0f);
 
 	auto& player (world.createEntity());
-	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 360.0f);
+	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 380.0f);
 
 	Animation anim = AssetManager::getAnimation("player");
 	player.addComponent<Animation>(anim);
@@ -192,8 +192,11 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	// Pause menu overlay.
 	createPauseMenuOverlay(windowWidth, windowHeight);
 
-	//createPlayerPosLabel(); TODO purge
+	// Create FPS counter label.
 	createFPSCounterLabel(windowWidth, windowHeight);
+
+	// Create UI labels.
+	createUILabels(windowWidth, windowHeight, stageWidth, stageHeight);
 }
 
 Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
@@ -325,6 +328,7 @@ void Scene::toggleOverlayVisibility(Entity& overlay) {
 	}
 }
 
+// TODO: purge.
 Entity& Scene::createPlayerPosLabel() {
 	auto& playerPosLabel(world.createEntity());
 	Label label = {
@@ -358,6 +362,45 @@ Entity& Scene::createFPSCounterLabel(int windowWidth, int windowHeight) {
 	fpsCounterLabel.addComponent<FPSCounter>();
 
 	return fpsCounterLabel;
+}
+
+Entity& Scene::createStaticLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text) {
+	auto& fpsCounterLabel(world.createEntity());
+	Label label = {
+		text,
+		AssetManager::getFont(fontName),
+		colour,
+		LabelType::Static,
+		text
+	};
+	// Immediately mark the label as dirty so it renders.
+	label.dirty = true;
+
+	TextureManager::loadLabel(label);
+	fpsCounterLabel.addComponent<Label>(label);
+	fpsCounterLabel.addComponent<Transform>(Vector2D(x, y), 0.0f, 1.0f);
+
+	return fpsCounterLabel;
+}
+
+void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight) {
+	char* staticLabelFont = "DFPPOPCorn";
+	int paddingX = windowWidth * 0.05;
+	int paddingY = (windowHeight - stageHeight) / 2 * 3;
+	int fontHeight = TTF_GetFontSize(AssetManager::getFont(staticLabelFont));
+	int leftPadding = stageWidth + paddingX + 50;
+
+	createStaticLabel(leftPadding, paddingY, {171, 166, 169, 255}, staticLabelFont, "HiScore");
+	createStaticLabel(leftPadding, fontHeight + paddingY, {171, 166, 169, 255}, staticLabelFont, "Score");
+
+	createStaticLabel(leftPadding, fontHeight * 2 + paddingY * 1.5, {170, 126, 176, 255}, staticLabelFont, "Player");
+	createStaticLabel(leftPadding, fontHeight * 3 + paddingY * 1.5, {170, 126, 176, 255}, staticLabelFont, "Bomb");
+
+	createStaticLabel(leftPadding, fontHeight * 4 + paddingY * 2, {180, 85, 172, 255}, staticLabelFont, "Power");
+	createStaticLabel(leftPadding, fontHeight * 5 + paddingY * 2, {180, 85, 172, 255}, staticLabelFont, "Graze");
+	createStaticLabel(leftPadding, fontHeight * 6 + paddingY * 2, {180, 85, 172, 255}, staticLabelFont, "Point");
+
+	// TODO: dynamic labels.
 }
 
 Entity& Scene::createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath) {

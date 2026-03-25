@@ -27,7 +27,7 @@ public:
 private:
     std::string name;
     SceneType type;
-    //void createProjectile(Vector2D pos, Vector2D dir, int speed); TODO commented out during tutorial, not needed?
+    //void createProjectile(Vector2D pos, Vector2D dir, int speed); TODO: commented out during tutorial, not needed?
 
     void initMainMenu(int windowWidth, int windowHeight);
     void initGameplay(const char* mapPath, int windowWidth, int windowHeight);
@@ -38,6 +38,8 @@ private:
 
     Entity& createPlayerPosLabel();
     Entity& createFPSCounterLabel(int windowWidth, int windowHeight);
+    Entity& createStaticLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text);
+    void createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);
 
     Entity& createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath);
 };
