@@ -96,6 +96,35 @@ struct RadialSpawner {
     float lifetime{};
 };
 
+struct LinearSpawner {
+    // Whether the bullet group is aimed at the player, rotating the group so that (0, 1) is pointing at them.
+    bool isAimed;
+
+    // Whether bullets radiate from emitter center after emission.
+    bool isFanPattern;
+
+    // Bullet emission speed.
+    float bulletEmissionSpeed{};
+
+    // Bullet speed multiplier relative to the distance between bullet and emitter center.
+    float bulletEmissionSpeedMultiplier{};
+
+    // List of positions for bullets to emit in the burst relative to emitter center.
+    std::vector<Vector2D> bulletPositions{};
+
+    // Invoked when spawning, once per bullet, with param local position.
+    std::function<void(Vector2D)> spawnCallback{};
+
+    // The frequency (sec) that one burst of bullets is emitted
+    float frequency{};
+
+    // Duration of spawner. Spawner turns off when duration expires.
+    float duration{};
+
+    // Delay before starting spawns.
+    float delay{};
+};
+
 // Our game state, might have multiple scenes.
 struct SceneState {
     int coinsCollected = 0;
