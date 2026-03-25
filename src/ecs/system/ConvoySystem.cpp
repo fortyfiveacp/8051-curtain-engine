@@ -6,8 +6,9 @@ void ConvoySystem::update(World& world, float dt) {
     auto& entities = world.getEntities();
 
     for (auto& entity : entities) {
-        if (!entity->hasComponent<Convoy>())
+        if (!entity->hasComponent<Convoy>()) {
             continue;
+        }
 
         auto& convoy = entity->getComponent<Convoy>();
         convoy.timer += dt;
