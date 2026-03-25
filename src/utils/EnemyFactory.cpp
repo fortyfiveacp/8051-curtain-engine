@@ -9,10 +9,10 @@ void EnemyFactory::build(Entity &entity, EnemyType type, Vector2D pos) {
             buildSmallFairy(entity, transform);
             break;
         case EnemyType::LargeFairy:
-            // TODO: find spritesheet of large fairy
+            // TODO: find spritesheet of large fairy.
             break;
         case EnemyType::Boss:
-            // TODO: find spritesheet of boss
+            // TODO: find spritesheet of boss.
             break;
         default:
             break;
