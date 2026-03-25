@@ -48,7 +48,7 @@ class World {
     FPSCounterSystem fpsCounterSystem;
     PreRenderSystem preRenderSystem;
 
-    // Reactive systems
+    // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
 
     ConvoySystem convoySystem;
@@ -58,7 +58,7 @@ public:
 
     void update(float dt, const SDL_Event& event, SceneType sceneType) {
         if (sceneType == SceneType::MainMenu) {
-            // Main menu system update
+            // Main menu system update.
             mainMenuSystem.update(event);
         } else {
             convoySystem.update(*this, dt);
@@ -125,8 +125,8 @@ public:
 
     void synchronizeEntities() {
         if (!deferredEntities.empty()) {
-            // Push back all deferred entities to the entities vector
-            // Using move so we don't create a copy
+            // Push back all deferred entities to the entities vector.
+            // Using move so we don't create a copy.
             std::move(
                 deferredEntities.begin(),
                 deferredEntities.end(),
