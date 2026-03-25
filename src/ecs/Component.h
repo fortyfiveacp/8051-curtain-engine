@@ -128,7 +128,7 @@ struct Convoy {
     float speed{};
     float spawnInterval{};
     float timer = 0.0f;
-}
+};
 
 enum class LabelType {
     PlayerPosition,
