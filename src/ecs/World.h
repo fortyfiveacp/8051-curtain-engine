@@ -90,7 +90,7 @@ public:
 
         SDL_Rect stageRect = { paddingX, paddingY, stageWidth, stageHeight };
         SDL_SetRenderViewport(renderer, &stageRect);
-        
+
         // TODO: purge.
         // for (auto& entity : entities) {
         //     if (entity->hasComponent<Camera>()) {

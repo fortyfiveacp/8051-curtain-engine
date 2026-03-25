@@ -385,20 +385,27 @@ Entity& Scene::createStaticLabel(int x, int y, SDL_Color colour, const char* fon
 
 void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight) {
 	char* staticLabelFont = "DFPPOPCorn";
+
 	int paddingX = windowWidth * 0.05;
 	int paddingY = (windowHeight - stageHeight) / 2 * 3;
+
 	int fontHeight = TTF_GetFontSize(AssetManager::getFont(staticLabelFont));
+	int leading = 5;
 	int leftPadding = stageWidth + paddingX + 50;
 
-	createStaticLabel(leftPadding, paddingY, {171, 166, 169, 255}, staticLabelFont, "HiScore");
-	createStaticLabel(leftPadding, fontHeight + paddingY, {171, 166, 169, 255}, staticLabelFont, "Score");
+	SDL_Color grey = {171, 166, 169, 255};
+	SDL_Color lightPink = {170, 126, 176, 255};
+	SDL_Color hotPink = {180, 85, 172, 255};
 
-	createStaticLabel(leftPadding, fontHeight * 2 + paddingY * 1.5, {170, 126, 176, 255}, staticLabelFont, "Player");
-	createStaticLabel(leftPadding, fontHeight * 3 + paddingY * 1.5, {170, 126, 176, 255}, staticLabelFont, "Bomb");
+	createStaticLabel(leftPadding, paddingY, grey, staticLabelFont, "HiScore");
+	createStaticLabel(leftPadding, fontHeight + paddingY, grey, staticLabelFont, "Score");
 
-	createStaticLabel(leftPadding, fontHeight * 4 + paddingY * 2, {180, 85, 172, 255}, staticLabelFont, "Power");
-	createStaticLabel(leftPadding, fontHeight * 5 + paddingY * 2, {180, 85, 172, 255}, staticLabelFont, "Graze");
-	createStaticLabel(leftPadding, fontHeight * 6 + paddingY * 2, {180, 85, 172, 255}, staticLabelFont, "Point");
+	createStaticLabel(leftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont, "Player");
+	createStaticLabel(leftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont, "Bomb");
+
+	createStaticLabel(leftPadding, (fontHeight + leading) * 4 + paddingY * 2, hotPink, staticLabelFont, "Power");
+	createStaticLabel(leftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont, "Graze");
+	createStaticLabel(leftPadding, (fontHeight + leading) * 6 + paddingY * 2, hotPink, staticLabelFont, "Point");
 
 	// TODO: dynamic labels.
 }
