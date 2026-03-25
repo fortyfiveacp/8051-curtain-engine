@@ -53,8 +53,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	// Create stage.
 	float stageWidth = windowWidth * 0.6;
 	float stageHeight = windowHeight * 0.93;
-	float backgroundSpeed = 100.0f;
-	float foregroundSpeed = backgroundSpeed + 30.0f;
+	float backgroundSpeed = 60.0f;
+	float foregroundSpeed = backgroundSpeed + backgroundSpeed * 0.25f;
 
 	// Create backgrounds.
 	createStageBackground(stageWidth, stageHeight, 0, backgroundSpeed, "../asset/stage1.png");
@@ -367,6 +367,7 @@ Entity& Scene::createStageBackground(float stageWidth, float stageHeight, float 
 	// Create backgrounds.
 	auto& stageBackground = world.createEntity();
 	stageBackground.addComponent<Transform>(Vector2D(0, startingY), 0.0f, 1.0f);
+	stageBackground.addComponent<Velocity>(Vector2D(0, 1), scrollSpeedY);
 	stageBackground.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
 	stageBackground.addComponent<StageBackground>(stageWidth, stageHeight, scrollSpeedY, 0.0f,tex);
 

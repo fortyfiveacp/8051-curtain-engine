@@ -15,14 +15,11 @@ public:
                 auto& transform = entity->getComponent<Transform>();
                 auto& sprite = entity->getComponent<Sprite>();
 
-                // Update background position.
+                // Track how far the background has moved down the screen.
                 float offset = stageBackground.scrollSpeedY * dt;
-                transform.position.y += offset;
-
-                // Track how far the background has moved down.
                 stageBackground.offsetY += offset;
 
-                // Move background back to the top to loop it.
+                // Move background back to the top when it passes its original height to loop it.
                 if (stageBackground.offsetY >= sprite.dst.h) {
                     transform.position.y -= sprite.dst.h;
                     stageBackground.offsetY -= sprite.dst.h;
