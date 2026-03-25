@@ -23,7 +23,7 @@ public:
                 stageBackground.offsetY += offset;
 
                 // Move background back to the top to loop it.
-                if (stageBackground.offsetY > sprite.dst.h) {
+                if (stageBackground.offsetY >= sprite.dst.h) {
                     transform.position.y -= sprite.dst.h;
                     stageBackground.offsetY -= sprite.dst.h;
                 }
