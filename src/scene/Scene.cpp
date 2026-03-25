@@ -148,6 +148,8 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 			e.addComponent<ProjectileTag>();
 		});
 
+	// Linear danmaku spawner
+
 	// Add timeline object (experimental, this will actually spawn enemy convoys later).
 	auto& timelineManager(world.createEntity());
 	auto& debugTimeline = timelineManager.addComponent<Timeline>();

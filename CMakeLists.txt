@@ -47,6 +47,7 @@ set(SRC_FILES
         src/ecs/system/MainMenuSystem.cpp
         src/ecs/system/TimelineSystem.h
         src/ecs/system/RadialSpawnerSystem.h
+        src/ecs/system/LinearSpawnerSystem.h
         #add all new source files here
 )
 

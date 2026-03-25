@@ -97,9 +97,6 @@ struct RadialSpawner {
 };
 
 struct LinearSpawner {
-    // Whether the bullet group is aimed at the player, rotating the group so that (0, 1) is pointing at them.
-    bool isAimed;
-
     // Whether bullets radiate from emitter center after emission.
     bool isFanPattern;
 
@@ -112,8 +109,8 @@ struct LinearSpawner {
     // List of positions for bullets to emit in the burst relative to emitter center.
     std::vector<Vector2D> bulletPositions{};
 
-    // Invoked when spawning, once per bullet, with param local position.
-    std::function<void(Vector2D)> spawnCallback{};
+    // Invoked when spawning, once per bullet, with params global position, direction, speed.
+    std::function<void(Vector2D, Vector2D, float)> spawnCallback{};
 
     // The frequency (sec) that one burst of bullets is emitted
     float frequency{};
@@ -123,6 +120,12 @@ struct LinearSpawner {
 
     // Delay before starting spawns.
     float delay{};
+
+    // The actual spawn countdown, which triggers spawn when it hits zero then resets.
+    float spawnTimer{frequency};
+
+    // Time since the spawner was first updated. Used for timing emission start and end.
+    float lifetime{};
 };
 
 // Our game state, might have multiple scenes.
