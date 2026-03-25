@@ -75,7 +75,7 @@ Vector2D Vector2D::operator/(float scalar) const {
 
 Vector2D& Vector2D::normalize() {
     // Pythagorean theorem
-    float length = std::sqrt(x * x + y * y);
+    float length = getLength();
 
     // If the length was 4.4
     // x = x / 4.4
@@ -88,6 +88,6 @@ Vector2D& Vector2D::normalize() {
     return *this;
 }
 
-float Vector2D::length() const {
+float Vector2D::getLength() const {
     return std::sqrt(x * x + y * y);
 }

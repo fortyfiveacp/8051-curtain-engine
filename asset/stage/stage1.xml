@@ -1,0 +1,29 @@
+<Stage>
+    <Paths>
+        <Path id="0" name="ZigZagLeft">
+            <Point x="100" y="-50" />
+            <Point x="100" y="320" />
+            <Point x="600" y="480" />
+            <Point x="10" y="640" />
+            <Point x="600" y="800" />
+            <Point x="10" y="1050" />
+        </Path>
+
+        <Path id="1" name="ZigZagRight">
+            <Point x="1180" y="-50" />
+            <Point x="1180" y="320" />
+            <Point x="680" y="480" />
+            <Point x="1270" y="640" />
+            <Point x="680" y="800" />
+            <Point x="1270" y="1050" />
+        </Path>
+    </Paths>
+
+    <Waves>
+        <Convoy start="2.0" enemyType="SmallFairy" pathId="0" numEnemies="10" interval="0.5" speed="150" />
+        <Convoy start="2.0" enemyType="SmallFairy" pathId="1" numEnemies="10" interval="0.5" speed="150" />
+
+        <Convoy start="10.0" enemyType="SmallFairy" pathId="0" numEnemies="10" interval="0.5" speed="150" />
+        <Convoy start="10.0" enemyType="SmallFairy" pathId="1" numEnemies="10" interval="0.5" speed="150" />
+    </Waves>
+</Stage>

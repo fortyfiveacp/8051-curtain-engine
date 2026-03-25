@@ -62,7 +62,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	// Init game data / state
 	gameState.playerHealth = 5;
 
-	// Start level 1
+	// Start stage 1
 	sceneManager.changeSceneDeferred("mainmenu");
 
 	// Resolve scene callback

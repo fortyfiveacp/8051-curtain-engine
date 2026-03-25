@@ -5,6 +5,7 @@
 #include "AnimationSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
+#include "ConvoySystem.h"
 #include "DestructionSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
@@ -44,6 +45,8 @@ class World {
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
 
+    ConvoySystem convoySystem;
+
 public:
     World() = default;
 
@@ -53,6 +56,7 @@ public:
             mainMenuSystem.update(event);
         }
         else {
+            convoySystem.update(*this, dt);
             pauseMenuSystem.update(entities, event);
             keyboardInputSystem.update(entities, event);
             pathSystem.update(entities, dt);

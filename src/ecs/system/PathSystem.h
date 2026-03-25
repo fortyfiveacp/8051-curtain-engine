@@ -4,16 +4,20 @@
 #include "Entity.h"
 #include "Component.h"
 
-struct Path {
-    std::vector<Vector2D> points;
-};
-
 class PathSystem {
     std::unordered_map<int, Path>* pathLibrary;
 
 public:
     PathSystem(std::unordered_map<int, Path>* lib)
         : pathLibrary(lib) {}
+
+    float getPathLength(const Path& path) {
+        float total = 0.0f;
+        for (size_t i = 0; i < path.points.size() - 1; i++) {
+            total += (path.points[i+1] - path.points[i]).getLength();
+        }
+        return total;
+    }
 
     Vector2D evaluate(const Path& path, float distance) {
         float remaining = distance;
@@ -22,7 +26,7 @@ public:
             auto a = path.points[i];
             auto b = path.points[i + 1];
 
-            float len = (b - a).length();
+            float len = (b - a).getLength();
 
             if (remaining <= len) {
                 float t = remaining / len;
@@ -47,8 +51,13 @@ public:
 
             const Path& path = (*pathLibrary)[pf.pathId];
 
-            tf.oldPosition = tf.position;
+            // Check if we have finished the path
+            if (pf.distance >= getPathLength(path)) {
+                e->destroy(); // Mark for removal by World::cleanup()
+                continue;
+            }
 
+            tf.oldPosition = tf.position;
             pf.distance += pf.speed * dt;
             tf.position = evaluate(path, pf.distance);
         }

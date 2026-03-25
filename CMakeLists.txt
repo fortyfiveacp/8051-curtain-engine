@@ -49,6 +49,11 @@ set(SRC_FILES
         src/ecs/system/PauseMenuSystem.cpp
         src/ecs/system/UIRenderSystem.cpp
         src/ecs/system/PathSystem.h
+        src/scene/StageLoader.h
+        src/ecs/system/ConvoySystem.h
+        src/utils/EnemyFactory.h
+        src/ecs/system/ConvoySystem.cpp
+        src/scene/StageLoader.cpp
         #add all new source files here
 )
 

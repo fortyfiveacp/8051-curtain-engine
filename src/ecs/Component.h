@@ -102,18 +102,31 @@ struct Timeline {
     std::vector<std::pair<float, std::function<void()>>> timeline{};
 };
 
+
+struct Path {
+    std::vector<Vector2D> points;
+};
+
 struct PathFollower {
     int pathId{};
-    float distance = 0.0f;
-    float speed = 100.0f;
+    float distance{};
+    float speed{};
     bool active = true;
 };
 
+enum class EnemyType {
+    SmallFairy,
+    LargeFairy,
+    Boss
+};
+
 struct Convoy {
-    float speed;
-    std::vector<Vector2D> waypoints;
-    int count;
-    float interval;
+    EnemyType enemyType{};
+    int pathId{};
+    int numEnemies{};
+    float speed{};
+    float spawnInterval{};
+    float timer = 0.0f;
 };
 
 struct PlayerTag{};

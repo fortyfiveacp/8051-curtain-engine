@@ -50,5 +50,5 @@ public:
 
     Vector2D& normalize();
 
-    float length() const;
+    float getLength() const;
 };
