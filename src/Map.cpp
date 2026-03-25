@@ -134,7 +134,7 @@ void Map::draw(const Camera& cam) {
                     break;
             }
 
-            TextureManager::draw(tileset, src, dest);
+            TextureManager::draw(tileset, &src, &dest);
         }
     }
 }

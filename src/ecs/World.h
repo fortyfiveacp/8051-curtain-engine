@@ -9,6 +9,8 @@
 #include "DestructionSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
+#include "FPSCounterSystem.h"
+#include "HUDSystem.h"
 #include "event/EventManager.h"
 #include "KeyboardInputSystem.h"
 #include "MainMenuSystem.h"
@@ -21,6 +23,7 @@
 #include "TimelineSystem.h"
 #include "UIRenderSystem.h"
 #include "scene/SceneType.h"
+#include "PreRenderSystem.h"
 
 class World {
     Map map;
@@ -41,6 +44,9 @@ class World {
     MainMenuSystem mainMenuSystem;
     UIRenderSystem uiRenderSystem;
     PauseMenuSystem pauseMenuSystem;
+    HUDSystem hudSystem;
+    FPSCounterSystem fpsCounterSystem;
+    PreRenderSystem preRenderSystem;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -54,8 +60,7 @@ public:
         if (sceneType == SceneType::MainMenu) {
             // Main menu system update
             mainMenuSystem.update(event);
-        }
-        else {
+        } else {
             convoySystem.update(*this, dt);
             pauseMenuSystem.update(entities, event);
             keyboardInputSystem.update(entities, event);
@@ -67,7 +72,11 @@ public:
             spawnTimerSystem.update(entities, dt);
             timelineSystem.update(entities, dt);
             destructionSystem.update(entities);
+            hudSystem.update(entities);
         }
+
+        fpsCounterSystem.update(entities, dt);
+        preRenderSystem.update(entities);
 
         synchronizeEntities();
         cleanup();

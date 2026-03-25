@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 class Vector2D {
 public:
@@ -51,4 +52,9 @@ public:
     Vector2D& normalize();
 
     float getLength() const;
+
+    inline std::ostream& operator<<(std::ostream& os, const Vector2D& vector) {
+        os << "(" << static_cast<int>(vector.x) << ", " << static_cast<int>(vector.y) << ")";
+        return os;
+    }
 };

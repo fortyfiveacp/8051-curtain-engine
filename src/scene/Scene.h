@@ -34,7 +34,11 @@ private:
 
     Entity& createPauseMenuOverlay(int windowWidth, int windowHeight);
     void spawnConvoy(const Convoy& convoy);
+    
     Entity& createCogButton(int windowWidth, int windowHeight, Entity& overlay);
     void createPauseMenuUComponents(Entity& overlay);
     void toggleOverlayVisibility(Entity& overlay);
+
+    Entity& createPlayerPosLabel();
+    Entity& createFPSCounterLabel(int windowWidth, int windowHeight);
 };

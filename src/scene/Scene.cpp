@@ -29,6 +29,8 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	SDL_FRect menuSrc {0, 0, (float)windowWidth, (float)windowHeight};
 	SDL_FRect menuDst {menuTransform.position.x, menuTransform.position.y, menuSrc.w, menuSrc.h};
 	menu.addComponent<Sprite>(texture, menuSrc, menuDst);
+
+	createFPSCounterLabel(windowWidth, windowHeight);
 }
 
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
@@ -158,6 +160,9 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// Pause menu overlay.
 	createPauseMenuOverlay(windowWidth, windowHeight);
+
+	createPlayerPosLabel();
+	createFPSCounterLabel(windowWidth, windowHeight);
 }
 
 Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
@@ -287,4 +292,39 @@ void Scene::toggleOverlayVisibility(Entity& overlay) {
 			selected.onSelect();
 		}
 	}
+}
+
+Entity& Scene::createPlayerPosLabel() {
+	auto& playerPosLabel(world.createEntity());
+	Label label = {
+		"Test String",
+		AssetManager::getFont("pop1"),
+		{240, 240, 240, 255},
+		LabelType::PlayerPosition,
+		"playerPos"
+	};
+
+	TextureManager::loadLabel(label);
+	playerPosLabel.addComponent<Label>(label);
+	playerPosLabel.addComponent<Transform>(Vector2D(10, 10), 0.0f, 1.0f);
+
+	return playerPosLabel;
+}
+
+Entity& Scene::createFPSCounterLabel(int windowWidth, int windowHeight) {
+	auto& fpsCounterLabel(world.createEntity());
+	Label label = {
+		"0.000fps",
+		AssetManager::getFont("pop1"),
+		{240, 240, 240, 255},
+		LabelType::FPSCounter,
+		"fpsCounter"
+	};
+
+	TextureManager::loadLabel(label);
+	fpsCounterLabel.addComponent<Label>(label);
+	fpsCounterLabel.addComponent<Transform>(Vector2D(windowWidth - 170, windowHeight - 40), 0.0f, 1.0f);
+	fpsCounterLabel.addComponent<FPSCounter>();
+
+	return fpsCounterLabel;
 }
