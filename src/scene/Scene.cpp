@@ -115,13 +115,13 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 	float rotationSpeed = 50.0f;
 	radialDanmaku.addComponent<AngularVelocity>(rotationSpeed);
 
-	float frequency = 0.3f;
+	float frequency = 0.17f;
 	float bulletEmissionSpeed = 150.0f;
 	float bulletEmissionAngularVelocity = 20.0f;
 	float radius = 30.0f;
 	float duration = 10.0f;
 	float delay = 2.0f;
-	int bulletsPerBurst = 3;
+	int bulletsPerBurst = 31;
 
 	// RadialSpawner component takes a callback which spawns individual bullets.
 	radialDanmaku.addComponent<RadialSpawner>(rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
@@ -156,11 +156,13 @@ const int windowHeight) : name(sceneName), type(sceneType) {
 	float bulletEmissionSpeedMultiplier = 1.0f;
 
 	std::vector<Vector2D> bulletSpawnPositions;
-	bulletSpawnPositions.emplace_back(Vector2D(0, -30));
-	bulletSpawnPositions.emplace_back(Vector2D(0, -40));
-	bulletSpawnPositions.emplace_back(Vector2D(0, -50));
-	bulletSpawnPositions.emplace_back(Vector2D(10, -20));
-	bulletSpawnPositions.emplace_back(Vector2D(-10, -20));
+	bulletSpawnPositions.emplace_back(0, -30);
+	bulletSpawnPositions.emplace_back(0, -40);
+	bulletSpawnPositions.emplace_back(0, -50);
+	bulletSpawnPositions.emplace_back(10, -20);
+	bulletSpawnPositions.emplace_back(-10, -20);
+	bulletSpawnPositions.emplace_back(15, -20);
+	bulletSpawnPositions.emplace_back(-15, -20);
 
 	linearDanmaku.addComponent<LinearSpawner>(isFanPattern, bulletEmissionSpeed, bulletEmissionSpeedMultiplier,
 		bulletSpawnPositions, frequency, duration, delay,
