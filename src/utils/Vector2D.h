@@ -55,4 +55,6 @@ public:
     Vector2D operator/(float scalar) const;
 
     Vector2D& normalize();
+
+    float length() const;
 };
