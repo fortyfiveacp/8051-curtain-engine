@@ -50,7 +50,6 @@ class World {
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
-    AudioSystem audioSystem{*this};
 
 public:
     World() = default;

@@ -4,7 +4,6 @@
 enum class EventType {
     Collision,
     PlayerAction,
-    Audio,
     UIInteraction
 };
 
@@ -34,37 +33,6 @@ struct PlayerActionEvent : BaseEvent {
     }
 };
 
-enum class SoundID {
-    PlayerShot
-};
-
-enum class MusicID {
-    StageTheme
-};
-
-struct AudioEvent : BaseEvent {
-    SoundID sound;
-
-    AudioEvent(SoundID sound) : sound(sound) {
-        type = EventType::Audio;
-    }
-};
-
-// Might not be needed.
-enum class MusicAction {
-    Play,
-    Stop
-};
-
-struct MusicEvent : BaseEvent {
-    MusicID music;
-    MusicAction action;
-    bool loop;
-
-    MusicEvent(MusicID music, MusicAction action, bool loop = true) : music(music), action(action), loop(loop) {
-        type = EventType::Audio;
-    }
-};
 enum class UIInteractionState {Pressed, Released, Selected};
 
 struct UIInteractionEvent : BaseEvent {
