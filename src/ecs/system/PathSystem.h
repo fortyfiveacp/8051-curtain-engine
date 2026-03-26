@@ -13,7 +13,7 @@ public:
     float getPathLength(const Path& path) {
         float totalLength = 0.0f;
         for (size_t i = 0; i < path.points.size() - 1; i++) {
-            totalLength += (path.points[i+1] - path.points[i]).getLength();
+            totalLength += (path.points[i + 1] - path.points[i]).getLength();
         }
         return totalLength;
     }
