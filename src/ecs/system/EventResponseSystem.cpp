@@ -100,6 +100,8 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
             return;
         }
 
+        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit"));
+
         // This logic is simple and direct.
         // Ideally, we would only operate on data in an update function (transient entities).
         auto& health = player->getComponent<Health>();
