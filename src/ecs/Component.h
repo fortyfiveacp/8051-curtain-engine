@@ -128,8 +128,6 @@ struct FPSCounter {
 };
 
 struct StageBackground {
-    float baseWidth{};
-    float baseHeight{};
     float scrollSpeedY = 100.0f;
     float offsetY = 0.0f;
     SDL_Texture* texture{};

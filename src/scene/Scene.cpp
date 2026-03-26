@@ -421,7 +421,7 @@ Entity& Scene::createStageBackground(float stageWidth, float stageHeight, float 
 	stageBackground.addComponent<Transform>(Vector2D(0, startingY), 0.0f, 1.0f);
 	stageBackground.addComponent<Velocity>(Vector2D(0, 1), scrollSpeedY);
 	stageBackground.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
-	stageBackground.addComponent<StageBackground>(stageWidth, stageHeight, scrollSpeedY, 0.0f, tex);
+	stageBackground.addComponent<StageBackground>(scrollSpeedY, 0.0f, tex);
 
 	return stageBackground;
 }
