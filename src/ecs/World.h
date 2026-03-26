@@ -3,12 +3,14 @@
 #include <vector>
 
 #include "AnimationSystem.h"
-#include "AudioSystem.h"
+#include "BackgroundRenderSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
 #include "DestructionSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
+#include "FPSCounterSystem.h"
+#include "HUDSystem.h"
 #include "event/EventManager.h"
 #include "KeyboardInputSystem.h"
 #include "MainMenuSystem.h"
@@ -20,6 +22,8 @@
 #include "TimelineSystem.h"
 #include "UIRenderSystem.h"
 #include "scene/SceneType.h"
+#include "PreRenderSystem.h"
+#include "StageBackgroundSystem.h"
 
 class World {
     Map map;
@@ -38,6 +42,11 @@ class World {
     MainMenuSystem mainMenuSystem;
     UIRenderSystem uiRenderSystem;
     PauseMenuSystem pauseMenuSystem;
+    HUDSystem hudSystem;
+    FPSCounterSystem fpsCounterSystem;
+    PreRenderSystem preRenderSystem;
+    BackgroundRenderSystem backgroundRenderSystem;
+    StageBackgroundSystem stageBackgroundSystem;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -50,8 +59,7 @@ public:
         if (sceneType == SceneType::MainMenu) {
             // Main menu system update
             mainMenuSystem.update(event);
-        }
-        else {
+        } else {
             pauseMenuSystem.update(entities, event);
             keyboardInputSystem.update(entities, event);
             movementSystem.update(entities, dt);
@@ -60,22 +68,43 @@ public:
             cameraSystem.update(entities);
             spawnTimerSystem.update(entities, dt);
             timelineSystem.update(entities, dt);
+            stageBackgroundSystem.update(entities, dt);
             destructionSystem.update(entities);
+            hudSystem.update(entities);
         }
+
+        fpsCounterSystem.update(entities, dt);
+        preRenderSystem.update(entities);
 
         synchronizeEntities();
         cleanup();
     }
 
-    void render() {
-        for (auto& entity : entities) {
-            if (entity->hasComponent<Camera>()) {
-                map.draw(entity->getComponent<Camera>());
-                break;
-            }
-        }
+    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) {
+        backgroundRenderSystem.render(entities);
+
+        // Set up stage viewport.
+        int stageWidth = windowWidth * 0.6;
+        int stageHeight = windowHeight * 0.93;
+        int paddingX = windowWidth * 0.05;
+        int paddingY = (windowHeight - stageHeight) / 2;
+
+        SDL_Rect stageRect = { paddingX, paddingY, stageWidth, stageHeight };
+        SDL_SetRenderViewport(renderer, &stageRect);
+
+        // TODO: purge.
+        // for (auto& entity : entities) {
+        //     if (entity->hasComponent<Camera>()) {
+        //         map.draw(entity->getComponent<Camera>());
+        //         break;
+        //     }
+        // }
 
         renderSystem.render(entities);
+
+        // Reset viewport for rendering UI.
+        SDL_SetRenderViewport(renderer, nullptr);
+
         uiRenderSystem.render(entities);
     }
 

@@ -3,6 +3,15 @@
 #include "tinyxml2.h"
 
 std::unordered_map<std::string, Animation> AssetManager::animations;
+std::unordered_map<std::string, TTF_Font*> AssetManager::fonts;
+
+void AssetManager::loadFont(const std::string& name, const char* path, float fontSize) {
+    fonts.emplace(name, TTF_OpenFont(path, fontSize));
+}
+
+TTF_Font* AssetManager::getFont(const std::string& name) {
+    return fonts[name];
+}
 
 std::unordered_map<SoundID, MIX_Audio*> AssetManager::sounds;
 std::unordered_map<MusicID, MIX_Audio*> AssetManager::music;

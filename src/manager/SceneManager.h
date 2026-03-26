@@ -59,9 +59,9 @@ public:
         }
     }
 
-    void render() const {
+    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) const {
         if (currentScene) {
-            currentScene->render();
+            currentScene->render(renderer, windowWidth, windowHeight);
         }
     }
 };
