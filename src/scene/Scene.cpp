@@ -366,14 +366,15 @@ Entity& Scene::createFPSCounterLabel(int windowWidth, int windowHeight) {
 	return fpsCounterLabel;
 }
 
-Entity& Scene::createStaticLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text) {
+Entity& Scene::createLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text, const char* cacheKey,
+	LabelType labelType) {
 	auto& fpsCounterLabel(world.createEntity());
 	Label label = {
 		text,
 		AssetManager::getFont(fontName),
 		colour,
-		LabelType::Static,
-		text
+		labelType,
+		cacheKey
 	};
 
 	// Immediately mark the label as dirty so it renders.
@@ -388,29 +389,58 @@ Entity& Scene::createStaticLabel(int x, int y, SDL_Color colour, const char* fon
 
 void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight) {
 	const char* staticLabelFont = "DFPPOPCorn";
+	const char* dynamicLabelFont = "pop1";
 
 	int paddingX = windowWidth * 0.05;
 	int paddingY = (windowHeight - stageHeight) / 2 * 3;
 
 	int fontHeight = TTF_GetFontSize(AssetManager::getFont(staticLabelFont));
 	int leading = 5;
-	int leftPadding = stageWidth + paddingX + 50;
+	int staticLeftPadding = stageWidth + paddingX + 50;
+	int dynamicLeftPadding = staticLeftPadding + 142;
 
+	SDL_Color offWhite = {240, 240, 240, 255};
 	SDL_Color grey = {171, 166, 169, 255};
 	SDL_Color lightPink = {170, 126, 176, 255};
 	SDL_Color hotPink = {180, 85, 172, 255};
 
-	createStaticLabel(leftPadding, paddingY, grey, staticLabelFont, "HiScore");
-	createStaticLabel(leftPadding, (fontHeight + leading) + paddingY, grey, staticLabelFont, "Score");
+	// HiScore static and dynamic label.
+	createLabel(staticLeftPadding, paddingY, grey, staticLabelFont,
+		"HiScore", "HiScoreLabel", LabelType::Static);
+	createLabel(dynamicLeftPadding, paddingY, offWhite, dynamicLabelFont,
+		"000000000", "HiScore", LabelType::HiScore);
 
-	createStaticLabel(leftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont, "Player");
-	createStaticLabel(leftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont, "Bomb");
+	// Score static and dynamic label.
+	createLabel(staticLeftPadding, (fontHeight + leading) + paddingY, grey, staticLabelFont,
+		"Score","ScoreLabel", LabelType::Static);
+	createLabel(dynamicLeftPadding, (fontHeight + leading) + paddingY, offWhite, dynamicLabelFont,
+		"000000000","Score", LabelType::Score);
 
-	createStaticLabel(leftPadding, (fontHeight + leading) * 4 + paddingY * 2, hotPink, staticLabelFont, "Power");
-	createStaticLabel(leftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont, "Graze");
-	createStaticLabel(leftPadding, (fontHeight + leading) * 6 + paddingY * 2, hotPink, staticLabelFont, "Point");
+	// Player health static and dynamic label.
+	createLabel(staticLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont,
+		"Player", "HealthLabel", LabelType::Static);
 
-	// TODO: dynamic labels.
+	// Bomb static and dynamic label.
+	createLabel(staticLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont,
+		"Bomb", "BombLabel", LabelType::Static);
+
+	// Power static and dynamic label.
+	createLabel(staticLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, hotPink, staticLabelFont,
+		"Power", "PowerLabel", LabelType::Static);
+	createLabel(dynamicLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, offWhite, dynamicLabelFont,
+		"0", "Power", LabelType::Power);
+
+	// Graze static and dynamic label.
+	createLabel(staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
+		"Graze", "GrazeLabel", LabelType::Static);
+	createLabel(dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
+		"0", "Graze", LabelType::Graze);
+
+	// Point static and dynamic label.
+	createLabel(staticLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, hotPink, staticLabelFont,
+		"Point", "PointLabel", LabelType::Static);
+	createLabel(dynamicLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, offWhite, dynamicLabelFont,
+		"0/0", "Point", LabelType::Point);
 }
 
 Entity& Scene::createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath) {

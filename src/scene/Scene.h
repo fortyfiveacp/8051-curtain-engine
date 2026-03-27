@@ -38,7 +38,8 @@ private:
 
     Entity& createPlayerPosLabel();
     Entity& createFPSCounterLabel(int windowWidth, int windowHeight);
-    Entity& createStaticLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text);
+    Entity& createLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text, const char* cacheKey,
+        LabelType labelType);
     void createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);
 
     Entity& createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath);
