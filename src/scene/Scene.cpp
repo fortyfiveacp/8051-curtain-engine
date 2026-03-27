@@ -134,6 +134,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	player.addComponent<PlayerTag>();
 	player.addComponent<Health>(Game::gameState.playerHealth);
+	player.addComponent<Bombs>(Game::gameState.playerBombs);
 
 	auto& spawner(world.createEntity());
 	Transform t = spawner.addComponent<Transform>(Vector2D(windowWidth / 2, windowHeight - 5), 0.0f, 1.0f);
@@ -387,6 +388,32 @@ Entity& Scene::createLabel(int x, int y, SDL_Color colour, const char* fontName,
 	return fpsCounterLabel;
 }
 
+Entity& Scene::createIconLabel(int x, int y, int maxNumber, int currentNumber, float iconWidth, float iconHeight,
+	IconLabelType type, const char* texturePath) {
+
+	SDL_Texture* tex = TextureManager::load(texturePath);
+
+	auto& iconLabel(world.createEntity());
+	iconLabel.addComponent<IconLabel>(maxNumber, tex, type);
+	iconLabel.addComponent<Transform>(Vector2D(x, y), 0.0f, 1.0f);
+
+	iconLabel.addComponent<Children>();
+
+	for (int i = 0; i < maxNumber; i++) {
+		auto& icon(world.createEntity());
+		SDL_FRect src {0, 0, static_cast<float>(tex->w), static_cast<float>(tex->h)};
+		SDL_FRect dst = {0, 0, iconWidth, iconHeight};
+		icon.addComponent<Sprite>(tex, src, dst, RenderLayer::UI);
+		icon.addComponent<Transform>(Vector2D(x + iconWidth * i, y), 0.0f, 1.0f);
+
+		// Parent icon to the icon label.
+		icon.addComponent<Parent>(&iconLabel);
+		iconLabel.getComponent<Children>().children.push_back(&icon);
+	}
+
+	return iconLabel;
+}
+
 void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight) {
 	const char* staticLabelFont = "DFPPOPCorn";
 	const char* dynamicLabelFont = "pop1";
@@ -396,7 +423,7 @@ void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, 
 
 	int fontHeight = TTF_GetFontSize(AssetManager::getFont(staticLabelFont));
 	int leading = 5;
-	int staticLeftPadding = stageWidth + paddingX + 50;
+	int staticLeftPadding = stageWidth + paddingX + 35;
 	int dynamicLeftPadding = staticLeftPadding + 142;
 
 	SDL_Color offWhite = {240, 240, 240, 255};
@@ -419,10 +446,14 @@ void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, 
 	// Player health static and dynamic label.
 	createLabel(staticLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont,
 		"Player", "HealthLabel", LabelType::Static);
+	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, 8, 2,
+		fontHeight, fontHeight, IconLabelType::Health, "../asset/ui/red-star.png");
 
 	// Bomb static and dynamic label.
 	createLabel(staticLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont,
 		"Bomb", "BombLabel", LabelType::Static);
+	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, 8, 3,
+		fontHeight, fontHeight, IconLabelType::Bomb, "../asset/ui/blue-star.png");
 
 	// Power static and dynamic label.
 	createLabel(staticLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, hotPink, staticLabelFont,

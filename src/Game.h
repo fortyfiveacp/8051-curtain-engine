@@ -6,6 +6,7 @@
 
 struct GameState {
 	int playerHealth;
+	int playerBombs;
 };
 
 class Game {

@@ -11,6 +11,7 @@
 #include "EventResponseSystem.h"
 #include "FPSCounterSystem.h"
 #include "HUDSystem.h"
+#include "IconLabelSystem.h"
 #include "event/EventManager.h"
 #include "KeyboardInputSystem.h"
 #include "MainMenuSystem.h"
@@ -45,6 +46,7 @@ class World {
     PauseMenuSystem pauseMenuSystem;
     HUDSystem hudSystem;
     FPSCounterSystem fpsCounterSystem;
+    IconLabelSystem iconLabelSystem;
     PreRenderSystem preRenderSystem;
     BackgroundRenderSystem backgroundRenderSystem;
     StageBackgroundSystem stageBackgroundSystem;
@@ -71,6 +73,7 @@ public:
             stageBackgroundSystem.update(entities, dt);
             destructionSystem.update(entities);
             hudSystem.update(entities);
+            iconLabelSystem.update(entities);
         }
 
         fpsCounterSystem.update(entities, dt);

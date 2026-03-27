@@ -73,6 +73,10 @@ struct Health {
     int currentHealth{};
 };
 
+struct Bombs {
+    int currentBombs{};
+};
+
 struct SelectableUI {
     std::function<void()> onPressed{};
     std::function<void()> onReleased{};
@@ -138,6 +142,20 @@ struct StageBackground {
     float scrollSpeedY = 100.0f;
     float offsetY = 0.0f;
     SDL_Texture* texture{};
+};
+
+enum class IconLabelType {
+    Health,
+    Bomb
+};
+
+struct IconLabel {
+    int maxNumber{};
+    SDL_Texture* texture = nullptr;
+    IconLabelType type = IconLabelType::Health;
+    int currentNumber{};
+    bool visible = true;
+    bool dirty = true;
 };
 
 struct PlayerTag{};

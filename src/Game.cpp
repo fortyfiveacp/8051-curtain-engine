@@ -67,7 +67,8 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	sceneManager.loadScene(SceneType::Gameplay, "level2", "../asset/map2.tmx", width, height);
 
 	// Init game data / state.
-	gameState.playerHealth = 5;
+	gameState.playerHealth = 3;
+	gameState.playerBombs = 3;
 
 	// Start level 1.
 	sceneManager.changeSceneDeferred("mainmenu");
