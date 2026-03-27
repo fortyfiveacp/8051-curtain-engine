@@ -24,6 +24,7 @@
 #include "scene/SceneType.h"
 #include "PreRenderSystem.h"
 #include "StageBackgroundSystem.h"
+#include "StageUtils.h"
 
 class World {
     Map map;
@@ -83,8 +84,8 @@ public:
         backgroundRenderSystem.render(entities);
 
         // Set up stage viewport.
-        int stageWidth = windowWidth * 0.6;
-        int stageHeight = windowHeight * 0.93;
+        int stageWidth = StageUtils::CalculateStageWidth(windowWidth);
+        int stageHeight = StageUtils::CalculateStageHeight(windowHeight);
         int paddingX = windowWidth * 0.05;
         int paddingY = (windowHeight - stageHeight) / 2;
 

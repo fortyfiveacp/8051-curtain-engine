@@ -2,8 +2,10 @@
 #include "Game.h"
 #include "Scene.h"
 
+#include "StageUtils.h"
+
 Scene::Scene(SceneType sceneType, const char* sceneName, const char* mapPath, const int windowWidth,
-const int windowHeight) : name(sceneName), type(sceneType) {
+             const int windowHeight) : name(sceneName), type(sceneType) {
 
 	if (sceneType == SceneType::MainMenu) {
 		initMainMenu(windowWidth, windowHeight);
@@ -51,8 +53,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	}
 
 	// Create stage.
-	float stageWidth = windowWidth * 0.6;
-	float stageHeight = windowHeight * 0.93;
+	float stageWidth = StageUtils::CalculateStageWidth(windowWidth);
+	float stageHeight = StageUtils::CalculateStageHeight(windowHeight);
 	float backgroundSpeed = 60.0f;
 	float foregroundSpeed = backgroundSpeed + backgroundSpeed * 0.25f;
 
