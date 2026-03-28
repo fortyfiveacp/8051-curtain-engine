@@ -3,8 +3,9 @@
 #include <iostream>
 #include <ostream>
 
-MIX_Track* AudioManager::sfxTrack;
+std::vector<MIX_Track*> AudioManager::sfxTracks;
 std::unordered_map<std::string, MIX_Audio*> AudioManager::audio;
+constexpr int MAX_SFX_TRACKS = 32;
 
 AudioManager::AudioManager() {
     if (MIX_Init() == 0) {
@@ -19,12 +20,16 @@ AudioManager::AudioManager() {
     }
 
     musicTrack = MIX_CreateTrack(mixer);
-    sfxTrack = MIX_CreateTrack(mixer);
+
+    for (int i = 0; i < MAX_SFX_TRACKS; i++) {
+        sfxTracks.push_back(MIX_CreateTrack(mixer));
+    }
+
     MIX_SetTrackGain(musicTrack, 1.0f);
 }
 
 void AudioManager::loadAudio(const std::string &name, const char *path) const {
-    if (audio.contains(path)) {
+    if (audio.contains(name)) {
         return;
     }
 
@@ -43,6 +48,7 @@ void AudioManager::playMusic(const std::string &name) const {
     }
 
     MIX_PlayTrack(musicTrack, -1); // -1 means loop endless.
+    MIX_TrackLooping(musicTrack);
     std::cout << "Playing music: " << name << std::endl;
 }
 
@@ -51,11 +57,16 @@ void AudioManager::stopMusic(const std::string &name) const {
 }
 
 void AudioManager::playSfx(const std::string &name) {
-    if (MIX_SetTrackAudio(sfxTrack, audio[name]) == 0) {
-        std::cout << "MIX_SetTrackAudio() Failed" << std::endl;
-        return;
-    }
+    for (auto* track : sfxTracks) {
+        if (!MIX_TrackPlaying(track)) {
+            if (MIX_SetTrackAudio(track, audio[name]) == 0) {
+                std::cout << "MIX_SetTrackAudio() Failed" << std::endl;
+                return;
+            }
 
-    MIX_PlayTrack(sfxTrack, 0);
-    std::cout << "Playing sfx: " << name << std::endl;
+            MIX_PlayTrack(track, 0);
+            std::cout << "Playing sfx: " << name << std::endl;
+            return;
+        }
+    }
 }

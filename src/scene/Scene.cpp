@@ -3,6 +3,7 @@
 #include "Scene.h"
 
 #include "StageUtils.h"
+#include "../manager/AudioManager.h"
 
 Scene::Scene(SceneType sceneType, const char* sceneName, const char* mapPath, const int windowWidth,
              const int windowHeight) : name(sceneName), type(sceneType) {
@@ -311,6 +312,7 @@ Entity& Scene::createSelectableButton(Entity& overlay, const char* font, SDL_Col
 
 	// Functions for on press, on release and on select.
 	selectable.onPressed = [&transform, onPressed] {
+		AudioManager::playSfx("ok");
 		transform.scale = 1.0f;
 		onPressed();
 	};
@@ -322,6 +324,7 @@ Entity& Scene::createSelectableButton(Entity& overlay, const char* font, SDL_Col
 	};
 
 	selectable.onSelect = [&transform, &label, selectedColour] {
+		AudioManager::playSfx("select");
 		transform.scale = 1.15f;
 		label.color = selectedColour;
 		label.dirty = true;
@@ -335,6 +338,8 @@ Entity& Scene::createSelectableButton(Entity& overlay, const char* font, SDL_Col
 }
 
 void Scene::toggleOverlayVisibility(Entity& overlay) {
+	AudioManager::playSfx("pause");
+
 	auto& sprite = overlay.getComponent<Sprite>();
 	bool newVisibility = !sprite.visible;
 	sprite.visible = newVisibility;
@@ -355,9 +360,10 @@ void Scene::toggleOverlayVisibility(Entity& overlay) {
 			}
 		}
 
-		// Set the first selectable entity as the default selected, if visible.
 		if (newVisibility) {
 			// TODO: also implement actually pausing the game.
+
+			// Set the first selectable entity as the default selected, if visible.
 			for (auto& child : c.children) {
 				if (child && child->hasComponent<SelectableUI>()) {
 					auto& selected = child->getComponent<SelectableUI>();
