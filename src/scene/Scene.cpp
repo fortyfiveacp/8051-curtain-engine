@@ -29,7 +29,9 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	SDL_FRect menuDst {menuTransform.position.x, menuTransform.position.y, menuSrc.w, menuSrc.h};
 	menu.addComponent<Sprite>(texture, menuSrc, menuDst, RenderLayer::Background);
 
-	createFPSCounterLabel(windowWidth, windowHeight);
+	auto& fpsCounter = createLabel(windowWidth - 170, windowHeight - 40, {240, 240, 240, 255},
+		"pop1", "0.000fps", "fpsCounter", LabelType::FPSCounter);
+	fpsCounter.addComponent<FPSCounter>();
 }
 
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
@@ -133,8 +135,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	playerCollider.rect.h = playerDst.h;
 
 	player.addComponent<PlayerTag>();
-	player.addComponent<Health>(Game::gameState.playerHealth);
-	player.addComponent<Bombs>(Game::gameState.playerBombs);
+	player.addComponent<PlayerStats>(Game::gameState.playerHealth, Game::gameState.playerBombs, 1234, 5678, 9, 10, 11); // TODO: remove test values.
 
 	auto& spawner(world.createEntity());
 	Transform t = spawner.addComponent<Transform>(Vector2D(windowWidth / 2, windowHeight - 5), 0.0f, 1.0f);
@@ -196,7 +197,9 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	createPauseMenuOverlay(windowWidth, windowHeight);
 
 	// Create FPS counter label.
-	createFPSCounterLabel(windowWidth, windowHeight);
+	auto& fpsCounter = createLabel(windowWidth - 170, windowHeight - 40, {240, 240, 240, 255},
+		"pop1", "0.000fps", "fpsCounter", LabelType::FPSCounter);
+	fpsCounter.addComponent<FPSCounter>();
 
 	// Create UI labels.
 	createUILabels(windowWidth, windowHeight, stageWidth, stageHeight);
@@ -331,45 +334,9 @@ void Scene::toggleOverlayVisibility(Entity& overlay) {
 	}
 }
 
-// TODO: purge.
-Entity& Scene::createPlayerPosLabel() {
-	auto& playerPosLabel(world.createEntity());
-	Label label = {
-		"Test String",
-		AssetManager::getFont("pop1"),
-		{240, 240, 240, 255},
-		LabelType::PlayerPosition,
-		"playerPos"
-	};
-
-	TextureManager::loadLabel(label);
-	playerPosLabel.addComponent<Label>(label);
-	playerPosLabel.addComponent<Transform>(Vector2D(10, 10), 0.0f, 1.0f);
-
-	return playerPosLabel;
-}
-
-Entity& Scene::createFPSCounterLabel(int windowWidth, int windowHeight) {
-	auto& fpsCounterLabel(world.createEntity());
-	Label label = {
-		"0.000fps",
-		AssetManager::getFont("pop1"),
-		{240, 240, 240, 255},
-		LabelType::FPSCounter,
-		"fpsCounter"
-	};
-
-	TextureManager::loadLabel(label);
-	fpsCounterLabel.addComponent<Label>(label);
-	fpsCounterLabel.addComponent<Transform>(Vector2D(windowWidth - 170, windowHeight - 40), 0.0f, 1.0f);
-	fpsCounterLabel.addComponent<FPSCounter>();
-
-	return fpsCounterLabel;
-}
-
 Entity& Scene::createLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text, const char* cacheKey,
 	LabelType labelType) {
-	auto& fpsCounterLabel(world.createEntity());
+	auto& newLabel(world.createEntity());
 	Label label = {
 		text,
 		AssetManager::getFont(fontName),
@@ -378,23 +345,20 @@ Entity& Scene::createLabel(int x, int y, SDL_Color colour, const char* fontName,
 		cacheKey
 	};
 
-	// Immediately mark the label as dirty so it renders.
-	label.dirty = true;
-
 	TextureManager::loadLabel(label);
-	fpsCounterLabel.addComponent<Label>(label);
-	fpsCounterLabel.addComponent<Transform>(Vector2D(x, y), 0.0f, 1.0f);
+	newLabel.addComponent<Label>(label);
+	newLabel.addComponent<Transform>(Vector2D(x, y), 0.0f, 1.0f);
 
-	return fpsCounterLabel;
+	return newLabel;
 }
 
 Entity& Scene::createIconLabel(int x, int y, int maxNumber, int currentNumber, float iconWidth, float iconHeight,
-	IconLabelType type, const char* texturePath) {
+	IconCounterType type, const char* texturePath) {
 
 	SDL_Texture* tex = TextureManager::load(texturePath);
 
 	auto& iconLabel(world.createEntity());
-	iconLabel.addComponent<IconLabel>(maxNumber, tex, type);
+	iconLabel.addComponent<IconCounter>(maxNumber, tex, type);
 	iconLabel.addComponent<Transform>(Vector2D(x, y), 0.0f, 1.0f);
 
 	iconLabel.addComponent<Children>();
@@ -418,56 +382,62 @@ void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, 
 	const char* staticLabelFont = "DFPPOPCorn";
 	const char* dynamicLabelFont = "pop1";
 
+	// The base distance the UI labels should be from the left and top of the screen.
 	int paddingX = windowWidth * 0.05;
 	int paddingY = (windowHeight - stageHeight) / 2 * 3;
 
+	// Font height and leading for calculating how distance is needed between each row of labels.
 	int fontHeight = TTF_GetFontSize(AssetManager::getFont(staticLabelFont));
 	int leading = 5;
+
+	// The distance for each column from the left side of the screen.
+	// The static labels are the unchanging text labels (i.e. HiScore:) while the dynamic labels are the actual number value.
 	int staticLeftPadding = stageWidth + paddingX + 35;
 	int dynamicLeftPadding = staticLeftPadding + 142;
 
+	// Colours for the labels.
 	SDL_Color offWhite = {240, 240, 240, 255};
 	SDL_Color grey = {171, 166, 169, 255};
 	SDL_Color lightPink = {170, 126, 176, 255};
 	SDL_Color hotPink = {180, 85, 172, 255};
 
-	// HiScore static and dynamic label.
+	// HiScore static and dynamic labels.
 	createLabel(staticLeftPadding, paddingY, grey, staticLabelFont,
 		"HiScore", "HiScoreLabel", LabelType::Static);
 	createLabel(dynamicLeftPadding, paddingY, offWhite, dynamicLabelFont,
 		"000000000", "HiScore", LabelType::HiScore);
 
-	// Score static and dynamic label.
+	// Score static and dynamic labels.
 	createLabel(staticLeftPadding, (fontHeight + leading) + paddingY, grey, staticLabelFont,
 		"Score","ScoreLabel", LabelType::Static);
 	createLabel(dynamicLeftPadding, (fontHeight + leading) + paddingY, offWhite, dynamicLabelFont,
 		"000000000","Score", LabelType::Score);
 
-	// Player health static and dynamic label.
+	// Player health static and dynamic labels.
 	createLabel(staticLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont,
 		"Player", "HealthLabel", LabelType::Static);
 	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, 8, 2,
-		fontHeight, fontHeight, IconLabelType::Health, "../asset/ui/red-star.png");
+		fontHeight, fontHeight, IconCounterType::Health, "../asset/ui/red-star.png");
 
-	// Bomb static and dynamic label.
+	// Bomb static and dynamic labels.
 	createLabel(staticLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont,
 		"Bomb", "BombLabel", LabelType::Static);
 	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, 8, 3,
-		fontHeight, fontHeight, IconLabelType::Bomb, "../asset/ui/blue-star.png");
+		fontHeight, fontHeight, IconCounterType::Bomb, "../asset/ui/blue-star.png");
 
-	// Power static and dynamic label.
+	// Power static and dynamic labels.
 	createLabel(staticLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, hotPink, staticLabelFont,
 		"Power", "PowerLabel", LabelType::Static);
 	createLabel(dynamicLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, offWhite, dynamicLabelFont,
 		"0", "Power", LabelType::Power);
 
-	// Graze static and dynamic label.
+	// Graze static and dynamic labels.
 	createLabel(staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
 		"Graze", "GrazeLabel", LabelType::Static);
 	createLabel(dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
 		"0", "Graze", LabelType::Graze);
 
-	// Point static and dynamic label.
+	// Point static and dynamic labels.
 	createLabel(staticLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, hotPink, staticLabelFont,
 		"Point", "PointLabel", LabelType::Static);
 	createLabel(dynamicLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, offWhite, dynamicLabelFont,

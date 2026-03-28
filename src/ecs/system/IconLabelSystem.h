@@ -20,19 +20,18 @@ public:
             return;
         }
 
-        auto& playerHealth = playerEntity->getComponent<Health>();
-        auto& playerBombs = playerEntity->getComponent<Bombs>();
+        auto& playerStats = playerEntity->getComponent<PlayerStats>();
 
         for (auto& e : entities) {
-            if (e->hasComponent<IconLabel>()) {
-                auto& iconLabel = e->getComponent<IconLabel>();
+            if (e->hasComponent<IconCounter>()) {
+                auto& iconLabel = e->getComponent<IconCounter>();
 
                 // Update player icon labels if the current numbers have changed.
-                if (iconLabel.type == IconLabelType::Health && playerHealth.currentHealth != iconLabel.currentNumber) {
-                    iconLabel.currentNumber = playerHealth.currentHealth;
+                if (iconLabel.type == IconCounterType::Health && playerStats.currentHealth != iconLabel.currentNumber) {
+                    iconLabel.currentNumber = playerStats.currentHealth;
                     iconLabel.dirty = true;
-                } else if (iconLabel.type == IconLabelType::Bomb && playerBombs.currentBombs != iconLabel.currentNumber) {
-                    iconLabel.currentNumber = playerBombs.currentBombs;
+                } else if (iconLabel.type == IconCounterType::Bomb && playerStats.currentBombs != iconLabel.currentNumber) {
+                    iconLabel.currentNumber = playerStats.currentBombs;
                     iconLabel.dirty = true;
                 }
             }

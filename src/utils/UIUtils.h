@@ -5,7 +5,7 @@
 class UiUtils {
 public:
     static void updateIconLabel(Entity& entity) {
-        auto& iconLabel = entity.getComponent<IconLabel>();
+        auto& iconLabel = entity.getComponent<IconCounter>();
 
         if (!iconLabel.dirty) {
             return;

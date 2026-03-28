@@ -104,7 +104,7 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
 
         // This logic is simple and direct.
         // Ideally, we would only operate on data in an update function (transient entities).
-        auto& health = player->getComponent<Health>();
+        auto& health = player->getComponent<PlayerStats>();
         health.currentHealth--;
 
         Game::gameState.playerHealth = health.currentHealth;

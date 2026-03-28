@@ -69,12 +69,14 @@ struct SceneState {
     int coinsCollected = 0;
 };
 
-struct Health {
+struct PlayerStats {
     int currentHealth{};
-};
-
-struct Bombs {
     int currentBombs{};
+    int currentHiScore{};
+    int currentScore{};
+    int currentPower{};
+    int currentGraze{};
+    int currentPoint{};
 };
 
 struct SelectableUI {
@@ -109,7 +111,6 @@ struct Timeline {
 };
 
 enum class LabelType {
-    PlayerPosition,
     FPSCounter,
     Static,
     HiScore,
@@ -125,12 +126,12 @@ struct Label {
     std::string text{};
     TTF_Font* font = nullptr;
     SDL_Color color{};
-    LabelType type = LabelType::PlayerPosition; // Default to player position for tutorial.
+    LabelType type = LabelType::Static;
     std::string textureCacheKey{};
     SDL_Texture* texture = nullptr;
     SDL_FRect dst{};
     bool visible = true;
-    bool dirty = false;
+    bool dirty = true;
 };
 
 struct FPSCounter {
@@ -144,15 +145,15 @@ struct StageBackground {
     SDL_Texture* texture{};
 };
 
-enum class IconLabelType {
+enum class IconCounterType {
     Health,
     Bomb
 };
 
-struct IconLabel {
+struct IconCounter {
     int maxNumber{};
     SDL_Texture* texture = nullptr;
-    IconLabelType type = IconLabelType::Health;
+    IconCounterType type = IconCounterType::Health;
     int currentNumber{};
     bool visible = true;
     bool dirty = true;

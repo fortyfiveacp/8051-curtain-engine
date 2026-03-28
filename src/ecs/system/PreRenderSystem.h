@@ -11,7 +11,7 @@ public:
         for (auto& e : entities) {
             if (e->hasComponent<Label>() && e->getComponent<Label>().dirty) {
                 TextureManager::updateLabel(e->getComponent<Label>());
-            } else if (e->hasComponent<IconLabel>()) {
+            } else if (e->hasComponent<IconCounter>()) {
                 UiUtils::updateIconLabel(*e);
             }
         }
