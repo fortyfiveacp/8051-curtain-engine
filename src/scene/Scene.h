@@ -40,9 +40,9 @@ private:
 
     Entity& createLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text, const char* cacheKey,
         LabelType labelType);
-    Entity& createIconLabel(int x, int y, int maxNumber, int currentNumber, float iconWidth, float iconHeight,
-        IconCounterType type, const char* texturePath);
-    void createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);
+    Entity& createIconLabel(int x, int y, int maxNumber, float iconWidth, float iconHeight,
+        IconCounterType iconCounterType, const char* texturePath);
+    void createSidebarUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);
 
     Entity& createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath);
 };

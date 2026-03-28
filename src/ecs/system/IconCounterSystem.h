@@ -3,7 +3,7 @@
 
 #include "Component.h"
 
-class IconLabelSystem {
+class IconCounterSystem {
 public:
     void update(const std::vector<std::unique_ptr<Entity>>& entities) {
         Entity* playerEntity = nullptr;

@@ -113,6 +113,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	camView.h = windowHeight; // height of the window.
 	cam.addComponent<Camera>(camView, world.getMap().width * 32.0f, world.getMap().height * 32.0f);
 
+	// Create the player.
 	auto& player (world.createEntity());
 	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 380.0f);
 
@@ -120,7 +121,6 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	player.addComponent<Animation>(anim);
 
 	SDL_Texture* texture = TextureManager::load("../asset/animations/reimu_anim.png");
-	// SDL_FRect playerSrc {0, 0, 32, 44}; // for Mario.
 	SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
 
 	float scaledPlayerWidth = playerSrc.w * 1.75f;
@@ -137,6 +137,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	player.addComponent<PlayerTag>();
 	player.addComponent<PlayerStats>(Game::gameState.playerHealth, Game::gameState.playerBombs, 1234, 5678, 9, 10, 11); // TODO: remove test values.
 
+	// TODO: purge.
 	auto& spawner(world.createEntity());
 	Transform t = spawner.addComponent<Transform>(Vector2D(windowWidth / 2, windowHeight - 5), 0.0f, 1.0f);
 	spawner.addComponent<TimedSpawner>(2.0f, [this, t] {
@@ -193,7 +194,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	auto& state(world.createEntity());
 	state.addComponent<SceneState>();
 
-	// Pause menu overlay.
+	// Create pause menu overlay.
 	createPauseMenuOverlay(windowWidth, windowHeight);
 
 	// Create FPS counter label.
@@ -201,8 +202,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		"pop1", "0.000fps", "fpsCounter", LabelType::FPSCounter);
 	fpsCounter.addComponent<FPSCounter>();
 
-	// Create UI labels.
-	createUILabels(windowWidth, windowHeight, stageWidth, stageHeight);
+	// Create sidebar UI labels.
+	createSidebarUILabels(windowWidth, windowHeight, stageWidth, stageHeight);
 }
 
 Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
@@ -215,7 +216,7 @@ Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
 
 	createPauseMenuUComponents(overlay, windowWidth, windowHeight);
 
-	// Toggleable component so escape key can toggle the pause menu.
+	// Add a toggleable component so the escape key can toggle the pause menu.
 	overlay.addComponent<Toggleable>([this, &overlay]() {
 		toggleOverlayVisibility(overlay);
 	});
@@ -387,13 +388,13 @@ Entity& Scene::createLabel(int x, int y, SDL_Color colour, const char* fontName,
 	return newLabel;
 }
 
-Entity& Scene::createIconLabel(int x, int y, int maxNumber, int currentNumber, float iconWidth, float iconHeight,
-	IconCounterType type, const char* texturePath) {
+Entity& Scene::createIconLabel(int x, int y, int maxNumber, float iconWidth, float iconHeight,
+	IconCounterType iconCounterType, const char* texturePath) {
 
 	SDL_Texture* tex = TextureManager::load(texturePath);
 
 	auto& iconLabel(world.createEntity());
-	iconLabel.addComponent<IconCounter>(maxNumber, tex, type);
+	iconLabel.addComponent<IconCounter>(maxNumber, tex, iconCounterType);
 	iconLabel.addComponent<Transform>(Vector2D(x, y), 0.0f, 1.0f);
 
 	iconLabel.addComponent<Children>();
@@ -413,7 +414,7 @@ Entity& Scene::createIconLabel(int x, int y, int maxNumber, int currentNumber, f
 	return iconLabel;
 }
 
-void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight) {
+void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight) {
 	const char* staticLabelFont = "DFPPOPCorn";
 	const char* dynamicLabelFont = "pop1";
 
@@ -451,13 +452,13 @@ void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, 
 	// Player health static and dynamic labels.
 	createLabel(staticLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont,
 		"Player", "HealthLabel", LabelType::Static);
-	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, 8, 2,
+	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, 8,
 		fontHeight, fontHeight, IconCounterType::Health, "../asset/ui/red-star.png");
 
 	// Bomb static and dynamic labels.
 	createLabel(staticLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont,
 		"Bomb", "BombLabel", LabelType::Static);
-	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, 8, 3,
+	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, 8,
 		fontHeight, fontHeight, IconCounterType::Bomb, "../asset/ui/blue-star.png");
 
 	// Power static and dynamic labels.
