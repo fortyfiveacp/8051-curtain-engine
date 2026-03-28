@@ -10,11 +10,19 @@ public:
         return windowHeight * 0.93;
     }
 
-    static SDL_Rect CalculateStageRect(int windowWidth, int windowHeight) {
-        int stageWidth = CalculateStageWidth(windowWidth);
-        int stageHeight = CalculateStageHeight(windowHeight);
-        int paddingX = windowWidth * 0.05;
-        int paddingY = (windowHeight - stageHeight) / 2;
+    static float CalculateStagePaddingX(int windowWidth) {
+        return windowWidth * 0.05;
+    }
+
+    static float CalculateStagePaddingY(int windowHeight) {
+        return (windowHeight - CalculateStageHeight(windowHeight)) / 2;
+    }
+
+    static SDL_FRect CalculateStageRect(int windowWidth, int windowHeight) {
+        float stageWidth = CalculateStageWidth(windowWidth);
+        float stageHeight = CalculateStageHeight(windowHeight);
+        float paddingX = windowWidth * 0.05;
+        float paddingY = ((windowHeight - stageHeight) / 2) - 1;
 
         return { paddingX, paddingY, stageWidth, stageHeight };
     }

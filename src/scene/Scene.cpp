@@ -207,13 +207,13 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
 	auto &overlay(world.createEntity());
-	SDL_Texture *overlayTex = TextureManager::load("../asset/ui/settings.jpg");
-	SDL_FRect overlaySrc {0, 0, windowWidth * 0.85f, windowHeight  * 0.85f};
-	SDL_FRect overlayDest {(float)windowWidth / 2 - overlaySrc.w / 2, (float)windowHeight / 2 - overlaySrc.h / 2, overlaySrc.w, overlaySrc.h};
+	SDL_Texture *overlayTex = TextureManager::load("../asset/ui/darken.png");
+	SDL_FRect overlaySrc {0, 0, static_cast<float>(overlayTex->w), static_cast<float>(overlayTex->h)};
+	SDL_FRect overlayDest = StageUtils::CalculateStageRect(windowWidth, windowHeight);
 	overlay.addComponent<Transform>(Vector2D(overlayDest.x, overlayDest.y), 0.0f, 1.0f);
 	overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDest, RenderLayer::UI, false);
 
-	createPauseMenuUComponents(overlay);
+	createPauseMenuUComponents(overlay, windowWidth, windowHeight);
 
 	// Toggleable component so escape key can toggle the pause menu.
 	overlay.addComponent<Toggleable>([this, &overlay]() {
@@ -225,79 +225,112 @@ Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
 	return overlay;
 }
 
-void Scene::createPauseMenuUComponents(Entity& overlay) {
+void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int windowHeight) {
 	if (!overlay.hasComponent<Children>()) {
 		overlay.addComponent<Children>();
 	}
 
-	auto& overlayTransform = overlay.getComponent<Transform>();
+	auto& parentChildren = overlay.getComponent<Children>();
+
+	// Label colours and font.
+	SDL_Color selectedColour {202, 101, 101, 255};
+	SDL_Color unselectedColour {48, 55, 69, 255};
+	SDL_Color pausedColour {240, 240, 240, 255};
+	const char* font = "pop1";
+	int fontHeight = TTF_GetFontSize(AssetManager::getFont(font));
+
 	auto& overlaySprite = overlay.getComponent<Sprite>();
 
-	float baseX = overlayTransform.position.x;
-	float baseY = overlayTransform.position.y;
+	int overlayMiddleX = overlaySprite.dst.w / 2;
+	int overlayMiddleY = overlaySprite.dst.h / 2;
+	int stagePaddingX = StageUtils::CalculateStagePaddingX(windowWidth);
+	int stagePaddingY = StageUtils::CalculateStagePaddingY(windowHeight);
 
-	auto& closeButton = world.createEntity();
-	auto& closeTransform = closeButton.addComponent<Transform>(Vector2D(baseX + overlaySprite.dst.w - 40, baseY + 10), 0.0f, 1.0f);
+	// Create paused title label.
+	auto& pauseTitle = createLabel(0, 0, pausedColour, font,
+		"Pause", "PauseLabel", LabelType::Static);
+	auto& pauseTransform = pauseTitle.getComponent<Transform>();
+	auto& pauseLabel = pauseTitle.getComponent<Label>();
+	pauseLabel.visible = false;
 
-	SDL_Texture* texture = TextureManager::load("../asset/ui/close.png");
-	SDL_FRect closeSrc {0, 0, 32, 32};
-	SDL_FRect closeDst {closeTransform.position.x, closeTransform.position.y, closeSrc.w, closeSrc.h};
-	closeButton.addComponent<Sprite>(texture, closeSrc, closeDst, RenderLayer::UI, false);
-	closeButton.addComponent<Collider>("ui", closeDst);
+	// Have to position the label after it's texture has been created.
+	pauseTransform.position.x = stagePaddingX + overlayMiddleX - pauseLabel.texture->w / 2;
+	pauseTransform.position.y = stagePaddingY + overlayMiddleY - pauseLabel.texture->h / 2 - fontHeight * 3;
 
-	auto& selectable = closeButton.addComponent<SelectableUI>();
+	// Add overlay as parent to the label.
+	pauseTitle.addComponent<Parent>(&overlay);
+	parentChildren.children.push_back(&pauseTitle);
 
-	selectable.onPressed = [this, &overlay, &closeTransform] {
-		toggleOverlayVisibility(overlay);
-		std::cout << "button 1 pressed" << std::endl;
-		closeTransform.scale = 1.0f;
-	};
+	// Create resume button.
+	auto& resumeButton = createSelectableButton(overlay, font, selectedColour, unselectedColour,
+		"Resume Game", "ResumeButton", [this, &overlay] {
+			toggleOverlayVisibility(overlay);
+		});
+	auto& resumeTransform = resumeButton.getComponent<Transform>();
+	auto& resumeLabel = resumeButton.getComponent<Label>();
 
-	selectable.onReleased = [&closeTransform] {
-		closeTransform.scale = 1.0f;
-	};
+	resumeTransform.position.x = stagePaddingX + overlayMiddleX - resumeLabel.texture->w / 2;
+	resumeTransform.position.y = stagePaddingY + overlayMiddleY - resumeLabel.texture->h / 2;
+	auto& resumeSelectable = resumeButton.getComponent<SelectableUI>();
 
-	selectable.onSelect = [&closeTransform] {
-		closeTransform.scale = 1.25f;
-	};
+	// Create quit button.
+	auto& quitButton = createSelectableButton(overlay, font, selectedColour, unselectedColour,
+		"Quit Game", "QuitButton", [] {
+			SDL_Event event;
+			event.type = SDL_EVENT_QUIT;
+			SDL_PushEvent(&event);
+		});
+	auto& quitTransform = quitButton.getComponent<Transform>();
+	auto& quitLabel = quitButton.getComponent<Label>();
 
-	closeButton.addComponent<Parent>(&overlay);
-	auto& parentChildren = overlay.getComponent<Children>();
-	parentChildren.children.push_back(&closeButton);
-
-	// Second close button for testing.
-	auto& closeButton2 = world.createEntity();
-	auto& closeTransform2 = closeButton2.addComponent<Transform>(Vector2D(baseX + overlaySprite.dst.w - 40, baseY + 50), 0.0f, 1.0f);
-	SDL_FRect closeSrc2 {0, 0, 32, 32};
-	SDL_FRect closeDst2 {closeTransform2.position.x, closeTransform2.position.y, closeSrc2.w, closeSrc2.h};
-	closeButton2.addComponent<Sprite>(texture, closeSrc2, closeDst2, RenderLayer::UI, false);
-	closeButton2.addComponent<Collider>("ui", closeDst2);
-
-	auto& selectable2 = closeButton2.addComponent<SelectableUI>();
-
-	selectable2.onPressed = [this, &overlay, &closeTransform2] {
-		toggleOverlayVisibility(overlay);
-		std::cout << "button 2 pressed" << std::endl;
-		closeTransform2.scale = 1.0f;
-	};
-
-	selectable2.onReleased = [&closeTransform2] {
-		closeTransform2.scale = 1.0f;
-	};
-
-	selectable2.onSelect = [&closeTransform2] {
-		closeTransform2.scale = 1.25f;
-	};
-
-	closeButton2.addComponent<Parent>(&overlay);
-	parentChildren.children.push_back(&closeButton2);
+	quitTransform.position.x = stagePaddingX + overlayMiddleX - quitLabel.texture->w / 2;
+	quitTransform.position.y = stagePaddingY + overlayMiddleY - quitLabel.texture->h / 2 + fontHeight + 15;
+	auto& quitSelectable = quitButton.getComponent<SelectableUI>();
 
 	// Set up selection doubly linked list.
-	selectable.next = &selectable2;
-	selectable.previous = &selectable2;
+	resumeSelectable.next = &quitSelectable;
+	resumeSelectable.previous = &quitSelectable;
 
-	selectable2.next = &selectable;
-	selectable2.previous = &selectable;
+	quitSelectable.next = &resumeSelectable;
+	quitSelectable.previous = &resumeSelectable;
+}
+
+Entity& Scene::createSelectableButton(Entity& overlay, const char* font, SDL_Color selectedColour, SDL_Color unselectedColour,
+	const char* text, const char* cacheKey, std::function<void()> onPressed) {
+	auto& parentChildren = overlay.getComponent<Children>();
+
+	// Create the button.
+	auto& button = createLabel(0, 0, selectedColour, font,
+		text, cacheKey, LabelType::Static);
+	auto& transform = button.getComponent<Transform>();
+	auto& label = button.getComponent<Label>();
+	label.visible = false;
+
+	auto& selectable = button.addComponent<SelectableUI>();
+
+	// Functions for on press, on release and on select.
+	selectable.onPressed = [&transform, onPressed] {
+		transform.scale = 1.0f;
+		onPressed();
+	};
+
+	selectable.onReleased = [&transform, &label, unselectedColour] {
+		transform.scale = 1.0f;
+		label.color = unselectedColour;
+		label.dirty = true;
+	};
+
+	selectable.onSelect = [&transform, &label, selectedColour] {
+		transform.scale = 1.15f;
+		label.color = selectedColour;
+		label.dirty = true;
+	};
+
+	// Add overlay as parent to the button.
+	button.addComponent<Parent>(&overlay);
+	parentChildren.children.push_back(&button);
+
+	return button;
 }
 
 void Scene::toggleOverlayVisibility(Entity& overlay) {
@@ -309,12 +342,8 @@ void Scene::toggleOverlayVisibility(Entity& overlay) {
 		auto& c = overlay.getComponent<Children>();
 
 		for (auto& child : c.children) {
-			if (child && child->hasComponent<Sprite>()) {
-				child->getComponent<Sprite>().visible = newVisibility;
-			}
-
-			if (child && child->hasComponent<Collider>()) {
-				child->getComponent<Collider>().enabled = newVisibility;
+			if (child && child->hasComponent<Label>()) {
+				child->getComponent<Label>().visible = newVisibility;
 			}
 
 			if (child && child->hasComponent<SelectableUI>()) {
@@ -327,9 +356,15 @@ void Scene::toggleOverlayVisibility(Entity& overlay) {
 
 		// Set the first selectable entity as the default selected, if visible.
 		if (newVisibility) {
-			auto& selected = c.children.front()->getComponent<SelectableUI>();
-			selected.selected = true;
-			selected.onSelect();
+			// TODO: also implement actually pausing the game.
+			for (auto& child : c.children) {
+				if (child && child->hasComponent<SelectableUI>()) {
+					auto& selected = child->getComponent<SelectableUI>();
+					selected.selected = true;
+					selected.onSelect();
+					break;
+				}
+			}
 		}
 	}
 }

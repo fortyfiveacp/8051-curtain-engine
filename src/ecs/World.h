@@ -92,8 +92,8 @@ public:
         // Set up stage viewport.
         int stageWidth = StageUtils::CalculateStageWidth(windowWidth);
         int stageHeight = StageUtils::CalculateStageHeight(windowHeight);
-        int paddingX = windowWidth * 0.05;
-        int paddingY = (windowHeight - stageHeight) / 2;
+        int paddingX = StageUtils::CalculateStagePaddingX(windowWidth);
+        int paddingY = StageUtils::CalculateStagePaddingY(windowHeight);
 
         SDL_Rect stageRect = { paddingX, paddingY, stageWidth, stageHeight };
         SDL_SetRenderViewport(renderer, &stageRect);

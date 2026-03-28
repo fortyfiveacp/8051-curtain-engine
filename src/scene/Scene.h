@@ -33,7 +33,9 @@ private:
     void initGameplay(const char* mapPath, int windowWidth, int windowHeight);
 
     Entity& createPauseMenuOverlay(int windowWidth, int windowHeight);
-    void createPauseMenuUComponents(Entity& overlay);
+    void createPauseMenuUComponents(Entity& overlay, int windowWidth, int windowHeight);
+    Entity& createSelectableButton(Entity& overlay, const char* font, SDL_Color selectedColour, SDL_Color unselectedColour,
+        const char* text, const char* cacheKey, std::function<void()> onPressed);
     void toggleOverlayVisibility(Entity& overlay);
 
     Entity& createLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text, const char* cacheKey,
