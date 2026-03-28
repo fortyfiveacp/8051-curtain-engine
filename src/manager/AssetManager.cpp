@@ -13,6 +13,9 @@ TTF_Font* AssetManager::getFont(const std::string& name) {
     return fonts[name];
 }
 
+std::unordered_map<SoundID, MIX_Audio*> AssetManager::sounds;
+std::unordered_map<MusicID, MIX_Audio*> AssetManager::music;
+
 void AssetManager::loadAnimation(const std::string& clipName, const char* path) {
     Animation animation = loadAnimationFromXML(path);
     animations[clipName] = animation;

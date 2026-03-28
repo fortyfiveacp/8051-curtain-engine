@@ -53,6 +53,10 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 		isRunning = false;
 	}
 
+	// Load audio.
+	audioManager.loadAudio("stage-theme", "../asset/audio/music/Stage Theme.mp3");
+	audioManager.loadAudio("player-hit", "../asset/audio/sfx/se_pldead00.flac");
+
 	// Load fonts.
 	AssetManager::loadFont("pop1", "../asset/fonts/pop1-w9.ttf", 32);
 	AssetManager::loadFont("DFPPOPCorn", "../asset/fonts/DFPPOPCORN-W12.ttf", 32);
@@ -68,6 +72,9 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 
 	// Init game data / state.
 	gameState.playerHealth = 5;
+
+	// Start music.
+	audioManager.playMusic("stage-theme");
 
 	// Start level 1.
 	sceneManager.changeSceneDeferred("mainmenu");

@@ -24,6 +24,7 @@
 #include "scene/SceneType.h"
 #include "PreRenderSystem.h"
 #include "StageBackgroundSystem.h"
+#include "event/AudioEventQueue.h"
 
 class World {
     Map map;
@@ -47,6 +48,7 @@ class World {
     PreRenderSystem preRenderSystem;
     BackgroundRenderSystem backgroundRenderSystem;
     StageBackgroundSystem stageBackgroundSystem;
+    AudioEventQueue audioEventQueue;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -73,6 +75,7 @@ public:
         }
 
         fpsCounterSystem.update(entities, dt);
+        audioEventQueue.process(); // Process all the audio events.
         preRenderSystem.update(entities);
 
         synchronizeEntities();
@@ -149,6 +152,10 @@ public:
 
     EventManager& getEventManager() {
         return eventManager;
+    }
+
+    AudioEventQueue& getAudioEventQueue() {
+        return audioEventQueue;
     }
 
     Map& getMap() {
