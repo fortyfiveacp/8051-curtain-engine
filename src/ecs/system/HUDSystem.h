@@ -29,34 +29,30 @@ public:
         for (auto& e : entities) {
             if (e->hasComponent<Label>()) {
                 auto& label = e->getComponent<Label>();
+                std::stringstream ss;
 
                 // Only perform the update if the new value is actually different.
                 if (label.type == LabelType::HiScore && playerStats.currentHiScore != std::stoi(label.text)) {
-                    std::stringstream ss;
                     ss << std::setw(9) << std::setfill('0') << playerStats.currentHiScore;
 
                     label.text = ss.str();
                     label.dirty = true;
                 } else if (label.type == LabelType::Score && playerStats.currentScore != std::stoi(label.text)) {
-                    std::stringstream ss;
                     ss << std::setw(9) << std::setfill('0') << playerStats.currentScore;
 
                     label.text = ss.str();
                     label.dirty = true;
                 } else if (label.type == LabelType::Power && playerStats.currentPower != std::stoi(label.text)) {
-                    std::stringstream ss;
                     ss << playerStats.currentPower;
 
                     label.text = ss.str();
                     label.dirty = true;
                 } else if (label.type == LabelType::Graze && playerStats.currentGraze != std::stoi(label.text)) {
-                    std::stringstream ss;
                     ss << playerStats.currentGraze;
 
                     label.text = ss.str();
                     label.dirty = true;
                 } else if (label.type == LabelType::Point && playerStats.currentPoint != std::stoi(label.text)) {
-                    std::stringstream ss;
                     ss << playerStats.currentPoint << "/" << 0; // TODO: how many points are there?
 
                     label.text = ss.str();

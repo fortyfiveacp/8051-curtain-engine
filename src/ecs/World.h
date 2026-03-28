@@ -59,20 +59,25 @@ class World {
 public:
     World() = default;
 
-    void update(float dt, const SDL_Event& event, SceneType sceneType) {
+    void update(float dt, const SDL_Event& event, SceneType sceneType, bool isPaused) {
         if (sceneType == SceneType::MainMenu) {
             // Main menu system update
             mainMenuSystem.update(event);
         } else {
             pauseMenuSystem.update(entities, event);
-            keyboardInputSystem.update(entities, event);
-            movementSystem.update(entities, dt);
-            collisionSystem.update(*this);
-            animationSystem.update(entities, dt);
-            cameraSystem.update(entities);
-            spawnTimerSystem.update(entities, dt);
-            timelineSystem.update(entities, dt);
-            stageBackgroundSystem.update(entities, dt);
+
+            // Only update gameplay systems if the game isn't paused.
+            if (!isPaused) {
+                keyboardInputSystem.update(entities, event);
+                movementSystem.update(entities, dt);
+                collisionSystem.update(*this);
+                animationSystem.update(entities, dt);
+                cameraSystem.update(entities);
+                spawnTimerSystem.update(entities, dt);
+                timelineSystem.update(entities, dt);
+                stageBackgroundSystem.update(entities, dt);
+            }
+
             destructionSystem.update(entities);
             hudSystem.update(entities);
             iconLabelSystem.update(entities);

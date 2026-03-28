@@ -11,7 +11,7 @@ public:
     Scene(SceneType sceneType, const char* sceneName, const char* mapPath, int windowWidth, int windowHeight);
 
     void update(const float dt, const SDL_Event &e) {
-        world.update(dt, e, type);
+        world.update(dt, e, type, isPaused);
     }
 
     void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) {
@@ -24,9 +24,14 @@ public:
         return name;
     }
 
+    void togglePause() {
+        isPaused = !isPaused;
+    }
+
 private:
     std::string name;
     SceneType type;
+    bool isPaused = false;
     //void createProjectile(Vector2D pos, Vector2D dir, int speed); TODO: commented out during tutorial, not needed?
 
     void initMainMenu(int windowWidth, int windowHeight);

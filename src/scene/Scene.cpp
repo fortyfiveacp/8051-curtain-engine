@@ -265,8 +265,12 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 
 	// Create resume button.
 	auto& resumeButton = createSelectableButton(overlay, font, selectedColour, unselectedColour,
-		"Resume Game", "ResumeButton", [this, &overlay] {
-			toggleOverlayVisibility(overlay);
+		"Resume Game", "ResumeButton", [] {
+			// Resume game by pushing an escape key down event to toggle the pause menu.
+			SDL_Event event;
+			event.type = SDL_EVENT_KEY_DOWN;
+			event.key.key = SDLK_ESCAPE;
+			SDL_PushEvent(&event);
 		});
 	auto& resumeTransform = resumeButton.getComponent<Transform>();
 	auto& resumeLabel = resumeButton.getComponent<Label>();
@@ -278,6 +282,7 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 	// Create quit button.
 	auto& quitButton = createSelectableButton(overlay, font, selectedColour, unselectedColour,
 		"Quit Game", "QuitButton", [] {
+			// Quit game by pushing a quit event.
 			SDL_Event event;
 			event.type = SDL_EVENT_QUIT;
 			SDL_PushEvent(&event);
@@ -361,8 +366,6 @@ void Scene::toggleOverlayVisibility(Entity& overlay) {
 		}
 
 		if (newVisibility) {
-			// TODO: also implement actually pausing the game.
-
 			// Set the first selectable entity as the default selected, if visible.
 			for (auto& child : c.children) {
 				if (child && child->hasComponent<SelectableUI>()) {

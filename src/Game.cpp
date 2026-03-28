@@ -116,11 +116,16 @@ void Game::handleEvents() {
 	SDL_PollEvent(&event);
 
 	switch (event.type) {
-	case SDL_EVENT_QUIT: // Triggered when user closes window.
-		isRunning = false;
-		break;
-	default:
-		break;
+		case SDL_EVENT_QUIT:
+			isRunning = false;
+			break;
+		case SDL_EVENT_KEY_DOWN:
+			if (event.key.key == SDLK_ESCAPE) {
+				sceneManager.currentScene->togglePause();
+			}
+			break;
+		default:
+			break;
 	}
 }
 
