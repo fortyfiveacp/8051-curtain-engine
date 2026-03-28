@@ -2,6 +2,7 @@
 #include <SDL3/SDL.h>
 
 #include "World.h"
+#include "manager/AudioManager.h"
 #include "manager/SceneManager.h"
 
 struct GameState {
@@ -30,6 +31,7 @@ public:
 	}
 
 	SDL_Renderer* renderer = nullptr;
+	AudioManager audioManager;
 	SceneManager sceneManager;
 	static std::function<void(std::string)> onSceneChangeRequest;
 	static GameState gameState;
