@@ -37,17 +37,20 @@ private:
     void initMainMenu(int windowWidth, int windowHeight);
     void initGameplay(const char* mapPath, int windowWidth, int windowHeight);
 
-    Entity& createPauseMenuOverlay(int windowWidth, int windowHeight);
-    void createPauseMenuUComponents(Entity& overlay, int windowWidth, int windowHeight);
+    // Functions for creating UI elements.
     Entity& createSelectableButton(Entity& overlay, const char* font, SDL_Color selectedColour, SDL_Color unselectedColour,
-        const char* text, const char* cacheKey, std::function<void()> onPressed);
-    void toggleOverlayVisibility(Entity& overlay);
-
+        const char* text, const char* cacheKey, const std::function<void()>& onPressed);
     Entity& createLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text, const char* cacheKey,
         LabelType labelType);
     Entity& createIconLabel(int x, int y, int maxNumber, float iconWidth, float iconHeight,
         IconCounterType iconCounterType, const char* texturePath);
-    void createSidebarUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);
-
     Entity& createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath);
+
+    // Functions for creating the specific UI in the game.
+    void createSidebarUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);
+    Entity& createPauseMenuOverlay(int windowWidth, int windowHeight);
+    void createPauseMenuUComponents(Entity& overlay, int windowWidth, int windowHeight);
+
+    // UI related helpers.
+    void toggleOverlayVisibility(Entity& overlay);
 };

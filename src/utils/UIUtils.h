@@ -4,22 +4,30 @@
 
 class UiUtils {
 public:
-    static void updateIconLabel(Entity& entity) {
-        auto& iconLabel = entity.getComponent<IconCounter>();
+    static void updateIconCounter(Entity& entity) {
+        auto& iconCounter = entity.getComponent<IconCounter>();
 
-        if (!iconLabel.dirty) {
+        if (!iconCounter.dirty) {
             return;
         }
 
+        // The actual icons should be children of the entity.
         if (entity.hasComponent<Children>()) {
             auto& children = entity.getComponent<Children>();
 
-            for (auto& child : children.children) {
-                child->getComponent<Sprite>().visible = false;
+            // Check if the current number is greater than the capacity of the counter.
+            // Logic for ensuring the current number stays within the bound should be handled elsewhere.
+            if (iconCounter.currentNumber > children.children.size()) {
+                std::cerr << "Icon counter has exceeded the set maximum size!" << std::endl;
             }
 
-            for (int i = 0; i < iconLabel.currentNumber; i++) {
-                children.children[i]->getComponent<Sprite>().visible = true;
+            // Make the current number of icons visible, then make the rest invisible.
+            for (int i = 0; i < children.children.size(); i++) {
+                if (i <= iconCounter.currentNumber) {
+                    children.children[i]->getComponent<Sprite>().visible = true;
+                } else {
+                    children.children[i]->getComponent<Sprite>().visible = false;
+                }
             }
         }
     }
