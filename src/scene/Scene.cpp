@@ -473,11 +473,13 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 }
 
 void Scene::toggleOverlayVisibility(Entity& overlay) {
-	AudioManager::playSfx("pause");
-
 	auto& sprite = overlay.getComponent<Sprite>();
 	bool newVisibility = !sprite.visible;
 	sprite.visible = newVisibility;
+
+	if (newVisibility) {
+		AudioManager::playSfx("pause");
+	}
 
 	if (overlay.hasComponent<Children>()) {
 		auto& c = overlay.getComponent<Children>();
