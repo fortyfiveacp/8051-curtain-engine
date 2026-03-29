@@ -4,6 +4,7 @@
 
 #include "Component.h"
 #include "Entity.h"
+#include "manager/AudioManager.h"
 
 class PlayerAbilitySystem {
 public:
@@ -18,6 +19,7 @@ public:
                 }
 
                 if (keyboardInput.bomb && playerStats.currentBombs > 0) {
+                    AudioManager::playSfx("bomb");
                     keyboardInput.bomb = false;
                     playerStats.currentBombs--; // TODO: need to update game state counter too.
 

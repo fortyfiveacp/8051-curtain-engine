@@ -46,10 +46,13 @@ void AudioManager::playMusic(const std::string &name) const {
         std::cout << "MIX_SetTrackAudio() Failed" << std::endl;
         return;
     }
+    SDL_PropertiesID props = SDL_CreateProperties();
+    SDL_SetNumberProperty(props, MIX_PROP_PLAY_LOOPS_NUMBER, -1); // -1 means loop endless.
 
-    MIX_PlayTrack(musicTrack, -1); // -1 means loop endless.
-    MIX_TrackLooping(musicTrack);
+    MIX_PlayTrack(musicTrack, props);
     std::cout << "Playing music: " << name << std::endl;
+
+    SDL_DestroyProperties(props);
 }
 
 void AudioManager::stopMusic(const std::string &name) const {

@@ -59,6 +59,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	audioManager.loadAudio("pause", "../asset/audio/sfx/se_pause.flac");
 	audioManager.loadAudio("select", "../asset/audio/sfx/se_select00.flac");
 	audioManager.loadAudio("ok", "../asset/audio/sfx/se_ok00.flac");
+	audioManager.loadAudio("bomb", "../asset/audio/sfx/se_cat00.flac");
 
 	// Load fonts.
 	AssetManager::loadFont("pop1", "../asset/fonts/pop1-w9.ttf", 32);
