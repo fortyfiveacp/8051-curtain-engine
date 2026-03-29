@@ -136,6 +136,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	playerCollider.rect.h = playerDst.h;
 
 	player.addComponent<PlayerTag>();
+	player.addComponent<MovementInput>();
 	player.addComponent<PlayerStats>(Game::gameState.playerHealth, Game::gameState.playerBombs, 1234, 5678, 9, 10, 11); // TODO: remove test values.
 
 	// TODO: purge.

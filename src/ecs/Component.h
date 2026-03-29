@@ -21,7 +21,8 @@ struct Transform {
 // Direction and speed.
 struct Velocity {
     Vector2D direction{};
-    float speed{};
+    float baseSpeed{};
+    float currentSpeed = baseSpeed;
 };
 
 enum class RenderLayer {
@@ -157,6 +158,15 @@ struct IconCounter {
     int currentNumber{};
     bool visible = true;
     bool dirty = true;
+};
+
+struct MovementInput {
+    bool up = false;
+    bool down = false;
+    bool left = false;
+    bool right = false;
+    bool focus = false;
+    float focusMultiplier = 0.5f;
 };
 
 struct PlayerTag{};

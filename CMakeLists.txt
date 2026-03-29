@@ -20,7 +20,7 @@ set(SRC_FILES
         src/ecs/system/RenderSystem.h
         src/ecs/World.h
         src/utils/Vector2D.h
-        src/ecs/system/KeyboardInputSystem.h
+        src/ecs/system/MovementInputSystem.h
         src/utils/Vector2D.cpp
         src/utils/collision.h
         src/utils/Collision.cpp

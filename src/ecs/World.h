@@ -13,7 +13,7 @@
 #include "HUDSystem.h"
 #include "IconCounterSystem.h"
 #include "event/EventManager.h"
-#include "KeyboardInputSystem.h"
+#include "MovementInputSystem.h"
 #include "MainMenuSystem.h"
 #include "Map.h"
 #include "MovementSystem.h"
@@ -34,7 +34,7 @@ class World {
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     MovementSystem movementSystem;
     RenderSystem renderSystem;
-    KeyboardInputSystem keyboardInputSystem;
+    MovementInputSystem keyboardInputSystem;
     CollisionSystem collisionSystem;
     AnimationSystem animationSystem;
     CameraSystem cameraSystem;
@@ -65,10 +65,10 @@ public:
             mainMenuSystem.update(event);
         } else {
             pauseMenuSystem.update(entities, event);
+            keyboardInputSystem.update(entities, event);
 
             // Only update gameplay systems if the game isn't paused.
             if (!isPaused) {
-                keyboardInputSystem.update(entities, event);
                 movementSystem.update(entities, dt);
                 collisionSystem.update(*this);
                 animationSystem.update(entities, dt);
