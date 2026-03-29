@@ -26,6 +26,7 @@
 #include "UIRenderSystem.h"
 #include "scene/SceneType.h"
 #include "PreRenderSystem.h"
+#include "SelectableUISystem.h"
 #include "StageBackgroundSystem.h"
 #include "StageUtils.h"
 #include "event/AudioEventQueue.h"
@@ -56,6 +57,7 @@ class World {
     AudioEventQueue audioEventQueue;
     PlayerAbilitySystem playerAbilitySystem;
     InvincibilityFramesSystem invincibilityFramesSystem;
+    SelectableUISystem selectableUISystem;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -68,8 +70,9 @@ public:
             // Main menu system update
             mainMenuSystem.update(event);
         } else {
-            pauseMenuSystem.update(entities, event);
             keyboardInputSystem.update(entities, event);
+            pauseMenuSystem.update(entities, event);
+            selectableUISystem.update(entities, event);
 
             // Only update gameplay systems if the game isn't paused.
             if (!isPaused) {

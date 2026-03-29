@@ -24,15 +24,15 @@ public:
 
         for (auto& e : entities) {
             if (e->hasComponent<IconCounter>()) {
-                auto& iconLabel = e->getComponent<IconCounter>();
+                auto& iconCounter = e->getComponent<IconCounter>();
 
-                // Update player icon labels if the current numbers have changed.
-                if (iconLabel.type == IconCounterType::Health && playerStats.currentHealth != iconLabel.currentNumber) {
-                    iconLabel.currentNumber = playerStats.currentHealth;
-                    iconLabel.dirty = true;
-                } else if (iconLabel.type == IconCounterType::Bomb && playerStats.currentBombs != iconLabel.currentNumber) {
-                    iconLabel.currentNumber = playerStats.currentBombs;
-                    iconLabel.dirty = true;
+                // Update icon counter if the current numbers have changed.
+                if (iconCounter.type == IconCounterType::Health && playerStats.currentHealth != iconCounter.currentNumber) {
+                    iconCounter.currentNumber = playerStats.currentHealth;
+                    iconCounter.dirty = true;
+                } else if (iconCounter.type == IconCounterType::Bomb && playerStats.currentBombs != iconCounter.currentNumber) {
+                    iconCounter.currentNumber = playerStats.currentBombs;
+                    iconCounter.dirty = true;
                 }
             }
         }

@@ -46,7 +46,6 @@ set(SRC_FILES
         src/ecs/system/MainMenuSystem.h
         src/ecs/system/MainMenuSystem.cpp
         src/ecs/system/TimelineSystem.h
-        src/ecs/system/PauseMenuSystem.cpp
         src/ecs/system/UIRenderSystem.cpp
         src/manager/AudioManager.h
         src/manager/AudioManager.cpp

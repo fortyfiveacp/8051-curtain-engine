@@ -8,7 +8,7 @@ class KeyboardInputSystem {
 public:
     void update(const std::vector<std::unique_ptr<Entity>>& entities, const SDL_Event& event) {
         for (auto& e : entities) {
-            // Change direction of the player.
+            // Get the keyboard input.
             if (e->hasComponent<PlayerTag>() && e->hasComponent<KeyboardInput>() && e->hasComponent<Velocity>()) {
                 auto& keyboardInput = e->getComponent<KeyboardInput>();
                 auto& v = e->getComponent<Velocity>();
@@ -76,7 +76,8 @@ public:
                     }
                 }
 
-                // Determine horizontal direction, with left priority.
+                // TODO: should this actually go into the movement system?
+                // Determine player horizontal direction, with left priority.
                 if (keyboardInput.left) {
                     v.direction.x = -1;
                 } else if (keyboardInput.right) {
@@ -85,7 +86,7 @@ public:
                     v.direction.x = 0;
                 }
 
-                // Determine vertical direction, with down priority.
+                // Determine player vertical direction, with down priority.
                 if (keyboardInput.down) {
                     v.direction.y = 1;
                 } else if (keyboardInput.up) {
