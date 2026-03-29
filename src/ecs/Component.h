@@ -73,6 +73,7 @@ struct SceneState {
 struct PlayerStats {
     int currentHealth{};
     int currentBombs{};
+    Vector2D playerStartingPosition{};
     int currentHiScore{};
     int currentScore{};
     int currentPower{};
@@ -160,13 +161,21 @@ struct IconCounter {
     bool dirty = true;
 };
 
-struct MovementInput {
+struct KeyboardInput {
     bool up = false;
     bool down = false;
     bool left = false;
     bool right = false;
     bool focus = false;
     float focusMultiplier = 0.5f;
+    bool shoot = false;
+    bool bomb = false;
+};
+
+struct InvincibilityFrames {
+    float duration = 4.0f;
+    float timer = 0.0f;
+    bool active = false;
 };
 
 struct PlayerTag{};

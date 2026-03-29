@@ -126,7 +126,9 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	float scaledPlayerWidth = playerSrc.w * 1.75f;
 	float scaledPlayerHeight = playerSrc.h * 1.75f;
-	auto& playerTransform = player.addComponent<Transform>(Vector2D(stageWidth / 2 - scaledPlayerWidth / 2, stageHeight - scaledPlayerHeight), 0.0f, 1.0f);
+	float playerStartingX = stageWidth / 2 - scaledPlayerWidth / 2;
+	float playerStartingY = stageHeight - scaledPlayerHeight;
+	auto& playerTransform = player.addComponent<Transform>(Vector2D(playerStartingX, playerStartingY), 0.0f, 1.0f);
 	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, scaledPlayerWidth, scaledPlayerHeight};
 
 	player.addComponent<Sprite>(texture, playerSrc, playerDst);
@@ -136,8 +138,10 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	playerCollider.rect.h = playerDst.h;
 
 	player.addComponent<PlayerTag>();
-	player.addComponent<MovementInput>();
-	player.addComponent<PlayerStats>(Game::gameState.playerHealth, Game::gameState.playerBombs, 1234, 5678, 9, 10, 11); // TODO: remove test values.
+	player.addComponent<KeyboardInput>();
+	player.addComponent<InvincibilityFrames>();
+	player.addComponent<PlayerStats>(Game::gameState.playerHealth, Game::gameState.playerBombs,
+		Vector2D(playerStartingX, playerStartingY), 1234, 5678, 9, 10, 11); // TODO: remove test values.
 
 	// TODO: purge.
 	auto& spawner(world.createEntity());

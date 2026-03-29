@@ -23,7 +23,7 @@ public:
 
             // Make the current number of icons visible, then make the rest invisible.
             for (int i = 0; i < children.children.size(); i++) {
-                if (i <= iconCounter.currentNumber) {
+                if (i < iconCounter.currentNumber) {
                     children.children[i]->getComponent<Sprite>().visible = true;
                 } else {
                     children.children[i]->getComponent<Sprite>().visible = false;

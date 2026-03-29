@@ -100,18 +100,31 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
             return;
         }
 
+        auto& invincibilityFrames = player->getComponent<InvincibilityFrames>();
+        auto& playerTransform = player->getComponent<Transform>();
+
+        // Ignore hit if invincible.
+        if (invincibilityFrames.active) {
+            return;
+        }
+
+        // Enable invincibility frames after hit.
+        invincibilityFrames.active = true;
+
         world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit"));
 
         // This logic is simple and direct.
         // Ideally, we would only operate on data in an update function (transient entities).
-        auto& health = player->getComponent<PlayerStats>();
-        health.currentHealth--;
+        auto& playerStats = player->getComponent<PlayerStats>();
 
-        Game::gameState.playerHealth = health.currentHealth;
+        // Teleport player back to starting position.
+        playerTransform.position = playerStats.playerStartingPosition;
 
-        std::cout << health.currentHealth << std::endl;
+        playerStats.currentHealth--;
+        Game::gameState.playerHealth = playerStats.currentHealth;
+        std::cout << playerStats.currentHealth << std::endl;
 
-        if (health.currentHealth == 0) {
+        if (playerStats.currentHealth == 0) {
             player->destroy();
 
             // Change scene (deferred).

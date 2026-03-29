@@ -36,6 +36,16 @@ public:
                     continue;
                 }
 
+                if (entity->hasComponent<InvincibilityFrames>()) {
+                    auto& invincibilityFrames = entity->getComponent<InvincibilityFrames>();
+
+                    // If the entity is currently invincible, make the sprite flicker by flipping between partial and full alpha.
+                    if (invincibilityFrames.active) {
+                        Uint8 alpha = (static_cast<int>(invincibilityFrames.timer * 20) % 2 == 0) ? 100 : 255;
+                        SDL_SetTextureAlphaMod(sprite.texture, alpha);
+                    }
+                }
+
                 // We are converting from world space to screen space.
                 sprite.dst.x = t.position.x - cam.view.x;
                 sprite.dst.y = t.position.y - cam.view.y;

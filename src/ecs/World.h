@@ -13,11 +13,13 @@
 #include "HUDSystem.h"
 #include "IconCounterSystem.h"
 #include "event/EventManager.h"
-#include "MovementInputSystem.h"
+#include "KeyboardInputSystem.h"
 #include "MainMenuSystem.h"
 #include "Map.h"
 #include "MovementSystem.h"
 #include "PauseMenuSystem.h"
+#include "PlayerAbilitySystem.h"
+#include "InvincibilityFramesSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
 #include "TimelineSystem.h"
@@ -34,7 +36,7 @@ class World {
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     MovementSystem movementSystem;
     RenderSystem renderSystem;
-    MovementInputSystem keyboardInputSystem;
+    KeyboardInputSystem keyboardInputSystem;
     CollisionSystem collisionSystem;
     AnimationSystem animationSystem;
     CameraSystem cameraSystem;
@@ -52,6 +54,8 @@ class World {
     BackgroundRenderSystem backgroundRenderSystem;
     StageBackgroundSystem stageBackgroundSystem;
     AudioEventQueue audioEventQueue;
+    PlayerAbilitySystem playerAbilitySystem;
+    InvincibilityFramesSystem invincibilityFramesSystem;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -71,6 +75,8 @@ public:
             if (!isPaused) {
                 movementSystem.update(entities, dt);
                 collisionSystem.update(*this);
+                invincibilityFramesSystem.update(entities, dt);
+                playerAbilitySystem.update(entities);
                 animationSystem.update(entities, dt);
                 cameraSystem.update(entities);
                 spawnTimerSystem.update(entities, dt);
