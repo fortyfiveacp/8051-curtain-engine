@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 #include <memory>
 #include <vector>
 
@@ -41,8 +42,22 @@ public:
 
                     // If the entity is currently invincible, make the sprite flicker by flipping between partial and full alpha.
                     if (invincibilityFrames.active) {
-                        Uint8 alpha = (static_cast<int>(invincibilityFrames.timer * 20) % 2 == 0) ? 100 : 255;
-                        SDL_SetTextureAlphaMod(sprite.texture, alpha);
+                        // Set the flicker frequency to 10 per second.
+                        float flickerFrequency = 10.0f;
+
+                        // Calculate flicker cycle duration.
+                        // A flicker cycle starts at full alpha, then flips to partial alpha halfway through the cycle.
+                        float cycleDuration = 1.0f / flickerFrequency;
+
+                        // Calculate if it's the first or second half of the cycle.
+                        float positionInCycle = std::fmod(invincibilityFrames.timer, cycleDuration);
+                        bool isFullAlpha = positionInCycle < (cycleDuration / 2.0f);
+
+                        // Set alpha accordingly.
+                        SDL_SetTextureAlphaMod(sprite.texture, isFullAlpha ? 255 : 100);
+                    } else {
+                        // Ensure alpha is set back to full opacity when not invincible.
+                        SDL_SetTextureAlphaMod(sprite.texture, 255);
                     }
                 }
 
