@@ -6,6 +6,7 @@
 #include "BackgroundRenderSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
+#include "DebugRenderSystem.h"
 #include "DestructionSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
@@ -58,6 +59,7 @@ class World {
     PlayerAbilitySystem playerAbilitySystem;
     InvincibilityFramesSystem invincibilityFramesSystem;
     SelectableUISystem selectableUISystem;
+    DebugRenderSystem debugRenderSystem;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -100,7 +102,7 @@ public:
         cleanup();
     }
 
-    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) {
+    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool isDebugging) {
         backgroundRenderSystem.render(entities);
 
         // Set up stage viewport.
@@ -121,6 +123,10 @@ public:
         // }
 
         renderSystem.render(entities);
+
+        if (isDebugging) {
+            debugRenderSystem.render(entities);
+        }
 
         // Reset viewport for rendering UI.
         SDL_SetRenderViewport(renderer, nullptr);

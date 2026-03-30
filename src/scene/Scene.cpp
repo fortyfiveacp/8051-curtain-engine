@@ -30,6 +30,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	SDL_FRect menuDst {menuTransform.position.x, menuTransform.position.y, menuSrc.w, menuSrc.h};
 	menu.addComponent<Sprite>(texture, menuSrc, menuDst, RenderLayer::Background);
 
+	// FPS counter.
 	auto& fpsCounter = createLabel(windowWidth - 170, windowHeight - 40, {240, 240, 240, 255},
 		"pop1", "0.000fps", "fpsCounter", LabelType::FPSCounter);
 	fpsCounter.addComponent<FPSCounter>();
@@ -131,11 +132,17 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	auto& playerTransform = player.addComponent<Transform>(Vector2D(playerStartingX, playerStartingY), 0.0f, 1.0f);
 	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, scaledPlayerWidth, scaledPlayerHeight};
 
-	player.addComponent<Sprite>(texture, playerSrc, playerDst);
+	auto& playerSprite = player.addComponent<Sprite>(texture, playerSrc, playerDst);
 
 	auto& playerCollider = player.addComponent<Collider>("player");
-	playerCollider.rect.w = playerDst.w;
-	playerCollider.rect.h = playerDst.h;
+
+	// Make the collider a square with side lengths of 1/8th the width of the player destination rect.
+	playerCollider.rect.w = playerDst.w / 8;
+	playerCollider.rect.h = playerDst.w / 8;
+
+	// Add offset to the collider to it's centered on the player destination rect.
+	playerCollider.offset.x = (playerDst.w  - playerCollider.rect.w) / 2.0f;
+	playerCollider.offset.y = (playerDst.h - playerCollider.rect.h) / 2.0f;
 
 	player.addComponent<PlayerTag>();
 	player.addComponent<KeyboardInput>();
@@ -161,8 +168,11 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		e.addComponent<Sprite>(tex, src, dest);
 
 		Collider& c = e.addComponent<Collider>("projectile");
-		c.rect.w = dest.w;
-		c.rect.h = dest.h;
+		c.rect.w = dest.w / 1.5;
+		c.rect.h = dest.h / 1.5;
+
+		c.offset.x = (dest.w  - c.rect.w) / 2.0f;
+		c.offset.y = (dest.h - c.rect.h) / 2.0f;
 
 		e.addComponent<ProjectileTag>();
 	});

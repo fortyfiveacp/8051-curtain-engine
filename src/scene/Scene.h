@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 
-#include "Vector2D.h"
 #include "World.h"
 #include "SDL3/SDL_events.h"
 #include "SceneType.h"
@@ -15,7 +14,7 @@ public:
     }
 
     void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) {
-        world.render(renderer, windowWidth, windowHeight);
+        world.render(renderer, windowWidth, windowHeight, isDebugging);
     }
 
     World world;
@@ -28,10 +27,15 @@ public:
         isPaused = !isPaused;
     }
 
+    void toggleDebug() {
+        isDebugging = !isDebugging;
+    }
+
 private:
     std::string name;
     SceneType type;
     bool isPaused = false;
+    bool isDebugging = false;
     //void createProjectile(Vector2D pos, Vector2D dir, int speed); TODO: commented out during tutorial, not needed?
 
     void initMainMenu(int windowWidth, int windowHeight);

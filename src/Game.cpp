@@ -123,6 +123,8 @@ void Game::handleEvents() {
 		case SDL_EVENT_KEY_DOWN:
 			if (event.key.key == SDLK_ESCAPE) {
 				sceneManager.currentScene->togglePause();
+			} else if (event.key.key == SDLK_TAB) {
+				sceneManager.currentScene->toggleDebug();
 			}
 			break;
 		default:

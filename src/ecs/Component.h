@@ -42,6 +42,7 @@ struct Sprite {
 struct Collider {
     std::string tag;
     SDL_FRect rect{};
+    Vector2D offset{}; // Offset for collider positioning relative to the entity's transform.
     bool enabled = true;
 };
 
