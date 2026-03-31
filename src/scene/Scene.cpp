@@ -132,7 +132,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	auto& playerTransform = player.addComponent<Transform>(Vector2D(playerStartingX, playerStartingY), 0.0f, 1.0f);
 	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, scaledPlayerWidth, scaledPlayerHeight};
 
-	auto& playerSprite = player.addComponent<Sprite>(texture, playerSrc, playerDst);
+	player.addComponent<Sprite>(texture, playerSrc, playerDst);
 
 	auto& playerCollider = player.addComponent<Collider>("player");
 
