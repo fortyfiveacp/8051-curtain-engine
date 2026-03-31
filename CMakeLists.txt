@@ -48,6 +48,11 @@ set(SRC_FILES
         src/ecs/system/TimelineSystem.h
         src/ecs/system/RadialSpawnerSystem.h
         src/ecs/system/LinearSpawnerSystem.h
+        src/ecs/system/PauseMenuSystem.cpp
+        src/ecs/system/UIRenderSystem.cpp
+        src/manager/AudioManager.h
+        src/manager/AudioManager.cpp
+        src/ecs/event/AudioEventQueue.h
         #add all new source files here
 )
 

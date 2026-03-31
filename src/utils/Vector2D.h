@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <numbers>
+#include <iostream>
 
 class Vector2D {
 public:
@@ -58,3 +59,8 @@ public:
 
     float length() const;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const Vector2D& vector) {
+    os << "(" << static_cast<int>(vector.x) << ", " << static_cast<int>(vector.y) << ")";
+    return os;
+}

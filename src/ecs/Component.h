@@ -3,11 +3,13 @@
 
 #include "utils/Vector2D.h"
 #include "SDL3/SDL_render.h"
+#include "SDL3_ttf/SDL_ttf.h"
 
 #include <string>
 #include <unordered_map>
 
 #include "AnimationClip.h"
+#include "Entity.h"
 
 struct Transform {
     Vector2D position{};
@@ -30,15 +32,24 @@ struct AngularVelocity {
     float rotationOverTime{};
 };
 
+enum class RenderLayer {
+    Background,
+    World,
+    UI
+};
+
 struct Sprite {
     SDL_Texture* texture = nullptr;
     SDL_FRect src{};
     SDL_FRect dst{};
+    RenderLayer renderLayer = RenderLayer::World;
+    bool visible = true;
 };
 
 struct Collider {
     std::string tag;
     SDL_FRect rect{};
+    bool enabled = true;
 };
 
 struct Animation {
@@ -137,6 +148,29 @@ struct Health {
     int currentHealth{};
 };
 
+struct SelectableUI {
+    std::function<void()> onPressed{};
+    std::function<void()> onReleased{};
+    std::function<void()> onSelect{};
+    bool selected = false;
+
+    // The selectable UI elements are a doubly linked list.
+    SelectableUI* next = nullptr;
+    SelectableUI* previous = nullptr;
+};
+
+struct Toggleable {
+    std::function<void()> toggle;
+};
+
+struct Parent {
+    Entity* parent = nullptr;
+};
+
+struct Children {
+    std::vector<Entity*> children{};
+};
+
 // Controls pre-scripted events at specific times.
 struct Timeline {
     float currentTime = 0;
@@ -145,5 +179,37 @@ struct Timeline {
     std::vector<std::pair<float, std::function<void()>>> timeline{};
 };
 
+enum class LabelType {
+    PlayerPosition,
+    FPSCounter,
+    Static
+};
+
+struct Label {
+    std::string text{};
+    TTF_Font* font = nullptr;
+    SDL_Color color{};
+    LabelType type = LabelType::PlayerPosition; // Default to player position for tutorial.
+    std::string textureCacheKey{};
+    SDL_Texture* texture = nullptr;
+    SDL_FRect dst{};
+    bool visible = true;
+    bool dirty = false;
+};
+
+struct FPSCounter {
+    int frameCount = 0;
+    float timer = 1.0f; // Default start timer at 1 so the first update isn't delayed by 1 second.
+};
+
+struct StageBackground {
+    float baseWidth{};
+    float baseHeight{};
+    float scrollSpeedY = 100.0f;
+    float offsetY = 0.0f;
+    SDL_Texture* texture{};
+};
+
 struct PlayerTag{};
+struct PauseMenuTag{};
 struct ProjectileTag{};

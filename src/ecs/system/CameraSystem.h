@@ -35,6 +35,13 @@ public:
                 // Clamp the camera.
                 // The camera is positioning itself so the player is centered, but the player could walk off the screen
                 // So clamp the camera so it stays within the window
+                if (cam.view.x > cam.worldWidth - cam.view.w) {
+                    cam.view.x = cam.worldWidth - cam.view.w;
+                }
+
+                if (cam.view.y > cam.worldHeight - cam.view.h) {
+                    cam.view.y = cam.worldHeight - cam.view.h;
+                }
 
                 if (cam.view.x < 0) {
                     cam.view.x = 0;
@@ -42,14 +49,6 @@ public:
 
                 if (cam.view.y < 0) {
                     cam.view.y = 0;
-                }
-
-                if (cam.view.x > cam.worldWidth - cam.view.w) {
-                    cam.view.x = cam.worldWidth - cam.view.w;
-                }
-
-                if (cam.view.y > cam.worldHeight - cam.view.h) {
-                    cam.view.y = cam.worldHeight - cam.view.h;
                 }
             }
         }

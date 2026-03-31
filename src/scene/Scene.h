@@ -14,8 +14,8 @@ public:
         world.update(dt, e, type);
     }
 
-    void render() {
-        world.render();
+    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) {
+        world.render(renderer, windowWidth, windowHeight);
     }
 
     World world;
@@ -27,5 +27,19 @@ public:
 private:
     std::string name;
     SceneType type;
-    void createProjectile(Vector2D pos, Vector2D dir, int speed);
+    //void createProjectile(Vector2D pos, Vector2D dir, int speed); TODO: commented out during tutorial, not needed?
+
+    void initMainMenu(int windowWidth, int windowHeight);
+    void initGameplay(const char* mapPath, int windowWidth, int windowHeight);
+
+    Entity& createPauseMenuOverlay(int windowWidth, int windowHeight);
+    void createPauseMenuUComponents(Entity& overlay);
+    void toggleOverlayVisibility(Entity& overlay);
+
+    Entity& createPlayerPosLabel();
+    Entity& createFPSCounterLabel(int windowWidth, int windowHeight);
+    Entity& createStaticLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text);
+    void createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);
+
+    Entity& createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath);
 };
