@@ -176,6 +176,7 @@ struct KeyboardInput {
 struct InvincibilityFrames {
     float duration = 4.0f;
     float timer = 0.0f;
+    float flickerFrequency = 10.0f; // The number of sprite flickers per second when invincible.
     bool active = false;
 };
 
