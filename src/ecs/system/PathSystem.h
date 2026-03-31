@@ -13,7 +13,7 @@ public:
     float getPathLength(const Path& path) {
         float totalLength = 0.0f;
         for (size_t i = 0; i < path.points.size() - 1; i++) {
-            totalLength += (path.points[i + 1] - path.points[i]).getLength();
+            totalLength += (path.points[i + 1] - path.points[i]).length();
         }
         return totalLength;
     }
@@ -25,7 +25,7 @@ public:
             auto a = path.points[i];
             auto b = path.points[i + 1];
 
-            float length = (b - a).getLength();
+            float length = (b - a).length();
 
             if (remainingPoints <= length) {
                 float t = remainingPoints / length;
