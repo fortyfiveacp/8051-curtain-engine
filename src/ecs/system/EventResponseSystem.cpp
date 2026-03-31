@@ -84,7 +84,8 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
                             playerStats.currentHiScore = playerStats.currentScore;
                         }
                         break;
-                    case Power:
+                    case SmallPower:
+                    case LargePower:
                         playerStats.currentPower += item.value;
                         break;
                     case Bomb:

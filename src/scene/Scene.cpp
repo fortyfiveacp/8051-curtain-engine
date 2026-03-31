@@ -179,22 +179,29 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// Test spawners for items. TODO: remove when no longer needed.
 	auto& pointSpawner(world.createEntity());
-	Transform t2 = pointSpawner.addComponent<Transform>(Vector2D(50, 0), 0.0f, 1.0f);
-	pointSpawner.addComponent<TimedSpawner>(2.0f, [this, t2] {
+	Transform t5 = pointSpawner.addComponent<Transform>(Vector2D(50, 250), 0.0f, 1.0f);
+	pointSpawner.addComponent<TimedSpawner>(3.0f, [this, t5] {
 		auto& itemEntity(world.createDeferredEntity());
-		ItemFactory::createItem(itemEntity, Point, t2.position);
+		ItemFactory::createItem(itemEntity, Point, t5.position);
 	});
 
 	auto& powerSpawner(world.createEntity());
-	Transform t3 = powerSpawner.addComponent<Transform>(Vector2D(125, 0), 0.0f, 1.0f);
-	powerSpawner.addComponent<TimedSpawner>(2.0f, [this, t3] {
+	Transform t3 = powerSpawner.addComponent<Transform>(Vector2D(125, 250), 0.0f, 1.0f);
+	powerSpawner.addComponent<TimedSpawner>(3.0f, [this, t3] {
 		auto& itemEntity(world.createDeferredEntity());
-		ItemFactory::createItem(itemEntity, Power, t3.position);
+		ItemFactory::createItem(itemEntity, SmallPower, t3.position);
+	});
+
+	auto& largePowerSpawner(world.createEntity());
+	Transform t2 = largePowerSpawner.addComponent<Transform>(Vector2D(200, 250), 0.0f, 1.0f);
+	largePowerSpawner.addComponent<TimedSpawner>(3.0f, [this, t2] {
+		auto& itemEntity(world.createDeferredEntity());
+		ItemFactory::createItem(itemEntity, LargePower, t2.position);
 	});
 
 	auto& bombSpawner(world.createEntity());
-	Transform t4 = bombSpawner.addComponent<Transform>(Vector2D(200, 0), 0.0f, 1.0f);
-	bombSpawner.addComponent<TimedSpawner>(2.0f, [this, t4] {
+	Transform t4 = bombSpawner.addComponent<Transform>(Vector2D(275, 250), 0.0f, 1.0f);
+	bombSpawner.addComponent<TimedSpawner>(3.0f, [this, t4] {
 		auto& itemEntity(world.createDeferredEntity());
 		ItemFactory::createItem(itemEntity, Bomb, t4.position);
 	});

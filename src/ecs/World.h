@@ -21,6 +21,7 @@
 #include "PauseMenuSystem.h"
 #include "PlayerAbilitySystem.h"
 #include "InvincibilityFramesSystem.h"
+#include "ItemBounceSystem.h"
 #include "PlayerBoundsSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
@@ -62,6 +63,7 @@ class World {
     SelectableUISystem selectableUISystem;
     DebugRenderSystem debugRenderSystem;
     PlayerBoundsSystem playerBoundsSystem;
+    ItemBounceSystem itemBounceSystem;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -88,6 +90,7 @@ public:
                 animationSystem.update(entities, dt);
                 cameraSystem.update(entities);
                 spawnTimerSystem.update(entities, dt);
+                itemBounceSystem.update(entities, dt);
                 timelineSystem.update(entities, dt);
                 stageBackgroundSystem.update(entities, dt);
             }

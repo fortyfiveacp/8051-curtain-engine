@@ -185,13 +185,17 @@ struct InvincibilityFrames {
 
 enum ItemType {
     Point,
-    Power,
+    LargePower,
+    SmallPower,
     Bomb
 };
 
 struct Item {
     int value{};
     ItemType type{};
+    float bounceDuration = 1.0f; // Duration of upwards movement when the item is created.
+    float timer = bounceDuration;
+    bool isBouncing = true; // Note: non-bouncing items will immediately ramp up speed (see ItemBounceSystem.h).
 };
 
 struct PlayerTag{};
