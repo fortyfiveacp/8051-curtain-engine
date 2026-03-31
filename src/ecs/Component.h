@@ -81,6 +81,8 @@ struct PlayerStats {
     int currentPower{};
     int currentGraze{};
     int currentPoint{};
+    int maxHealth = 8;
+    int maxBombs = 8;
 };
 
 struct SelectableUI {
@@ -179,6 +181,17 @@ struct InvincibilityFrames {
     float timer = 0.0f;
     float flickerFrequency = 10.0f; // The number of sprite flickers per second when invincible.
     bool active = false;
+};
+
+enum ItemType {
+    Point,
+    Power,
+    Bomb
+};
+
+struct Item {
+    int value{};
+    ItemType type{};
 };
 
 struct PlayerTag{};

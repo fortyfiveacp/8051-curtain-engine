@@ -50,6 +50,7 @@ set(SRC_FILES
         src/manager/AudioManager.h
         src/manager/AudioManager.cpp
         src/ecs/event/AudioEventQueue.h
+        src/utils/ItemFactory.cpp
         #add all new source files here
 )
 

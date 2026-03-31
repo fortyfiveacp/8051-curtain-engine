@@ -70,21 +70,48 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
             return;
         }
 
-        other->destroy();
+        auto& item = other->getComponent<Item>();
 
         for (auto& entity : world.getEntities()) {
-            if (!entity->hasComponent<SceneState>()) {
-                continue;
+            if (entity->hasComponent<PlayerStats>()) {
+                auto& playerStats = entity->getComponent<PlayerStats>();
+
+                switch(item.type) {
+                    case Point:
+                        playerStats.currentScore += item.value;
+                        playerStats.currentPoint++;
+                        if (playerStats.currentScore > playerStats.currentHiScore) {
+                            playerStats.currentHiScore = playerStats.currentScore;
+                        }
+                        break;
+                    case Power:
+                        playerStats.currentPower += item.value;
+                        break;
+                    case Bomb:
+                        if (playerStats.currentBombs + item.value <= playerStats.maxBombs) {
+                            playerStats.currentBombs += item.value;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                break;
             }
+            // if (!entity->hasComponent<SceneState>()) {
+            //     continue;
+            // }
 
             // Scene state
-            auto& sceneState = entity->getComponent<SceneState>();
-            sceneState.coinsCollected++;
-
-            if (sceneState.coinsCollected > 1) {
-                Game::onSceneChangeRequest("level2");
-            }
+            // auto& sceneState = entity->getComponent<SceneState>();
+            // sceneState.coinsCollected++;
+            //
+            // if (sceneState.coinsCollected > 1) {
+            //     Game::onSceneChangeRequest("level2");
+            // }
         }
+
+        other->destroy();
     }
     else if (std::string(otherTag) == "wall") {
         // Stop the player

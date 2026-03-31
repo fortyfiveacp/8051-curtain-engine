@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "Scene.h"
 
+#include "ItemFactory.h"
 #include "StageUtils.h"
 #include "../manager/AudioManager.h"
 
@@ -147,7 +148,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	player.addComponent<KeyboardInput>();
 	player.addComponent<InvincibilityFrames>();
 	player.addComponent<PlayerStats>(Game::gameState.playerHealth, Game::gameState.playerBombs,
-		Vector2D(playerStartingX, playerStartingY), 1234, 5678, 9, 10, 11); // TODO: remove test values.
+		Vector2D(playerStartingX, playerStartingY)); // TODO: remove test values.
 
 	// TODO: purge.
 	auto& spawner(world.createEntity());
@@ -174,6 +175,28 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		c.offset.y = (dest.h - c.rect.h) / 2.0f;
 
 		e.addComponent<ProjectileTag>();
+	});
+
+	// Test spawners for items. TODO: remove when no longer needed.
+	auto& pointSpawner(world.createEntity());
+	Transform t2 = pointSpawner.addComponent<Transform>(Vector2D(50, 0), 0.0f, 1.0f);
+	pointSpawner.addComponent<TimedSpawner>(2.0f, [this, t2] {
+		auto& itemEntity(world.createDeferredEntity());
+		ItemFactory::createItem(itemEntity, Point, t2.position);
+	});
+
+	auto& powerSpawner(world.createEntity());
+	Transform t3 = powerSpawner.addComponent<Transform>(Vector2D(125, 0), 0.0f, 1.0f);
+	powerSpawner.addComponent<TimedSpawner>(2.0f, [this, t3] {
+		auto& itemEntity(world.createDeferredEntity());
+		ItemFactory::createItem(itemEntity, Power, t3.position);
+	});
+
+	auto& bombSpawner(world.createEntity());
+	Transform t4 = bombSpawner.addComponent<Transform>(Vector2D(200, 0), 0.0f, 1.0f);
+	bombSpawner.addComponent<TimedSpawner>(2.0f, [this, t4] {
+		auto& itemEntity(world.createDeferredEntity());
+		ItemFactory::createItem(itemEntity, Bomb, t4.position);
 	});
 
 	// Add timeline object (experimental, this will actually spawn enemy convoys later).

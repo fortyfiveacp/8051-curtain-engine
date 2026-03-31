@@ -24,6 +24,8 @@ public:
                     playerStats.currentBombs--; // TODO: need to update game state counter too.
 
                     // TODO: actual bomb logic.
+                } else {
+                    keyboardInput.bomb = false;
                 }
             }
         }
