@@ -110,12 +110,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	// }
 
 	auto& cam = world.createEntity();
-	SDL_FRect camView{};
-	camView.x = 0;
-	camView.y = 0;
-	camView.w = stageWidth; // Width of the stage.
-	camView.h = stageHeight; // Height of the stage.
-	float outOfViewPadding = 50.0f;
+	SDL_FRect camView {0, 0, stageWidth, stageHeight};
+	float outOfViewPadding = 100.0f;
 	cam.addComponent<Camera>(camView, stageWidth, stageHeight, outOfViewPadding);
 
 	// Create the player.

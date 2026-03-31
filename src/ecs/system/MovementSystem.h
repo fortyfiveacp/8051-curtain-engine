@@ -43,18 +43,18 @@ public:
                     }
                 }
 
-                // Track previous frame's position (for collisions)
+                // Track previous frame's position (for collisions).
                 t.oldPosition = t.position;
 
                 Vector2D directionVector = v.direction;
 
-                // Normalize
+                // Normalize.
                 directionVector.normalize();
 
                 // Vector2D needs an operator function to multiply a float.
                 Vector2D velocityVector = directionVector * v.currentSpeed;
 
-                // Update position
+                // Update position.
                 t.position += velocityVector * dt;
             }
         }
