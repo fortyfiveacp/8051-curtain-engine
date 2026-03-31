@@ -1,4 +1,6 @@
 #pragma once
+#include <cmath>
+#include <numbers>
 #include <iostream>
 
 class Vector2D {
@@ -12,6 +14,10 @@ public:
     }
 
     Vector2D(float x, float y) : x(x), y(y) {}
+
+    // 0 degrees is DOWN on screen, 90 degrees is RIGHT, etc.
+    explicit Vector2D(const float degrees) : x(std::cos((degrees + 90) / (180 / std::numbers::pi))),
+                                             y(std::sin((degrees + 90) / (180 / std::numbers::pi))) {}
 
     bool operator==(const Vector2D& vector) const;
 
@@ -50,6 +56,8 @@ public:
     Vector2D operator/(float scalar) const;
 
     Vector2D& normalize();
+
+    float length() const;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Vector2D& vector) {
