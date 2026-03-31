@@ -9,9 +9,8 @@ public:
     void update(const std::vector<std::unique_ptr<Entity>>& entities, const SDL_Event& event) {
         for (auto& e : entities) {
             // Get the keyboard input.
-            if (e->hasComponent<PlayerTag>() && e->hasComponent<KeyboardInput>() && e->hasComponent<Velocity>()) {
+            if (e->hasComponent<PlayerTag>() && e->hasComponent<KeyboardInput>()) {
                 auto& keyboardInput = e->getComponent<KeyboardInput>();
-                auto& v = e->getComponent<Velocity>();
 
                 if (event.type == SDL_EVENT_KEY_DOWN) {
                     switch (event.key.key) {
@@ -74,32 +73,6 @@ public:
                         default:
                             break;
                     }
-                }
-
-                // TODO: should this actually go into the movement system?
-                // Determine player horizontal direction, with left priority.
-                if (keyboardInput.left) {
-                    v.direction.x = -1;
-                } else if (keyboardInput.right) {
-                    v.direction.x = 1;
-                } else {
-                    v.direction.x = 0;
-                }
-
-                // Determine player vertical direction, with down priority.
-                if (keyboardInput.down) {
-                    v.direction.y = 1;
-                } else if (keyboardInput.up) {
-                    v.direction.y = -1;
-                } else {
-                    v.direction.y = 0;
-                }
-
-                // Slow down current speed if in focus mode.
-                if (keyboardInput.focus) {
-                    v.currentSpeed = v.baseSpeed * keyboardInput.focusMultiplier;
-                } else {
-                    v.currentSpeed = v.baseSpeed;
                 }
             }
         }

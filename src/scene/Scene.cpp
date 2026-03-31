@@ -111,9 +111,12 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	auto& cam = world.createEntity();
 	SDL_FRect camView{};
-	camView.w = windowWidth; // width of the window.
-	camView.h = windowHeight; // height of the window.
-	cam.addComponent<Camera>(camView, world.getMap().width * 32.0f, world.getMap().height * 32.0f);
+	camView.x = 0;
+	camView.y = 0;
+	camView.w = stageWidth; // Width of the stage.
+	camView.h = stageHeight; // Height of the stage.
+	float outOfViewPadding = 50.0f;
+	cam.addComponent<Camera>(camView, stageWidth, stageHeight, outOfViewPadding);
 
 	// Create the player.
 	auto& player (world.createEntity());
@@ -152,7 +155,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// TODO: purge.
 	auto& spawner(world.createEntity());
-	Transform t = spawner.addComponent<Transform>(Vector2D(windowWidth / 2, windowHeight - 5), 0.0f, 1.0f);
+	Transform t = spawner.addComponent<Transform>(Vector2D(stageWidth - 150, stageHeight - 5), 0.0f, 1.0f);
 	spawner.addComponent<TimedSpawner>(2.0f, [this, t] {
 		// Create the projectile (birds).
 		auto& e(world.createDeferredEntity());

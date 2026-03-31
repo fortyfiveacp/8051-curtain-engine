@@ -58,6 +58,7 @@ struct Camera {
     SDL_FRect view;
     float worldWidth;
     float worldHeight;
+    float outOfViewPadding{}; // The amount of extra space projectiles can move out of view before being destroyed.
 };
 
 struct TimedSpawner {
