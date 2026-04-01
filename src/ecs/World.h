@@ -179,4 +179,6 @@ public:
     Map& getMap() {
         return map;
     }
+
+    std::function<void(Vector2D pos, Vector2D dir, float speed)> requestBulletSpawn;
 };

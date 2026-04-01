@@ -52,6 +52,33 @@
             <Point x="352" y="446"/>
             <Point x="352" y="1000" />
         </Path>
+
+        <Path id="9" name="Diag_TL_BR_Center">
+            <Point x="0" y="0" />
+            <Point x="650" y="950" />
+        </Path>
+        <Path id="10" name="Diag_TR_BL_Center">
+            <Point x="586" y="100" />
+            <Point x="86" y="950" />
+        </Path>
+
+        <Path id="11" name="Side_Left_Center">
+            <Point x="-50" y="200" />
+            <Point x="600" y="800" />
+        </Path>
+        <Path id="12" name="Side_Left_Upper">
+            <Point x="-50" y="140" />
+            <Point x="600" y="790" />
+        </Path>
+        <Path id="13" name="Side_Left_Lower">
+            <Point x="-50" y="260" />
+            <Point x="600" y="910" />
+        </Path>
+
+        <Path id="14" name="Side_Right_Entry">
+            <Point x="818" y="200" />
+            <Point x="168" y="800" />
+        </Path>
     </Paths>
     <Waves>
         <Convoy start="2.0" enemyType="SmallFairy" pathId="0" numEnemies="10" interval="0.5" speed="90" />
@@ -64,5 +91,17 @@
         <Convoy start="20.0" enemyType="LargeFairy" pathId="5" numEnemies="3" interval="2.0" speed="60" />
         <Convoy start="20.0" enemyType="LargeFairy" pathId="6" numEnemies="3" interval="2.0" speed="60" />
         <Convoy start="20.0" enemyType="LargeFairy" pathId="7" numEnemies="3" interval="2.0" speed="60" />
+
+        <Convoy start="25.0" enemyType="SmallFairy" pathId="9" numEnemies="3" interval="0.4" speed="150" />
+
+        <Convoy start="30.0" enemyType="SmallFairy" pathId="9" numEnemies="3" interval="0.4" speed="150" />
+        <Convoy start="30.0" enemyType="SmallFairy" pathId="10" numEnemies="3" interval="0.4" speed="150" />
+        <Convoy start="30.0" enemyType="SmallFairy" pathId="11" numEnemies="3" interval="0.4" speed="150" />
+
+        <Convoy start="35.0" enemyType="SmallFairy" pathId="12" numEnemies="3" interval="0.4" speed="150" />
+
+        <Convoy start="40.0" enemyType="SmallFairy" pathId="12" numEnemies="3" interval="0.4" speed="150" />
+        <Convoy start="40.2" enemyType="SmallFairy" pathId="13" numEnemies="3" interval="0.4" speed="150" />
+        <Convoy start="40.0" enemyType="SmallFairy" pathId="14" numEnemies="3" interval="0.4" speed="150" />
     </Waves>
 </Stage>
