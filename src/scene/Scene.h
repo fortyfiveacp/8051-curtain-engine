@@ -7,10 +7,13 @@
 
 class Scene {
 public:
+    bool isPaused = false;
+    bool isDebugging = false;
+
     Scene(SceneType sceneType, const char* sceneName, const char* mapPath, int windowWidth, int windowHeight);
 
     void update(const float dt, const SDL_Event &e) {
-        world.update(dt, e, type, isPaused);
+        world.update(dt, e, type, isPaused, isDebugging);
     }
 
     void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) {
@@ -22,20 +25,9 @@ public:
     const std::string& getName() const {
         return name;
     }
-
-    void togglePause() {
-        isPaused = !isPaused;
-    }
-
-    void toggleDebug() {
-        isDebugging = !isDebugging;
-    }
-
 private:
     std::string name;
     SceneType type;
-    bool isPaused = false;
-    bool isDebugging = false;
     //void createProjectile(Vector2D pos, Vector2D dir, int speed); TODO: commented out during tutorial, not needed?
 
     void initMainMenu(int windowWidth, int windowHeight);

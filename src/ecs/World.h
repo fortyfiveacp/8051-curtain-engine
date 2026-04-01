@@ -75,15 +75,15 @@ class World {
 public:
     World() = default;
 
-    void update(float dt, const SDL_Event& event, SceneType sceneType, bool isPaused) {
+    void update(float dt, const SDL_Event& event, SceneType sceneType, bool isPaused, bool isDebugging) {
         if (sceneType == SceneType::MainMenu) {
             // Main menu system update
             mainMenuSystem.update(event);
         } else {
             keyboardInputSystem.update(entities, event);
             playerBoundsSystem.update(entities);
-            pauseMenuSystem.update(entities, event);
-            selectableUISystem.update(entities, event);
+            pauseMenuSystem.update(entities,  *this, event, isPaused);
+            selectableUISystem.update(entities, *this, event);
 
             // Only update gameplay systems if the game isn't paused.
             if (!isPaused) {
@@ -101,6 +101,7 @@ public:
                 stageBackgroundSystem.update(entities, dt);
             }
 
+            debugRenderSystem.update(*this, event, isDebugging);
             destructionSystem.update(entities);
             hudSystem.update(entities);
             iconLabelSystem.update(entities);

@@ -171,12 +171,14 @@ struct SelectableUI {
     bool selected = false;
 
     // The selectable UI elements are a doubly linked list.
-    SelectableUI* next = nullptr;
-    SelectableUI* previous = nullptr;
+    // Upon some reflection this may or may not be best practice in terms of ECS design.
+    Entity* next = nullptr;
+    Entity* previous = nullptr;
 };
 
 struct Toggleable {
     std::function<void()> toggle;
+    bool enabled = true;
 };
 
 struct Parent {

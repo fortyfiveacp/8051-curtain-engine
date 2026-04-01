@@ -53,6 +53,9 @@ set(SRC_FILES
         src/manager/AudioManager.cpp
         src/ecs/event/AudioEventQueue.h
         src/utils/ItemFactory.cpp
+        src/ecs/system/SelectableUISystem.cpp
+        src/ecs/system/PauseMenuSystem.cpp
+        src/ecs/system/DebugRenderSystem.cpp
         #add all new source files here
 )
 

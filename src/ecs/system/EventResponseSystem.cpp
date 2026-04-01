@@ -32,8 +32,8 @@ EventResponseSystem::EventResponseSystem(World &world) {
             return;
         }
 
-        const auto& keyboardInteractionEvent = static_cast<const UIInteractionEvent&>(e);
-        onUIInteraction(keyboardInteractionEvent);
+        const auto& uiInteractionEvent = static_cast<const UIInteractionEvent&>(e);
+        onUIInteraction(uiInteractionEvent);
     });
 }
 
@@ -47,9 +47,11 @@ void EventResponseSystem::onUIInteraction(const UIInteractionEvent& e) {
             selectable.onPressed();
             break;
         case UIInteractionState::Released:
+            selectable.selected = false;
             selectable.onReleased();
             break;
         case UIInteractionState::Selected:
+            selectable.selected = true;
             selectable.onSelect();
             break;
         default:

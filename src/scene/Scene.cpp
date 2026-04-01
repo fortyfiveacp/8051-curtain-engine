@@ -37,6 +37,27 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 }
 
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
+	// Subscribe to event for pausing the game.
+	world.getEventManager().subscribe([this](const BaseEvent& e) {
+		if (e.type != EventType::Pause) {
+			return;
+		}
+
+		const auto& pauseEvent = static_cast<const PauseEvent&>(e);
+		isPaused = pauseEvent.isPaused;
+	});
+
+	// Subscribe to event for debugging the game.
+	world.getEventManager().subscribe([this](const BaseEvent& e) {
+		if (e.type != EventType::Debug) {
+			return;
+		}
+
+		const auto& debugEvent = static_cast<const DebugEvent&>(e);
+		isDebugging = debugEvent.isDebugging;
+	});
+
+
 	SDL_Texture* backgroundTex = TextureManager::load("../asset/background.png");
 	float texWidth = backgroundTex->w;
 	float texHeight = backgroundTex->h;
@@ -589,11 +610,11 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 	auto& quitSelectable = quitButton.getComponent<SelectableUI>();
 
 	// Set up selection doubly linked list.
-	resumeSelectable.next = &quitSelectable;
-	resumeSelectable.previous = &quitSelectable;
+	resumeSelectable.next = &quitButton;
+	resumeSelectable.previous = &quitButton;
 
-	quitSelectable.next = &resumeSelectable;
-	quitSelectable.previous = &resumeSelectable;
+	quitSelectable.next = &resumeButton;
+	quitSelectable.previous = &resumeButton;
 }
 
 void Scene::toggleOverlayVisibility(Entity& overlay) {
