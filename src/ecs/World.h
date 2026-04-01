@@ -92,7 +92,7 @@ public:
                 invincibilityFramesSystem.update(entities, dt);
                 playerAbilitySystem.update(entities);
                 animationSystem.update(entities, dt);
-                cameraSystem.update(entities);
+                // cameraSystem.update(entities); // TODO: decide what to do with the camera system.
                 spawnTimerSystem.update(entities, dt);
                 itemBounceSystem.update(entities, dt);
                 radialSpawnerSystem.update(entities, dt);
