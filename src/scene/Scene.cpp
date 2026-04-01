@@ -199,18 +199,19 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	// Linear danmaku spawner.
 	auto& linearDanmaku(world.createEntity());
 	linearDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
+	linearDanmaku.addComponent<LookAtRotator>(playerTransform, 0.0f);
 
 	bool isFanPattern = true;
 	float bulletEmissionSpeedMultiplier = 1.0f;
 
 	std::vector<Vector2D> bulletSpawnPositions;
-	bulletSpawnPositions.emplace_back(0, -30);
-	bulletSpawnPositions.emplace_back(0, -40);
-	bulletSpawnPositions.emplace_back(0, -50);
-	bulletSpawnPositions.emplace_back(10, -20);
-	bulletSpawnPositions.emplace_back(-10, -20);
-	bulletSpawnPositions.emplace_back(15, -20);
-	bulletSpawnPositions.emplace_back(-15, -20);
+	bulletSpawnPositions.emplace_back(0, 30);
+	bulletSpawnPositions.emplace_back(0, 40);
+	bulletSpawnPositions.emplace_back(0, 50);
+	bulletSpawnPositions.emplace_back(10, 20);
+	bulletSpawnPositions.emplace_back(-10, 20);
+	bulletSpawnPositions.emplace_back(15, 20);
+	bulletSpawnPositions.emplace_back(-15, 20);
 
 	linearDanmaku.addComponent<LinearSpawner>(isFanPattern, bulletEmissionSpeed, bulletEmissionSpeedMultiplier,
 		bulletSpawnPositions, frequency, duration, delay,
