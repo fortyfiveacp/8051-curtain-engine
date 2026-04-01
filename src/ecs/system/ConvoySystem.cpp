@@ -27,9 +27,5 @@ void ConvoySystem::update(World& world, float dt) {
 
 void ConvoySystem::spawnEnemy(World &world, const Convoy &convoy){
     auto& enemy = world.createDeferredEntity();
-    const auto& path = world.getPathLibrary()[convoy.pathId];
-    Vector2D startPos = path.points[0];
-
-    EnemyFactory::build(enemy, convoy.enemyType, startPos);
-    enemy.addComponent<PathFollower>(convoy.pathId, 0.0f, convoy.speed);
+    EnemyFactory::build(enemy, convoy.enemyType, convoy.pathId, convoy.speed);
 }

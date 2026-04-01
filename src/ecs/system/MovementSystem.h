@@ -9,7 +9,7 @@ class MovementSystem {
 public:
     void update(std::vector<std::unique_ptr<Entity>>& entities, float dt) {
         for (auto& entity : entities) {
-            if (entity->hasComponent<Transform>()) {
+            if (entity->hasComponent<Transform>() && !entity->hasComponent<PathFollower>()) {
                 if (entity->hasComponent<Velocity>()) {
                     // Update position.
                     updatePosition(dt, entity);

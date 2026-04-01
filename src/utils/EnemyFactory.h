@@ -5,9 +5,10 @@
 
 class EnemyFactory {
 public:
-    static void build(Entity& entity, EnemyType type, Vector2D pos);
+    static void build(Entity& entity, EnemyType type, int pathId, float speed);
 
 private:
     static void buildSmallFairy(Entity& entity, Transform& transform);
-
+    static void buildLargeFairy(Entity& entity, Transform& transform);
+    static void buildStageBoss(Entity& entity, Transform& transform);
 };

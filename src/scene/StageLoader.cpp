@@ -10,12 +10,20 @@ void StageLoader::loadStage(const char *path, World &world) {
     for (auto* pathElem = pathsRoot->FirstChildElement("Path");
         pathElem;
         pathElem = pathElem->NextSiblingElement("Path")) {
+
         int id = pathElem->IntAttribute("id");
         Path path;
+
         for (auto* pt = pathElem->FirstChildElement("Point");
             pt;
             pt = pt->NextSiblingElement("Point")) {
-            path.points.push_back(Vector2D(pt->FloatAttribute("x"), pt->FloatAttribute("y")));
+
+            PathPoint point;
+            point.position = Vector2D(pt->FloatAttribute("x"), pt->FloatAttribute("y"));
+            // New: Read the waitTime attribute (defaults to 0.0f if not present)
+            point.hoverTime = pt->FloatAttribute("waitTime");
+
+            path.points.push_back(point);
         }
         world.getPathLibrary()[id] = path;
     }

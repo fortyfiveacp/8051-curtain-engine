@@ -13,7 +13,7 @@ public:
     float getPathLength(const Path& path) {
         float totalLength = 0.0f;
         for (size_t i = 0; i < path.points.size() - 1; i++) {
-            totalLength += (path.points[i + 1] - path.points[i]).length();
+            totalLength += (path.points[i + 1].position - path.points[i].position).length();
         }
         return totalLength;
     }
@@ -22,8 +22,8 @@ public:
         float remainingPoints = distance;
 
         for (size_t i = 0; i < path.points.size() - 1; i++) {
-            auto a = path.points[i];
-            auto b = path.points[i + 1];
+            auto a = path.points[i].position;
+            auto b = path.points[i + 1].position;
 
             float length = (b - a).length();
 
@@ -35,7 +35,7 @@ public:
             remainingPoints -= length;
         }
 
-        return path.points.back();
+        return path.points.back().position;
     }
 
     void update(std::vector<std::unique_ptr<Entity>>& entities, float dt) {
@@ -45,19 +45,44 @@ public:
 
             auto& pf = e->getComponent<PathFollower>();
             auto& tf = e->getComponent<Transform>();
-
             if (!pf.active) continue;
 
             const Path& path = (*pathLibrary)[pf.pathId];
 
-            if (pf.distance >= getPathLength(path)) {
-                e->destroy();
+            if (pf.currentHoverTimer > 0) {
+                pf.currentHoverTimer -= dt;
                 continue;
             }
 
-            tf.oldPosition = tf.position;
-            pf.distance += pf.speed * dt;
-            tf.position = evaluatePath(path, pf.distance);
+            // Determine if there's an upcoming hover point
+            float nextDistance = pf.distance + (pf.speed * dt);
+            float accumulatedDist = 0.0f;
+
+            bool isHovering = false;
+
+            for (int i = 0; i < static_cast<int>(path.points.size()) - 1; ++i) {
+                float segmentLen = (path.points[i + 1].position - path.points[i].position).length();
+                accumulatedDist += segmentLen;
+
+                // Check if next move is past next point, if it has a wait time, and if enemy has not hovered
+                // there yet.
+                if (pf.distance < accumulatedDist && nextDistance >= accumulatedDist) {
+                    if (path.points[i + 1].hoverTime > 0 && pf.lastPointReached < i + 1) {
+                        pf.currentHoverTimer = path.points[i + 1].hoverTime;
+                        pf.lastPointReached = i + 1;
+                        pf.distance = accumulatedDist;
+                        tf.position = path.points[i + 1].position;
+
+                        isHovering = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isHovering) {
+                pf.distance = nextDistance;
+                tf.position = evaluatePath(path, pf.distance);
+            }
         }
     }
 };

@@ -180,8 +180,13 @@ struct Timeline {
 };
 
 
+struct PathPoint {
+    Vector2D position;
+    float hoverTime = 0.0f;
+};
+
 struct Path {
-    std::vector<Vector2D> points{};
+    std::vector<PathPoint> points{};
 };
 
 struct PathFollower {
@@ -189,6 +194,8 @@ struct PathFollower {
     float distance{};
     float speed{};
     bool active = true;
+    float currentHoverTimer = 0.0f;
+    int lastPointReached = -1;
 };
 
 enum class EnemyType {
