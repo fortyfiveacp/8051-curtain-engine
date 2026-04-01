@@ -53,7 +53,7 @@ public:
                     label.text = ss.str();
                     label.dirty = true;
                 } else if (label.type == LabelType::Point && playerStats.currentPoint != std::stoi(label.text)) {
-                    ss << playerStats.currentPoint << "/" << 0; // TODO: how many points are there?
+                    ss << playerStats.currentPoint << "/" << PlayerStats::MAX_POINTS;
 
                     label.text = ss.str();
                     label.dirty = true;

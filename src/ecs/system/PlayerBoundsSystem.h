@@ -36,8 +36,8 @@ inline void PlayerBoundsSystem::update(const std::vector<std::unique_ptr<Entity>
             auto& keyboardInput = entity->getComponent<KeyboardInput>();
 
             // The additional distance the player is allowed to move out of bounds.
-            float boundsAllowanceX = sprite.dst.w / 4;
-            float boundsAllowanceY = sprite.dst.h / 4;
+            float boundsAllowanceX = sprite.dst.w / 4.25f;
+            float boundsAllowanceY = sprite.dst.h / 4.25f;
 
             // If the player comes reaches an edge, disable their movement in the appropriate direction.
             // Bound allowance is included for the right, left and top to allow the player to move off the screen slightly.

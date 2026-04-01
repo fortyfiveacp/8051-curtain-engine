@@ -74,47 +74,43 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
 
         auto& item = other->getComponent<Item>();
 
-        for (auto& entity : world.getEntities()) {
-            if (entity->hasComponent<PlayerStats>()) {
-                auto& playerStats = entity->getComponent<PlayerStats>();
+        if (player->hasComponent<PlayerStats>()) {
+            auto& playerStats = player->getComponent<PlayerStats>();
 
-                switch(item.type) {
-                    case Point:
-                        playerStats.currentScore += item.value;
-                        playerStats.currentPoint++;
-                        if (playerStats.currentScore > playerStats.currentHiScore) {
-                            playerStats.currentHiScore = playerStats.currentScore;
-                        }
-                        break;
-                    case SmallPower:
-                    case LargePower:
-                        playerStats.currentPower += item.value;
-                        break;
-                    case Bomb:
-                        if (playerStats.currentBombs + item.value <= playerStats.maxBombs) {
-                            playerStats.currentBombs += item.value;
-                        }
-                        break;
-                    default:
-                        break;
-                }
+            switch(item.type) {
+                case Point:
+                    playerStats.currentScore = std::min(playerStats.currentScore + item.value, PlayerStats::MAX_SCORE);
+                    playerStats.currentPoint++;
 
-                break;
+                    // Also update current HiScore if current Score exceeds it.
+                    playerStats.currentHiScore = std::max(playerStats.currentHiScore, playerStats.currentScore);
+                    break;
+                case SmallPower:
+                case LargePower:
+                    playerStats.currentPower = std::min(playerStats.currentPower + item.value, PlayerStats::MAX_POWER);
+                    break;
+                case Bomb:
+                    playerStats.currentBombs = std::min(playerStats.currentBombs + item.value, PlayerStats::MAX_BOMBS);
+                    break;
+                default:
+                    break;
             }
-
-            // TODO: purge.
-            // if (!entity->hasComponent<SceneState>()) {
-            //     continue;
-            // }
-
-            // Scene state
-            // auto& sceneState = entity->getComponent<SceneState>();
-            // sceneState.coinsCollected++;
-            //
-            // if (sceneState.coinsCollected > 1) {
-            //     Game::onSceneChangeRequest("level2");
-            // }
         }
+
+        // TODO: purge.
+        // for (auto& entity : world.getEntities()) {
+        //     if (!entity->hasComponent<SceneState>()) {
+        //         continue;
+        //     }
+        //
+        //     Scene state
+        //     auto& sceneState = entity->getComponent<SceneState>();
+        //     sceneState.coinsCollected++;
+        //
+        //     if (sceneState.coinsCollected > 1) {
+        //         Game::onSceneChangeRequest("level2");
+        //     }
+        // }
 
         other->destroy();
     }

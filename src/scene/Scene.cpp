@@ -388,13 +388,13 @@ void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stage
 	// Player health static and dynamic labels.
 	createLabel(staticLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont,
 		"Player", "HealthLabel", LabelType::Static);
-	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, 8,
+	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, PlayerStats::MAX_HEALTH,
 		fontHeight, fontHeight, IconCounterType::Health, "../asset/ui/red-star.png");
 
 	// Bomb static and dynamic labels.
 	createLabel(staticLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont,
 		"Bomb", "BombLabel", LabelType::Static);
-	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, 8,
+	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, PlayerStats::MAX_BOMBS,
 		fontHeight, fontHeight, IconCounterType::Bomb, "../asset/ui/blue-star.png");
 
 	// Power static and dynamic labels.
@@ -410,10 +410,13 @@ void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stage
 		"0", "Graze", LabelType::Graze);
 
 	// Point static and dynamic labels.
+	std::string initialPointString = "0/" + std::to_string(PlayerStats::MAX_POINTS);
+	const char* initialPoint = initialPointString.c_str();
+
 	createLabel(staticLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, hotPink, staticLabelFont,
 		"Point", "PointLabel", LabelType::Static);
 	createLabel(dynamicLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, offWhite, dynamicLabelFont,
-		"0/0", "Point", LabelType::Point);
+		initialPoint, "Point", LabelType::Point);
 }
 
 Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {

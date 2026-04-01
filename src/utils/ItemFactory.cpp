@@ -6,11 +6,11 @@ void ItemFactory::createItem(Entity& entity, ItemType type, Vector2D position) {
     auto& transform = entity.addComponent<Transform>(position, 0.0f, 1.0f);
 
     switch (type) {
-        case LargePower:
-            createLargePowerItem(entity, transform);
-            break;
         case Point:
             createPointItem(entity, transform);
+            break;
+        case LargePower:
+            createLargePowerItem(entity, transform);
             break;
         case SmallPower:
             createSmallPowerItem(entity, transform);
@@ -51,14 +51,14 @@ void ItemFactory::createPointItem(Entity& entity, Transform transform) {
     entity.addComponent<Item>(4500, Point);
 }
 
-void ItemFactory::createSmallPowerItem(Entity& entity, Transform transform) {
-    createBaseItem(entity, transform, 0, 0);
-    entity.addComponent<Item>(1, SmallPower);
-}
-
 void ItemFactory::createLargePowerItem(Entity& entity, Transform transform) {
     createBaseItem(entity, transform, 32, 0);
     entity.addComponent<Item>(5, LargePower);
+}
+
+void ItemFactory::createSmallPowerItem(Entity& entity, Transform transform) {
+    createBaseItem(entity, transform, 0, 0);
+    entity.addComponent<Item>(1, SmallPower);
 }
 
 void ItemFactory::createBombItem(Entity& entity, Transform transform) {

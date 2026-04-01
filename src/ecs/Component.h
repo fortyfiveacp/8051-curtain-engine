@@ -81,8 +81,11 @@ struct PlayerStats {
     int currentPower{};
     int currentGraze{};
     int currentPoint{};
-    int maxHealth = 8;
-    int maxBombs = 8;
+    static constexpr int MAX_SCORE = 999999999;
+    static constexpr int MAX_HEALTH = 8;
+    static constexpr int MAX_BOMBS = 8;
+    static constexpr int MAX_POWER = 400;
+    static constexpr int MAX_POINTS = 50; // TODO: how many points are there?
 };
 
 struct SelectableUI {
@@ -196,7 +199,7 @@ struct Item {
 };
 
 struct ItemBounce { // Note that bounce require a velocity component with an upward direction at the start.
-    float bounceDuration = 1.0f; // Duration of upwards movement when the item is created.
+    float bounceDuration = 1.25f; // Duration of upwards movement when the item is created.
     float timer = bounceDuration;
     bool isBouncing = true;
 };
