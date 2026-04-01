@@ -1,7 +1,6 @@
 #include "../manager/AssetManager.h"
 #include "Game.h"
 #include "Scene.h"
-
 #include "ItemFactory.h"
 #include "StageUtils.h"
 #include "../manager/AudioManager.h"
@@ -117,7 +116,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// Create the player.
 	auto& player (world.createEntity());
-	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 425.0f);
+	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 400.0f);
 
 	Animation anim = AssetManager::getAnimation("player");
 	player.addComponent<Animation>(anim);
@@ -167,7 +166,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		SDL_FRect dest { t.position.x, t.position.y, 32, 32 };
 		e.addComponent<Sprite>(tex, src, dest);
 
-		Collider& c = e.addComponent<Collider>("projectile");
+		auto& c = e.addComponent<Collider>("projectile");
 		c.rect.w = dest.w / 1.5;
 		c.rect.h = dest.h / 1.5;
 
@@ -205,6 +204,89 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		auto& itemEntity(world.createDeferredEntity());
 		ItemFactory::createItem(itemEntity, Bomb, t4.position);
 	});
+
+	// Radial danmaku spawner.
+	auto& radialDanmaku(world.createEntity());
+	auto radialDanmakuTransform = radialDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
+
+	float rotationSpeed = 50.0f;
+	radialDanmaku.addComponent<AngularVelocity>(rotationSpeed);
+
+	float frequency = 0.17f;
+	float bulletEmissionSpeed = 150.0f;
+	float bulletEmissionAngularVelocity = 20.0f;
+	float radius = 30.0f;
+	float duration = 10.0f;
+	float delay = 2.0f;
+	int bulletsPerBurst = 5;
+
+	// RadialSpawner component takes a callback which spawns individual bullets.
+	radialDanmaku.addComponent<RadialSpawner>(rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
+		radius, duration, delay, bulletsPerBurst,
+		[this, radialDanmakuTransform, bulletEmissionSpeed, bulletEmissionAngularVelocity, radius](Vector2D direction) {
+			auto& e(world.createDeferredEntity());
+
+			Vector2D bulletSpawnPositionOffset = direction * radius;
+
+			e.addComponent<Transform>(radialDanmakuTransform.position + bulletSpawnPositionOffset, 0.0f, 1.0f);
+			e.addComponent<Velocity>(direction, bulletEmissionSpeed, true);
+
+			e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
+			SDL_FRect src { 0, 0, 32, 32 };
+			SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 32 };
+			e.addComponent<Sprite>(tex, src, dest);
+
+			auto& c = e.addComponent<Collider>("projectile");
+			c.rect.w = dest.w / 1.5;
+			c.rect.h = dest.h / 1.5;
+
+			c.offset.x = (dest.w  - c.rect.w) / 2.0f;
+			c.offset.y = (dest.h - c.rect.h) / 2.0f;
+
+			e.addComponent<ProjectileTag>();
+		});
+
+	// Linear danmaku spawner.
+	auto& linearDanmaku(world.createEntity());
+	linearDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
+
+	bool isFanPattern = true;
+	float bulletEmissionSpeedMultiplier = 1.0f;
+
+	std::vector<Vector2D> bulletSpawnPositions;
+	bulletSpawnPositions.emplace_back(0, -30);
+	bulletSpawnPositions.emplace_back(0, -40);
+	bulletSpawnPositions.emplace_back(0, -50);
+	bulletSpawnPositions.emplace_back(10, -20);
+	bulletSpawnPositions.emplace_back(-10, -20);
+	bulletSpawnPositions.emplace_back(15, -20);
+	bulletSpawnPositions.emplace_back(-15, -20);
+
+	linearDanmaku.addComponent<LinearSpawner>(isFanPattern, bulletEmissionSpeed, bulletEmissionSpeedMultiplier,
+		bulletSpawnPositions, frequency, duration, delay,
+		[this](Vector2D position, Vector2D direction, float speed) {
+			auto& e(world.createDeferredEntity());
+
+			e.addComponent<Transform>(position, 0.0f, 1.0f);
+			e.addComponent<Velocity>(direction, speed, false);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
+			SDL_FRect src { 0, 0, 32, 32 };
+			SDL_FRect dest { position.x, position.y, 32, 32 };
+			e.addComponent<Sprite>(tex, src, dest);
+
+			auto& c = e.addComponent<Collider>("projectile");
+			c.rect.w = dest.w / 1.5;
+			c.rect.h = dest.h / 1.5;
+
+			c.offset.x = (dest.w  - c.rect.w) / 2.0f;
+			c.offset.y = (dest.h - c.rect.h) / 2.0f;
+
+			e.addComponent<ProjectileTag>();
+		});
+
 
 	// Add timeline object (experimental, this will actually spawn enemy convoys later).
 	auto& timelineManager(world.createEntity());
