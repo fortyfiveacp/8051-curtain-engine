@@ -46,9 +46,14 @@ public:
                     // Update position.
                     updatePosition(dt, entity);
                 }
+
                 if (entity->hasComponent<AngularVelocity>()) {
-                    // Update rotation.
-                    updateRotation(dt, entity);
+                    // Update rotation based on angular velocity.
+                    updateRotationBasedOnAngularVelocity(dt, entity);
+                }
+                else if (entity->hasComponent<LookAtRotator>()) {
+                    // Update rotation to look at a specific target.
+                    updateRotationBasedOnTarget(entity);
                 }
             }
         }
@@ -84,10 +89,20 @@ private:
         t.position += velocityVector * dt;
     }
 
-    static void updateRotation(float dt, std::unique_ptr<Entity> &entity) {
+    static void updateRotationBasedOnAngularVelocity(float dt, std::unique_ptr<Entity> &entity) {
         auto& t = entity->getComponent<Transform>();
         auto& v = entity->getComponent<AngularVelocity>();
 
         t.rotation = std::fmod(t.rotation + (v.rotationOverTime * dt), 360.0f);
+    }
+
+    static void updateRotationBasedOnTarget(std::unique_ptr<Entity> &entity) {
+        auto& t = entity->getComponent<Transform>();
+        auto& r = entity->getComponent<LookAtRotator>();
+
+        const Vector2D displacement = r.target.position - t.position;
+
+        t.rotation = std::fmod(std::atan2(displacement.y, displacement.x) * (180 / std::numbers::pi) +
+            r.offsetDegrees - 90.0f, 360.0f);
     }
 };
