@@ -274,7 +274,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	linearDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
 	linearDanmaku.addComponent<LookAtRotator>(playerTransform, 0.0f);
 
-	bool isFanPattern = true;
+	bool isFanPattern = false;
 	float bulletEmissionSpeedMultiplier = 1.0f;
 
 	std::vector<Vector2D> bulletSpawnPositions;
@@ -322,11 +322,11 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		std::cout << "Linear start!" << std::endl;
 		linearSpawner.isActive = true;
 	});
-	debugTimeline.timeline.emplace_back(4.0, [&radialSpawner] {
+	debugTimeline.timeline.emplace_back(10.0, [&radialSpawner] {
 		std::cout << "Radial end!" << std::endl;
 		radialSpawner.isActive = false;
 	});
-	debugTimeline.timeline.emplace_back(5.0, [&linearSpawner] {
+	debugTimeline.timeline.emplace_back(11.0, [&linearSpawner] {
 		std::cout << "Linear end!" << std::endl;
 		linearSpawner.isActive = false;
 	});
