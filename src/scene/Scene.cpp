@@ -31,8 +31,8 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	menu.addComponent<Sprite>(texture, menuSrc, menuDst, RenderLayer::Background);
 
 	// FPS counter.
-	auto& fpsCounter = createLabel(windowWidth - 170, windowHeight - 40, {240, 240, 240, 255},
-		"pop1", "0.000fps", "fpsCounter", LabelType::FPSCounter);
+	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40,
+		{240, 240, 240, 255}, "pop1", "0.000fps", "fpsCounter", LabelType::FPSCounter);
 	fpsCounter.addComponent<FPSCounter>();
 }
 
@@ -85,12 +85,12 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// Create backgrounds.
 	// The backgrounds are 1 pixel taller to make an overlap that hides the seam between backgrounds.
-	createStageBackground(stageWidth, stageHeight + 1, 0, backgroundSpeed, "../asset/stage1.png");
-	createStageBackground(stageWidth, stageHeight + 1, -stageHeight, backgroundSpeed, "../asset/stage1.png");
+	UIUtils::createStageBackground(world, stageWidth, stageHeight + 1, 0, backgroundSpeed, "../asset/stage1.png");
+	UIUtils::createStageBackground(world, stageWidth, stageHeight + 1, -stageHeight, backgroundSpeed, "../asset/stage1.png");
 
 	// Create foregrounds.
-	createStageBackground(stageWidth, stageHeight, 0, foregroundSpeed, "../asset/foreground1.png");
-	createStageBackground(stageWidth, stageHeight, -stageHeight, foregroundSpeed, "../asset/foreground1.png");
+	UIUtils::createStageBackground(world, stageWidth, stageHeight, 0, foregroundSpeed, "../asset/foreground1.png");
+	UIUtils::createStageBackground(world, stageWidth, stageHeight, -stageHeight, foregroundSpeed, "../asset/foreground1.png");
 
 	// TODO: purge unused systems.
 	// Load our map.
@@ -346,111 +346,12 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	createPauseMenuOverlay(windowWidth, windowHeight);
 
 	// Create FPS counter label.
-	auto& fpsCounter = createLabel(windowWidth - 170, windowHeight - 40, {240, 240, 240, 255},
+	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40, {240, 240, 240, 255},
 		"pop1", "0.000fps", "fpsCounter", LabelType::FPSCounter);
 	fpsCounter.addComponent<FPSCounter>();
 
 	// Create sidebar UI labels.
 	createSidebarUILabels(windowWidth, windowHeight, stageWidth, stageHeight);
-}
-
-Entity& Scene::createSelectableButton(Entity& overlay, const char* font, SDL_Color selectedColour, SDL_Color unselectedColour,
-	const char* text, const char* cacheKey, const std::function<void()>& onPressed) {
-	auto& parentChildren = overlay.getComponent<Children>();
-
-	// Create the button.
-	auto& button = createLabel(0, 0, selectedColour, font,
-		text, cacheKey, LabelType::Static);
-	auto& transform = button.getComponent<Transform>();
-	auto& label = button.getComponent<Label>();
-	label.visible = false;
-
-	auto& selectable = button.addComponent<SelectableUI>();
-
-	// Functions for on press, on release and on select.
-	selectable.onPressed = [&transform, onPressed] {
-		AudioManager::playSfx("ok");
-		transform.scale = 1.0f;
-		onPressed();
-	};
-
-	selectable.onReleased = [&transform, &label, unselectedColour] {
-		transform.scale = 1.0f;
-		label.color = unselectedColour;
-		label.dirty = true;
-	};
-
-	selectable.onSelect = [&transform, &label, selectedColour] {
-		AudioManager::playSfx("select");
-		transform.scale = 1.15f;
-		label.color = selectedColour;
-		label.dirty = true;
-	};
-
-	// Add overlay as parent to the button.
-	button.addComponent<Parent>(&overlay);
-	parentChildren.children.push_back(&button);
-
-	return button;
-}
-
-Entity& Scene::createLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text, const char* cacheKey,
-	LabelType labelType) {
-	auto& newLabel(world.createEntity());
-	Label label = {
-		text,
-		AssetManager::getFont(fontName),
-		colour,
-		labelType,
-		cacheKey
-	};
-
-	TextureManager::loadLabel(label);
-	newLabel.addComponent<Label>(label);
-	newLabel.addComponent<Transform>(Vector2D(x, y), 0.0f, 1.0f);
-
-	return newLabel;
-}
-
-Entity& Scene::createIconLabel(int x, int y, int maxNumber, float iconWidth, float iconHeight,
-	IconCounterType iconCounterType, const char* texturePath) {
-
-	SDL_Texture* tex = TextureManager::load(texturePath);
-
-	auto& iconLabel(world.createEntity());
-	iconLabel.addComponent<IconCounter>(maxNumber, tex, iconCounterType);
-	iconLabel.addComponent<Transform>(Vector2D(x, y), 0.0f, 1.0f);
-
-	iconLabel.addComponent<Children>();
-
-	for (int i = 0; i < maxNumber; i++) {
-		auto& icon(world.createEntity());
-		SDL_FRect src {0, 0, static_cast<float>(tex->w), static_cast<float>(tex->h)};
-		SDL_FRect dst = {0, 0, iconWidth, iconHeight};
-		icon.addComponent<Sprite>(tex, src, dst, RenderLayer::UI);
-		icon.addComponent<Transform>(Vector2D(x + iconWidth * i, y), 0.0f, 1.0f);
-
-		// Parent icon to the icon label.
-		icon.addComponent<Parent>(&iconLabel);
-		iconLabel.getComponent<Children>().children.push_back(&icon);
-	}
-
-	return iconLabel;
-}
-
-Entity& Scene::createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath) {
-	SDL_Texture* tex = TextureManager::load(texturePath);
-	SDL_FRect src {0, 0, static_cast<float>(tex->w), static_cast<float>(tex->h)};
-	SDL_FRect dst = {0, 0, stageWidth, stageHeight};
-
-	// Create backgrounds.
-	auto& stageBackground = world.createEntity();
-	stageBackground.addComponent<Transform>(Vector2D(0, startingY), 0.0f, 1.0f);
-	stageBackground.addComponent<Velocity>(Vector2D(0, 1), scrollSpeedY);
-	stageBackground.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
-	stageBackground.addComponent<StageBackground>(scrollSpeedY, 0.0f, tex);
-
-	return stageBackground;
 }
 
 void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight) {
@@ -477,48 +378,48 @@ void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stage
 	SDL_Color hotPink = {180, 85, 172, 255};
 
 	// HiScore static and dynamic labels.
-	createLabel(staticLeftPadding, paddingY, grey, staticLabelFont,
+	UIUtils::createLabel(world, staticLeftPadding, paddingY, grey, staticLabelFont,
 		"HiScore", "HiScoreLabel", LabelType::Static);
-	createLabel(dynamicLeftPadding, paddingY, offWhite, dynamicLabelFont,
+	UIUtils::createLabel(world, dynamicLeftPadding, paddingY, offWhite, dynamicLabelFont,
 		"000000000", "HiScore", LabelType::HiScore);
 
 	// Score static and dynamic labels.
-	createLabel(staticLeftPadding, (fontHeight + leading) + paddingY, grey, staticLabelFont,
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) + paddingY, grey, staticLabelFont,
 		"Score","ScoreLabel", LabelType::Static);
-	createLabel(dynamicLeftPadding, (fontHeight + leading) + paddingY, offWhite, dynamicLabelFont,
+	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) + paddingY, offWhite, dynamicLabelFont,
 		"000000000","Score", LabelType::Score);
 
 	// Player health static and dynamic labels.
-	createLabel(staticLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont,
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont,
 		"Player", "HealthLabel", LabelType::Static);
-	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, PlayerStats::MAX_HEALTH,
+	UIUtils::createIconLabel(world, dynamicLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, PlayerStats::MAX_HEALTH,
 		fontHeight, fontHeight, IconCounterType::Health, "../asset/ui/red-star.png");
 
 	// Bomb static and dynamic labels.
-	createLabel(staticLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont,
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont,
 		"Bomb", "BombLabel", LabelType::Static);
-	createIconLabel(dynamicLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, PlayerStats::MAX_BOMBS,
+	UIUtils::createIconLabel(world, dynamicLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, PlayerStats::MAX_BOMBS,
 		fontHeight, fontHeight, IconCounterType::Bomb, "../asset/ui/blue-star.png");
 
 	// Power static and dynamic labels.
-	createLabel(staticLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, hotPink, staticLabelFont,
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, hotPink, staticLabelFont,
 		"Power", "PowerLabel", LabelType::Static);
-	createLabel(dynamicLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, offWhite, dynamicLabelFont,
+	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, offWhite, dynamicLabelFont,
 		"0", "Power", LabelType::Power);
 
 	// Graze static and dynamic labels.
-	createLabel(staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
 		"Graze", "GrazeLabel", LabelType::Static);
-	createLabel(dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
+	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
 		"0", "Graze", LabelType::Graze);
 
 	// Point static and dynamic labels.
 	std::string initialPointString = "0/" + std::to_string(PlayerStats::MAX_POINTS);
 	const char* initialPoint = initialPointString.c_str();
 
-	createLabel(staticLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, hotPink, staticLabelFont,
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, hotPink, staticLabelFont,
 		"Point", "PointLabel", LabelType::Static);
-	createLabel(dynamicLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, offWhite, dynamicLabelFont,
+	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, offWhite, dynamicLabelFont,
 		initialPoint, "Point", LabelType::Point);
 }
 
@@ -564,7 +465,7 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 	float stagePaddingY = StageUtils::CalculateStagePaddingY(windowHeight);
 
 	// Create paused title label.
-	auto& pauseTitle = createLabel(0, 0, pausedColour, font,
+	auto& pauseTitle =  UIUtils::createLabel(world, 0, 0, pausedColour, font,
 		"Pause", "PauseLabel", LabelType::Static);
 	auto& pauseTransform = pauseTitle.getComponent<Transform>();
 	auto& pauseLabel = pauseTitle.getComponent<Label>();
@@ -579,7 +480,7 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 	parentChildren.children.push_back(&pauseTitle);
 
 	// Create resume button.
-	auto& resumeButton = createSelectableButton(overlay, font, selectedColour, unselectedColour,
+	auto& resumeButton =  UIUtils::createSelectableButton(world, overlay, font, selectedColour, unselectedColour,
 		"Resume Game", "ResumeButton", [] {
 			// Resume game by pushing an escape key down event to toggle the pause menu.
 			SDL_Event event;
@@ -595,7 +496,7 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 	auto& resumeSelectable = resumeButton.getComponent<SelectableUI>();
 
 	// Create quit button.
-	auto& quitButton = createSelectableButton(overlay, font, selectedColour, unselectedColour,
+	auto& quitButton =  UIUtils::createSelectableButton(world, overlay, font, selectedColour, unselectedColour,
 		"Quit Game", "QuitButton", [] {
 			// Quit game by pushing a quit event.
 			SDL_Event event;

@@ -1,5 +1,3 @@
-#pragma once
-
 #include "DebugRenderSystem.h"
 
 #include "World.h"

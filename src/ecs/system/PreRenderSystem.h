@@ -12,7 +12,7 @@ public:
             if (e->hasComponent<Label>() && e->getComponent<Label>().dirty) {
                 TextureManager::updateLabel(e->getComponent<Label>());
             } else if (e->hasComponent<IconCounter>()) {
-                UiUtils::updateIconCounter(*e);
+                UIUtils::updateIconCounter(*e);
             }
         }
     }

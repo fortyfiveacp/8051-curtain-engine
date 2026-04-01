@@ -1,5 +1,3 @@
-#pragma once
-
 #include "PauseMenuSystem.h"
 
 #include "World.h"

@@ -1,34 +1,24 @@
 #pragma once
+
+#include <functional>
+
 #include "Component.h"
 #include "Entity.h"
+#include "SDL3/SDL_pixels.h"
 
-class UiUtils {
+class World;
+
+class UIUtils {
 public:
-    static void updateIconCounter(Entity& entity) {
-        auto& iconCounter = entity.getComponent<IconCounter>();
+    static void updateIconCounter(Entity& entity);
 
-        if (!iconCounter.dirty) {
-            return;
-        }
-
-        // The actual icons should be children of the entity.
-        if (entity.hasComponent<Children>()) {
-            auto& children = entity.getComponent<Children>();
-
-            // Check if the current number is greater than the capacity of the counter.
-            // Logic for ensuring the current number stays within the bound should be handled elsewhere.
-            if (iconCounter.currentNumber > children.children.size()) {
-                std::cerr << "Icon counter has exceeded the set maximum size!" << std::endl;
-            }
-
-            // Make the current number of icons visible, then make the rest invisible.
-            for (int i = 0; i < children.children.size(); i++) {
-                if (i < iconCounter.currentNumber) {
-                    children.children[i]->getComponent<Sprite>().visible = true;
-                } else {
-                    children.children[i]->getComponent<Sprite>().visible = false;
-                }
-            }
-        }
-    }
+    // Functions for creating UI elements.
+    static Entity& createSelectableButton(World& world, Entity& overlay, const char* font, SDL_Color selectedColour,
+        SDL_Color unselectedColour, const char* text, const char* cacheKey, const std::function<void()>& onPressed);
+    static Entity& createLabel(World& world, int x, int y, SDL_Color colour, const char* fontName, const char* text,
+        const char* cacheKey, LabelType labelType);
+    static Entity& createIconLabel(World& world, int x, int y, int maxNumber, float iconWidth, float iconHeight,
+        IconCounterType iconCounterType, const char* texturePath);
+    static Entity& createStageBackground(World& world, float stageWidth, float stageHeight, float startingY,
+        float scrollSpeedY, const char* texturePath);
 };

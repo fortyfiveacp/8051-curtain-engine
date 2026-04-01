@@ -56,6 +56,7 @@ set(SRC_FILES
         src/ecs/system/SelectableUISystem.cpp
         src/ecs/system/PauseMenuSystem.cpp
         src/ecs/system/DebugRenderSystem.cpp
+        src/utils/UIUtils.cpp
         #add all new source files here
 )
 
