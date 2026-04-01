@@ -27,8 +27,15 @@ public:
 
                     for (int i = 0; i < spawner.bulletPositions.size(); i++) {
                         auto& localPosition = spawner.bulletPositions[i];
-                        const Vector2D spawnPosition = transform.position + localPosition;
-                        Vector2D displacement = -localPosition;
+
+                        // Rotate the local position according to the spawner's rotation.
+                        float angleRadians = std::atan2(localPosition.y, localPosition.x) +
+                            transform.rotation * (std::numbers::pi / 180.0f);
+                        float radius = localPosition.length();
+
+                        auto rotatedLocalPosition = Vector2D(std::cos(angleRadians) * radius, std::sin(angleRadians) * radius);
+                        const Vector2D spawnPosition = transform.position + rotatedLocalPosition;
+                        Vector2D displacement = -rotatedLocalPosition;
 
                         float rotation;
 
