@@ -1,21 +1,23 @@
 #pragma once
 #include <string>
 
-#include "Vector2D.h"
 #include "World.h"
 #include "SDL3/SDL_events.h"
 #include "SceneType.h"
 
 class Scene {
 public:
+    bool isPaused = false;
+    bool isDebugging = false;
+
     Scene(SceneType sceneType, const char* sceneName, const char* mapPath, int windowWidth, int windowHeight);
 
     void update(const float dt, const SDL_Event &e) {
-        world.update(dt, e, type);
+        world.update(dt, e, type, isPaused, isDebugging);
     }
 
     void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) {
-        world.render(renderer, windowWidth, windowHeight);
+        world.render(renderer, windowWidth, windowHeight, isDebugging);
     }
 
     World world;
@@ -23,7 +25,6 @@ public:
     const std::string& getName() const {
         return name;
     }
-
 private:
     std::string name;
     SceneType type;
@@ -32,14 +33,11 @@ private:
     void initMainMenu(int windowWidth, int windowHeight);
     void initGameplay(const char* mapPath, int windowWidth, int windowHeight);
 
+    // Functions for creating the specific UI in the game.
+    void createSidebarUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);
     Entity& createPauseMenuOverlay(int windowWidth, int windowHeight);
-    void createPauseMenuUComponents(Entity& overlay);
+    void createPauseMenuUComponents(Entity& overlay, int windowWidth, int windowHeight);
+
+    // UI related helpers.
     void toggleOverlayVisibility(Entity& overlay);
-
-    Entity& createPlayerPosLabel();
-    Entity& createFPSCounterLabel(int windowWidth, int windowHeight);
-    Entity& createStaticLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text);
-    void createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);
-
-    Entity& createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath);
 };

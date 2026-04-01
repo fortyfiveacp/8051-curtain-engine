@@ -56,12 +56,17 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	// Load audio.
 	audioManager.loadAudio("stage-theme", "../asset/audio/music/Stage Theme.mp3");
 	audioManager.loadAudio("player-hit", "../asset/audio/sfx/se_pldead00.flac");
+	audioManager.loadAudio("pause", "../asset/audio/sfx/se_pause.flac");
+	audioManager.loadAudio("select", "../asset/audio/sfx/se_select00.flac");
+	audioManager.loadAudio("ok", "../asset/audio/sfx/se_ok00.flac");
+	audioManager.loadAudio("bomb", "../asset/audio/sfx/se_cat00.flac");
+	audioManager.loadAudio("item", "../asset/audio/sfx/se_item00.flac");
 
 	// Load fonts.
 	AssetManager::loadFont("pop1", "../asset/fonts/pop1-w9.ttf", 32);
 	AssetManager::loadFont("DFPPOPCorn", "../asset/fonts/DFPPOPCORN-W12.ttf", 32);
 
-	// Load assets.
+	// Load animations.
 	AssetManager::loadAnimation("player", "../asset/animations/reimu_animations.xml");
 	AssetManager::loadAnimation("enemy", "../asset/animations/bird_animations.xml");
 
@@ -71,7 +76,13 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	sceneManager.loadScene(SceneType::Gameplay, "level2", "../asset/map2.tmx", width, height);
 
 	// Init game data / state.
-	gameState.playerHealth = 5;
+	gameState.hiScore = 0;
+	gameState.score = 0;
+	gameState.playerHealth = 3;
+	gameState.playerBombs = 3;
+	gameState.power = 0;
+	gameState.graze = 0;
+	gameState.point = 0;
 
 	// Start music.
 	audioManager.playMusic("stage-theme");
@@ -107,11 +118,11 @@ void Game::handleEvents() {
 	SDL_PollEvent(&event);
 
 	switch (event.type) {
-	case SDL_EVENT_QUIT: // Triggered when user closes window.
-		isRunning = false;
-		break;
-	default:
-		break;
+		case SDL_EVENT_QUIT:
+			isRunning = false;
+			break;
+		default:
+			break;
 	}
 }
 

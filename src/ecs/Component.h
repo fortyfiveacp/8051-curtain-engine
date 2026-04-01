@@ -21,10 +21,12 @@ struct Transform {
 // Direction and speed.
 struct Velocity {
     Vector2D direction{};
-    float speed{};
+    float baseSpeed{};
 
     // If true, the direction is influenced by Transform.rotation.
     bool isLocalSpace{};
+
+    float currentSpeed = baseSpeed;
 };
 
 // Rotation over time, which modifies the rotation property of the Transform.
@@ -49,6 +51,7 @@ struct Sprite {
 struct Collider {
     std::string tag;
     SDL_FRect rect{};
+    Vector2D offset{}; // Offset for collider positioning relative to the entity's transform.
     bool enabled = true;
 };
 
@@ -64,6 +67,7 @@ struct Camera {
     SDL_FRect view;
     float worldWidth;
     float worldHeight;
+    float outOfViewPadding{}; // The amount of extra space projectiles can move out of view before being destroyed.
 };
 
 struct TimedSpawner {
@@ -144,8 +148,20 @@ struct SceneState {
     int coinsCollected = 0;
 };
 
-struct Health {
+struct PlayerStats {
     int currentHealth{};
+    int currentBombs{};
+    Vector2D playerStartingPosition{};
+    int currentHiScore{};
+    int currentScore{};
+    int currentPower{};
+    int currentGraze{};
+    int currentPoint{};
+    static constexpr int MAX_SCORE = 999999999;
+    static constexpr int MAX_HEALTH = 8;
+    static constexpr int MAX_BOMBS = 8;
+    static constexpr int MAX_POWER = 400;
+    static constexpr int MAX_POINTS = 50; // TODO: how many points are there?
 };
 
 struct SelectableUI {
@@ -155,12 +171,14 @@ struct SelectableUI {
     bool selected = false;
 
     // The selectable UI elements are a doubly linked list.
-    SelectableUI* next = nullptr;
-    SelectableUI* previous = nullptr;
+    // Upon some reflection this may or may not be best practice in terms of ECS design.
+    Entity* next = nullptr;
+    Entity* previous = nullptr;
 };
 
 struct Toggleable {
     std::function<void()> toggle;
+    bool enabled = true;
 };
 
 struct Parent {
@@ -180,21 +198,27 @@ struct Timeline {
 };
 
 enum class LabelType {
-    PlayerPosition,
     FPSCounter,
-    Static
+    Static,
+    HiScore,
+    Score,
+    Health,
+    Bomb,
+    Power,
+    Graze,
+    Point
 };
 
 struct Label {
     std::string text{};
     TTF_Font* font = nullptr;
     SDL_Color color{};
-    LabelType type = LabelType::PlayerPosition; // Default to player position for tutorial.
+    LabelType type = LabelType::Static;
     std::string textureCacheKey{};
     SDL_Texture* texture = nullptr;
     SDL_FRect dst{};
     bool visible = true;
-    bool dirty = false;
+    bool dirty = true;
 };
 
 struct FPSCounter {
@@ -203,11 +227,60 @@ struct FPSCounter {
 };
 
 struct StageBackground {
-    float baseWidth{};
-    float baseHeight{};
     float scrollSpeedY = 100.0f;
     float offsetY = 0.0f;
     SDL_Texture* texture{};
+};
+
+enum class IconCounterType {
+    Health,
+    Bomb
+};
+
+struct IconCounter {
+    int maxNumber{};
+    SDL_Texture* texture = nullptr;
+    IconCounterType type = IconCounterType::Health;
+    int currentNumber{};
+    bool visible = true;
+    bool dirty = true;
+};
+
+struct KeyboardInput {
+    bool up = false;
+    bool down = false;
+    bool left = false;
+    bool right = false;
+    bool focus = false;
+    float focusMultiplier = 0.5f;
+    bool shoot = false;
+    bool bomb = false;
+};
+
+struct InvincibilityFrames {
+    float duration = 4.0f;
+    float timer = 0.0f;
+    float flickerFrequency = 10.0f; // The number of sprite flickers per second when invincible.
+    bool active = false;
+};
+
+enum ItemType {
+    Point,
+    LargePower,
+    SmallPower,
+    Bomb
+};
+
+struct Item {
+    int value{};
+    ItemType type{};
+};
+
+// Note that bounces require a velocity component with an upward direction at the start.
+struct ItemBounce {
+    float bounceDuration = 1.25f; // Duration of upwards movement when the item is created.
+    float timer = bounceDuration;
+    bool isBouncing = true;
 };
 
 struct PlayerTag{};

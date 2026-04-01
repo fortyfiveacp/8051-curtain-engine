@@ -32,8 +32,8 @@ EventResponseSystem::EventResponseSystem(World &world) {
             return;
         }
 
-        const auto& keyboardInteractionEvent = static_cast<const UIInteractionEvent&>(e);
-        onUIInteraction(keyboardInteractionEvent);
+        const auto& uiInteractionEvent = static_cast<const UIInteractionEvent&>(e);
+        onUIInteraction(uiInteractionEvent);
     });
 }
 
@@ -47,9 +47,11 @@ void EventResponseSystem::onUIInteraction(const UIInteractionEvent& e) {
             selectable.onPressed();
             break;
         case UIInteractionState::Released:
+            selectable.selected = false;
             selectable.onReleased();
             break;
         case UIInteractionState::Selected:
+            selectable.selected = true;
             selectable.onSelect();
             break;
         default:
@@ -70,21 +72,49 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
             return;
         }
 
-        other->destroy();
+        AudioManager::playSfx("item");
 
-        for (auto& entity : world.getEntities()) {
-            if (!entity->hasComponent<SceneState>()) {
-                continue;
-            }
+        auto& item = other->getComponent<Item>();
 
-            // Scene state
-            auto& sceneState = entity->getComponent<SceneState>();
-            sceneState.coinsCollected++;
+        if (player->hasComponent<PlayerStats>()) {
+            auto& playerStats = player->getComponent<PlayerStats>();
 
-            if (sceneState.coinsCollected > 1) {
-                Game::onSceneChangeRequest("level2");
+            switch(item.type) {
+                case Point:
+                    playerStats.currentScore = std::min(playerStats.currentScore + item.value, PlayerStats::MAX_SCORE);
+                    playerStats.currentPoint++;
+
+                    // Also update current HiScore if current Score exceeds it.
+                    playerStats.currentHiScore = std::max(playerStats.currentHiScore, playerStats.currentScore);
+                    break;
+                case SmallPower:
+                case LargePower:
+                    playerStats.currentPower = std::min(playerStats.currentPower + item.value, PlayerStats::MAX_POWER);
+                    break;
+                case Bomb:
+                    playerStats.currentBombs = std::min(playerStats.currentBombs + item.value, PlayerStats::MAX_BOMBS);
+                    break;
+                default:
+                    break;
             }
         }
+
+        // TODO: purge.
+        // for (auto& entity : world.getEntities()) {
+        //     if (!entity->hasComponent<SceneState>()) {
+        //         continue;
+        //     }
+        //
+        //     Scene state
+        //     auto& sceneState = entity->getComponent<SceneState>();
+        //     sceneState.coinsCollected++;
+        //
+        //     if (sceneState.coinsCollected > 1) {
+        //         Game::onSceneChangeRequest("level2");
+        //     }
+        // }
+
+        other->destroy();
     }
     else if (std::string(otherTag) == "wall") {
         // Stop the player
@@ -100,18 +130,31 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
             return;
         }
 
+        auto& invincibilityFrames = player->getComponent<InvincibilityFrames>();
+        auto& playerTransform = player->getComponent<Transform>();
+
+        // Ignore hit if invincible.
+        if (invincibilityFrames.active) {
+            return;
+        }
+
+        // Enable invincibility frames after hit.
+        invincibilityFrames.active = true;
+
         world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit"));
 
         // This logic is simple and direct.
         // Ideally, we would only operate on data in an update function (transient entities).
-        auto& health = player->getComponent<Health>();
-        health.currentHealth--;
+        auto& playerStats = player->getComponent<PlayerStats>();
 
-        Game::gameState.playerHealth = health.currentHealth;
+        // Teleport player back to starting position.
+        playerTransform.position = playerStats.playerStartingPosition;
 
-        std::cout << health.currentHealth << std::endl;
+        playerStats.currentHealth--;
+        Game::gameState.playerHealth = playerStats.currentHealth;
+        std::cout << playerStats.currentHealth << std::endl;
 
-        if (health.currentHealth == 0) {
+        if (playerStats.currentHealth == 0) {
             player->destroy();
 
             // Change scene (deferred).
