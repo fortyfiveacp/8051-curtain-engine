@@ -5,6 +5,7 @@
 #include "Component.h"
 
 class PathSystem {
+    // TODO: separate this into a component.
     std::unordered_map<int, Path>* pathLibrary;
 
 public:
@@ -54,7 +55,7 @@ public:
                 continue;
             }
 
-            // Determine if there's an upcoming hover point
+            // Determine if there's an upcoming hover point.
             float nextDistance = pf.distance + (pf.speed * dt);
             float accumulatedDist = 0.0f;
 

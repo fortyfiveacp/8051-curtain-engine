@@ -53,33 +53,30 @@ void EnemyFactory::buildLargeFairy(Entity &entity, Transform &transform, World &
     entity.addComponent<Sprite>(tex, src, dst);
     entity.addComponent<Health>(10);
 
-    // Define spawner settings
     float frequency = 1.0f;
     float bulletSpeed = 150.0f;
     float bulletAngularVel = 20.0f;
     float radius = 30.0f;
     int bulletsPerBurst = 31;
 
-    // Add the RadialSpawner component
     entity.addComponent<RadialSpawner>(
-        0.0f,               // rotationSpeed
+        0.0f,                   // rotationSpeed
         frequency,          // frequency
         bulletSpeed,        // bulletEmissionSpeed
         bulletAngularVel,   // bulletEmissionAngularVelocity
         radius,             // radius
-        10.0f,              // duration
-        2.0f,               // delay
+        10.0f,                  // duration
+        2.0f,                   // delay
         bulletsPerBurst,    // bulletsPerBurst
         [&world, &entity, bulletSpeed, bulletAngularVel, radius](Vector2D direction) {
-            // This callback is called by RadialSpawnerSystem for every bullet in the burst
 
-            // Ensure the fairy still exists
-            if (!entity.isActive()) return;
+            if (!entity.isActive()) {
+                return;
+            }
 
             auto& fairyTransform = entity.getComponent<Transform>();
             auto& bullet = world.createDeferredEntity();
 
-            // Calculate position: fairy center + offset based on direction and radius
             Vector2D spawnPos = fairyTransform.position + (direction * radius);
 
             bullet.addComponent<Transform>(spawnPos, 0.0f, 1.0f);
@@ -87,11 +84,10 @@ void EnemyFactory::buildLargeFairy(Entity &entity, Transform &transform, World &
             bullet.addComponent<AngularVelocity>(bulletAngularVel);
             bullet.addComponent<ProjectileTag>();
 
-            // Visuals for the bullet
             SDL_Texture* tex = TextureManager::load("../asset/bullet4.png");
             bullet.addComponent<Sprite>(tex, SDL_FRect{0,0,64,64}, SDL_FRect{0,0,64,64});
 
-            Collider c = bullet.addComponent<Collider>("projectile");
+            auto& c = bullet.addComponent<Collider>("projectile");
             c.rect.w = 32;
             c.rect.h = 32;
         }
