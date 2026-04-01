@@ -172,8 +172,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	int bulletsPerBurst = 31;
 
 	// RadialSpawner component takes a callback which spawns individual bullets.
-	radialDanmaku.addComponent<RadialSpawner>(rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
-		radius, duration, delay, bulletsPerBurst,
+	auto& radialSpawner = radialDanmaku.addComponent<RadialSpawner>(false, rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
+		radius, bulletsPerBurst,
 		[this, radialDanmakuTransform, bulletEmissionSpeed, bulletEmissionAngularVelocity, radius](Vector2D direction) {
 			auto& e(world.createDeferredEntity());
 
@@ -212,8 +212,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	bulletSpawnPositions.emplace_back(15, -20);
 	bulletSpawnPositions.emplace_back(-15, -20);
 
-	linearDanmaku.addComponent<LinearSpawner>(isFanPattern, bulletEmissionSpeed, bulletEmissionSpeedMultiplier,
-		bulletSpawnPositions, frequency, duration, delay,
+	auto& linearSpawner = linearDanmaku.addComponent<LinearSpawner>(false, isFanPattern, bulletEmissionSpeed, bulletEmissionSpeedMultiplier,
+		bulletSpawnPositions, frequency,
 		[this](Vector2D position, Vector2D direction, float speed) {
 			auto& e(world.createDeferredEntity());
 
@@ -233,33 +233,33 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		});
 
 
-	// Add timeline object (experimental, this will actually spawn enemy convoys later).
+	// Add timeline object (for testing danmaku scripting).
 	auto& timelineManager(world.createEntity());
 	auto& debugTimeline = timelineManager.addComponent<Timeline>();
 
 	debugTimeline.timeline.emplace_back(1.0, [] {
-		std::cout << "Hello" << std::endl;
+		std::cout << "Radial start!" << std::endl;
+	});
+	debugTimeline.timeline.emplace_back(1.0, [&radialSpawner] {
+		radialSpawner.isActive = true;
 	});
 	debugTimeline.timeline.emplace_back(2.0, [] {
-		std::cout << "World" << std::endl;
+		std::cout << "Linear start!" << std::endl;
+	});
+	debugTimeline.timeline.emplace_back(2.0, [&linearSpawner] {
+		linearSpawner.isActive = true;
 	});
 	debugTimeline.timeline.emplace_back(4.0, [] {
-		std::cout << "Welcome ";
+		std::cout << "Radial end!" << std::endl;
 	});
-	debugTimeline.timeline.emplace_back(4.5, [] {
-		std::cout << "to ";
+	debugTimeline.timeline.emplace_back(4.0, [&radialSpawner] {
+		radialSpawner.isActive = false;
 	});
 	debugTimeline.timeline.emplace_back(5.0, [] {
-		std::cout << "Touhou ";
+		std::cout << "Linear end!" << std::endl;
 	});
-	debugTimeline.timeline.emplace_back(5.5, [] {
-		std::cout << "Miko ";
-	});
-	debugTimeline.timeline.emplace_back(6.0, [] {
-		std::cout << "Warfare";
-	});
-	debugTimeline.timeline.emplace_back(6.0, [] {
-		std::cout << "!!" << std::endl;
+	debugTimeline.timeline.emplace_back(5.0, [&linearSpawner] {
+		linearSpawner.isActive = false;
 	});
 
 	// Add scene state.
