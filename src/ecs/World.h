@@ -43,7 +43,7 @@ class World {
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     std::unordered_map<int, Path> pathLibrary;
-    PathSystem pathSystem{&pathLibrary};
+    PathSystem pathSystem;
     MovementSystem movementSystem;
     RenderSystem renderSystem;
     KeyboardInputSystem keyboardInputSystem;
@@ -86,19 +86,8 @@ public:
             // Main menu system update.
             mainMenuSystem.update(event);
         } else {
-            convoySystem.update(*this, dt);
             keyboardInputSystem.update(entities, event);
-            pathSystem.update(entities, dt);
-            movementSystem.update(entities, dt);
-            collisionSystem.update(*this);
-            animationSystem.update(entities, dt);
             cameraSystem.update(entities);
-            spawnTimerSystem.update(entities, dt);
-            radialSpawnerSystem.update(entities, dt);
-            linearSpawnerSystem.update(entities, dt);
-            timelineSystem.update(entities, dt);
-            stageBackgroundSystem.update(entities, dt);
-            keyboardInputSystem.update(entities, event);
             playerBoundsSystem.update(entities);
             pauseMenuSystem.update(entities,  *this, event, isPaused);
             selectableUISystem.update(entities, *this, event);
@@ -109,6 +98,8 @@ public:
                 collisionSystem.update(*this);
                 invincibilityFramesSystem.update(entities, dt);
                 playerAbilitySystem.update(entities);
+                convoySystem.update(*this, dt);
+                pathSystem.update(*this, entities, dt);
                 animationSystem.update(entities, dt);
                 // cameraSystem.update(entities); // TODO: decide what to do with the camera system.
                 spawnTimerSystem.update(entities, dt);

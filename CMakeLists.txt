@@ -65,6 +65,7 @@ set(SRC_FILES
         src/ecs/system/DebugRenderSystem.cpp
         src/utils/UIUtils.cpp
         src/utils/StageUtils.cpp
+        src/ecs/system/PathSystem.cpp
         #add all new source files here
 )
 

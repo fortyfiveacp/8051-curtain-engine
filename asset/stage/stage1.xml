@@ -40,15 +40,17 @@
         </Path>
         <Path id="6" name="LargeStraightOneThird">
             <Point x="224" y="-80" />
+            <Point x="480" y="250" waitTime="5.0" />
             <Point x="224" y="1000" />
         </Path>
         <Path id="7" name="LargeStraightTwoThirds">
             <Point x="480" y="-80" />
+            <Point x="480" y="250" waitTime="5.0" />
             <Point x="480" y="1000" />
         </Path>
         <Path id="8" name="CenterHover">
             <Point x="352" y="-80" />
-            <Point x="352" y="298" waitTime="5.0"  />
+            <Point x="352" y="298" waitTime="5.0" />
             <Point x="352" y="446"/>
             <Point x="352" y="1000" />
         </Path>
@@ -86,7 +88,7 @@
         <Convoy start="15.0" enemyType="SmallFairy" pathId="2" numEnemies="5" interval="1.0" speed="120" />
         <Convoy start="15.0" enemyType="SmallFairy" pathId="3" numEnemies="5" interval="1.0" speed="120" />
 
-        <Convoy start="5.0" enemyType="LargeFairy" pathId="8" numEnemies="1" speed="100" />
+        <Convoy start="5.0" enemyType="LargeFairy" pathId="8" numEnemies="1" speed="200" />
         <Convoy start="20.0" enemyType="LargeFairy" pathId="4" numEnemies="3" interval="2.0" speed="60" />
         <Convoy start="20.0" enemyType="LargeFairy" pathId="5" numEnemies="3" interval="2.0" speed="60" />
         <Convoy start="20.0" enemyType="LargeFairy" pathId="6" numEnemies="3" interval="2.0" speed="60" />
