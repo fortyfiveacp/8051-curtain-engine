@@ -161,8 +161,14 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	playerCollider.rect.h = playerDst.w / 8;
 
 	// Add offset to the collider to it's centered on the player destination rect.
-	playerCollider.offset.x = (playerDst.w  - playerCollider.rect.w) / 2.0f;
+	playerCollider.offset.x = (playerDst.w - playerCollider.rect.w) / 2.0f;
 	playerCollider.offset.y = (playerDst.h - playerCollider.rect.h) / 2.0f;
+
+	// TODO: replace above RectCollider with this code
+	auto& playerCircleCollider = player.addComponent<CircleCollider>("player");
+	playerCircleCollider.radius = 50;
+	playerCircleCollider.offset.x = playerDst.w / 2.0f;
+	playerCircleCollider.offset.y = playerDst.h / 2.0f;
 
 	player.addComponent<PlayerTag>();
 	player.addComponent<KeyboardInput>();
