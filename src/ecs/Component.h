@@ -21,15 +21,26 @@ struct Transform {
 // Direction and speed.
 struct Velocity {
     Vector2D direction{};
-    float speed{};
+    float baseSpeed{};
 
     // If true, the direction is influenced by Transform.rotation.
     bool isLocalSpace{};
+
+    float currentSpeed = baseSpeed;
 };
 
 // Rotation over time, which modifies the rotation property of the Transform.
 struct AngularVelocity {
     float rotationOverTime{};
+};
+
+// Sets the rotation property of the Transform to point toward a different target Transform.
+struct LookAtRotator {
+    // The target so that the rotator will point local space DOWN toward the target.
+    Transform& target;
+
+    // Offset to the target in degrees.
+    float offsetDegrees{};
 };
 
 enum class RenderLayer {
@@ -49,6 +60,7 @@ struct Sprite {
 struct Collider {
     std::string tag;
     SDL_FRect rect{};
+    Vector2D offset{}; // Offset for collider positioning relative to the entity's transform.
     bool enabled = true;
 };
 
@@ -64,6 +76,7 @@ struct Camera {
     SDL_FRect view;
     float worldWidth;
     float worldHeight;
+    float outOfViewPadding{}; // The amount of extra space projectiles can move out of view before being destroyed.
 };
 
 struct TimedSpawner {
@@ -73,6 +86,9 @@ struct TimedSpawner {
 };
 
 struct RadialSpawner {
+    // Whether to emit projectiles.
+    bool isActive{};
+
     // The spawner's rotation speed.
     float rotationSpeed{};
 
@@ -88,12 +104,6 @@ struct RadialSpawner {
     // Inner radius of bullet pattern emitters.
     float radius{};
 
-    // Duration of spawner. Spawner turns off when duration expires.
-    float duration{};
-
-    // Delay before starting spawns.
-    float delay{};
-
     // Number of bullets in each burst.
     int bulletsPerBurst{};
 
@@ -102,12 +112,12 @@ struct RadialSpawner {
 
     // The actual spawn countdown, which triggers spawn when it hits zero then resets.
     float spawnTimer{frequency};
-
-    // Time since the spawner was first updated. Used for timing emission start and end.
-    float lifetime{};
 };
 
 struct LinearSpawner {
+    // Whether to emit projectiles.
+    bool isActive{};
+
     // Whether bullets radiate from emitter center after emission.
     bool isFanPattern;
 
@@ -123,20 +133,11 @@ struct LinearSpawner {
     // The frequency (sec) that one burst of bullets is emitted
     float frequency{};
 
-    // Duration of spawner. Spawner turns off when duration expires.
-    float duration{};
-
-    // Delay before starting spawns.
-    float delay{};
-
     // Invoked when spawning, once per bullet, with params global position, direction, speed.
     std::function<void(Vector2D, Vector2D, float)> spawnCallback{};
 
     // The actual spawn countdown, which triggers spawn when it hits zero then resets.
     float spawnTimer{frequency};
-
-    // Time since the spawner was first updated. Used for timing emission start and end.
-    float lifetime{};
 };
 
 // Our game state, might have multiple scenes.
@@ -144,8 +145,20 @@ struct SceneState {
     int coinsCollected = 0;
 };
 
-struct Health {
+struct PlayerStats {
     int currentHealth{};
+    int currentBombs{};
+    Vector2D playerStartingPosition{};
+    int currentHiScore{};
+    int currentScore{};
+    int currentPower{};
+    int currentGraze{};
+    int currentPoint{};
+    static constexpr int MAX_SCORE = 999999999;
+    static constexpr int MAX_HEALTH = 8;
+    static constexpr int MAX_BOMBS = 8;
+    static constexpr int MAX_POWER = 400;
+    static constexpr int MAX_POINTS = 50; // TODO: how many points are there?
 };
 
 struct SelectableUI {
@@ -155,12 +168,14 @@ struct SelectableUI {
     bool selected = false;
 
     // The selectable UI elements are a doubly linked list.
-    SelectableUI* next = nullptr;
-    SelectableUI* previous = nullptr;
+    // Upon some reflection this may or may not be best practice in terms of ECS design.
+    Entity* next = nullptr;
+    Entity* previous = nullptr;
 };
 
 struct Toggleable {
     std::function<void()> toggle;
+    bool enabled = true;
 };
 
 struct Parent {
@@ -214,21 +229,27 @@ struct Convoy {
 };
 
 enum class LabelType {
-    PlayerPosition,
     FPSCounter,
-    Static
+    Static,
+    HiScore,
+    Score,
+    Health,
+    Bomb,
+    Power,
+    Graze,
+    Point
 };
 
 struct Label {
     std::string text{};
     TTF_Font* font = nullptr;
     SDL_Color color{};
-    LabelType type = LabelType::PlayerPosition; // Default to player position for tutorial.
+    LabelType type = LabelType::Static;
     std::string textureCacheKey{};
     SDL_Texture* texture = nullptr;
     SDL_FRect dst{};
     bool visible = true;
-    bool dirty = false;
+    bool dirty = true;
 };
 
 struct FPSCounter {
@@ -237,11 +258,60 @@ struct FPSCounter {
 };
 
 struct StageBackground {
-    float baseWidth{};
-    float baseHeight{};
     float scrollSpeedY = 100.0f;
     float offsetY = 0.0f;
     SDL_Texture* texture{};
+};
+
+enum class IconCounterType {
+    Health,
+    Bomb
+};
+
+struct IconCounter {
+    int maxNumber{};
+    SDL_Texture* texture = nullptr;
+    IconCounterType type = IconCounterType::Health;
+    int currentNumber{};
+    bool visible = true;
+    bool dirty = true;
+};
+
+struct KeyboardInput {
+    bool up = false;
+    bool down = false;
+    bool left = false;
+    bool right = false;
+    bool focus = false;
+    float focusMultiplier = 0.5f;
+    bool shoot = false;
+    bool bomb = false;
+};
+
+struct InvincibilityFrames {
+    float duration = 4.0f;
+    float timer = 0.0f;
+    float flickerFrequency = 10.0f; // The number of sprite flickers per second when invincible.
+    bool active = false;
+};
+
+enum ItemType {
+    Point,
+    LargePower,
+    SmallPower,
+    Bomb
+};
+
+struct Item {
+    int value{};
+    ItemType type{};
+};
+
+// Note that bounces require a velocity component with an upward direction at the start.
+struct ItemBounce {
+    float bounceDuration = 1.25f; // Duration of upwards movement when the item is created.
+    float timer = bounceDuration;
+    bool isBouncing = true;
 };
 
 struct PlayerTag{};

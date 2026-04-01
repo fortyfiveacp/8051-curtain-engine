@@ -7,11 +7,13 @@
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
 #include "ConvoySystem.h"
+#include "DebugRenderSystem.h"
 #include "DestructionSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
 #include "FPSCounterSystem.h"
 #include "HUDSystem.h"
+#include "IconCounterSystem.h"
 #include "event/EventManager.h"
 #include "KeyboardInputSystem.h"
 #include "LinearSpawnerSystem.h"
@@ -21,13 +23,19 @@
 #include "PathSystem.h"
 #include "RadialSpawnerSystem.h"
 #include "PauseMenuSystem.h"
+#include "PlayerAbilitySystem.h"
+#include "InvincibilityFramesSystem.h"
+#include "ItemBounceSystem.h"
+#include "PlayerBoundsSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
 #include "TimelineSystem.h"
 #include "UIRenderSystem.h"
 #include "scene/SceneType.h"
 #include "PreRenderSystem.h"
+#include "SelectableUISystem.h"
 #include "StageBackgroundSystem.h"
+#include "StageUtils.h"
 #include "event/AudioEventQueue.h"
 
 class World {
@@ -53,10 +61,17 @@ class World {
     PauseMenuSystem pauseMenuSystem;
     HUDSystem hudSystem;
     FPSCounterSystem fpsCounterSystem;
+    IconCounterSystem iconLabelSystem;
     PreRenderSystem preRenderSystem;
     BackgroundRenderSystem backgroundRenderSystem;
     StageBackgroundSystem stageBackgroundSystem;
     AudioEventQueue audioEventQueue;
+    PlayerAbilitySystem playerAbilitySystem;
+    InvincibilityFramesSystem invincibilityFramesSystem;
+    SelectableUISystem selectableUISystem;
+    DebugRenderSystem debugRenderSystem;
+    PlayerBoundsSystem playerBoundsSystem;
+    ItemBounceSystem itemBounceSystem;
 
     // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
@@ -66,13 +81,12 @@ class World {
 public:
     World() = default;
 
-    void update(float dt, const SDL_Event& event, SceneType sceneType) {
+    void update(float dt, const SDL_Event& event, SceneType sceneType, bool isPaused, bool isDebugging) {
         if (sceneType == SceneType::MainMenu) {
             // Main menu system update.
             mainMenuSystem.update(event);
         } else {
             convoySystem.update(*this, dt);
-            pauseMenuSystem.update(entities, event);
             keyboardInputSystem.update(entities, event);
             pathSystem.update(entities, dt);
             movementSystem.update(entities, dt);
@@ -84,8 +98,31 @@ public:
             linearSpawnerSystem.update(entities, dt);
             timelineSystem.update(entities, dt);
             stageBackgroundSystem.update(entities, dt);
+            keyboardInputSystem.update(entities, event);
+            playerBoundsSystem.update(entities);
+            pauseMenuSystem.update(entities,  *this, event, isPaused);
+            selectableUISystem.update(entities, *this, event);
+
+            // Only update gameplay systems if the game isn't paused.
+            if (!isPaused) {
+                movementSystem.update(entities, dt);
+                collisionSystem.update(*this);
+                invincibilityFramesSystem.update(entities, dt);
+                playerAbilitySystem.update(entities);
+                animationSystem.update(entities, dt);
+                // cameraSystem.update(entities); // TODO: decide what to do with the camera system.
+                spawnTimerSystem.update(entities, dt);
+                itemBounceSystem.update(entities, dt);
+                radialSpawnerSystem.update(entities, dt);
+                linearSpawnerSystem.update(entities, dt);
+                timelineSystem.update(entities, dt);
+                stageBackgroundSystem.update(entities, dt);
+            }
+
+            debugRenderSystem.update(*this, event, isDebugging);
             destructionSystem.update(entities);
             hudSystem.update(entities);
+            iconLabelSystem.update(entities);
         }
 
         fpsCounterSystem.update(entities, dt);
@@ -96,14 +133,14 @@ public:
         cleanup();
     }
 
-    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) {
+    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool isDebugging) {
         backgroundRenderSystem.render(entities);
 
         // Set up stage viewport.
-        int stageWidth = windowWidth * 0.6;
-        int stageHeight = windowHeight * 0.93;
-        int paddingX = windowWidth * 0.05;
-        int paddingY = (windowHeight - stageHeight) / 2;
+        int stageWidth = StageUtils::CalculateStageWidth(windowWidth);
+        int stageHeight = StageUtils::CalculateStageHeight(windowHeight);
+        int paddingX = StageUtils::CalculateStagePaddingX(windowWidth);
+        int paddingY = StageUtils::CalculateStagePaddingY(windowHeight);
 
         SDL_Rect stageRect = { paddingX, paddingY, stageWidth, stageHeight };
         SDL_SetRenderViewport(renderer, &stageRect);
@@ -117,6 +154,10 @@ public:
         // }
 
         renderSystem.render(entities);
+
+        if (isDebugging) {
+            debugRenderSystem.render(entities);
+        }
 
         // Reset viewport for rendering UI.
         SDL_SetRenderViewport(renderer, nullptr);

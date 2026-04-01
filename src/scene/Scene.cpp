@@ -1,6 +1,9 @@
 #include "../manager/AssetManager.h"
 #include "Game.h"
 #include "Scene.h"
+#include "ItemFactory.h"
+#include "StageUtils.h"
+#include "../manager/AudioManager.h"
 
 #include "EnemyFactory.h"
 #include "StageLoader.h"
@@ -30,10 +33,34 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	SDL_FRect menuDst {menuTransform.position.x, menuTransform.position.y, menuSrc.w, menuSrc.h};
 	menu.addComponent<Sprite>(texture, menuSrc, menuDst, RenderLayer::Background);
 
-	createFPSCounterLabel(windowWidth, windowHeight);
+	// FPS counter.
+	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40,
+		{240, 240, 240, 255}, "pop1", "0.000fps", "fpsCounter", LabelType::FPSCounter);
+	fpsCounter.addComponent<FPSCounter>();
 }
 
 void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
+	// Subscribe to event for pausing the game.
+	world.getEventManager().subscribe([this](const BaseEvent& e) {
+		if (e.type != EventType::Pause) {
+			return;
+		}
+
+		const auto& pauseEvent = static_cast<const PauseEvent&>(e);
+		isPaused = pauseEvent.isPaused;
+	});
+
+	// Subscribe to event for debugging the game.
+	world.getEventManager().subscribe([this](const BaseEvent& e) {
+		if (e.type != EventType::Debug) {
+			return;
+		}
+
+		const auto& debugEvent = static_cast<const DebugEvent&>(e);
+		isDebugging = debugEvent.isDebugging;
+	});
+
+
 	SDL_Texture* backgroundTex = TextureManager::load("../asset/background.png");
 	float texWidth = backgroundTex->w;
 	float texHeight = backgroundTex->h;
@@ -54,19 +81,19 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	}
 
 	// Create stage.
-	float stageWidth = windowWidth * 0.6;
-	float stageHeight = windowHeight * 0.93;
+	float stageWidth = StageUtils::CalculateStageWidth(windowWidth);
+	float stageHeight = StageUtils::CalculateStageHeight(windowHeight);
 	float backgroundSpeed = 60.0f;
 	float foregroundSpeed = backgroundSpeed + backgroundSpeed * 0.25f;
 
 	// Create backgrounds.
 	// The backgrounds are 1 pixel taller to make an overlap that hides the seam between backgrounds.
-	createStageBackground(stageWidth, stageHeight + 1, 0, backgroundSpeed, "../asset/stage1.png");
-	createStageBackground(stageWidth, stageHeight + 1, -stageHeight, backgroundSpeed, "../asset/stage1.png");
+	StageUtils::createStageBackground(world, stageWidth, stageHeight + 1, 0, backgroundSpeed, "../asset/stage1.png");
+	StageUtils::createStageBackground(world, stageWidth, stageHeight + 1, -stageHeight, backgroundSpeed, "../asset/stage1.png");
 
 	// Create foregrounds.
-	createStageBackground(stageWidth, stageHeight, 0, foregroundSpeed, "../asset/foreground1.png");
-	createStageBackground(stageWidth, stageHeight, -stageHeight, foregroundSpeed, "../asset/foreground1.png");
+	StageUtils::createStageBackground(world, stageWidth, stageHeight, 0, foregroundSpeed, "../asset/foreground1.png");
+	StageUtils::createStageBackground(world, stageWidth, stageHeight, -stageHeight, foregroundSpeed, "../asset/foreground1.png");
 
 	StageLoader::loadStage("../asset/stage/stage1.xml", world);
 
@@ -109,37 +136,48 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	// }
 
 	auto& cam = world.createEntity();
-	SDL_FRect camView{};
-	camView.w = windowWidth; // width of the window.
-	camView.h = windowHeight; // height of the window.
-	cam.addComponent<Camera>(camView, world.getMap().width * 32.0f, world.getMap().height * 32.0f);
+	SDL_FRect camView {0, 0, stageWidth, stageHeight};
+	float outOfViewPadding = 100.0f;
+	cam.addComponent<Camera>(camView, stageWidth, stageHeight, outOfViewPadding);
 
+	// Create the player.
 	auto& player (world.createEntity());
-	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 380.0f);
+	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 400.0f);
 
 	Animation anim = AssetManager::getAnimation("player");
 	player.addComponent<Animation>(anim);
 
 	SDL_Texture* texture = TextureManager::load("../asset/animations/reimu_anim.png");
-	// SDL_FRect playerSrc {0, 0, 32, 44}; // for Mario.
 	SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
 
 	float scaledPlayerWidth = playerSrc.w * 1.75f;
 	float scaledPlayerHeight = playerSrc.h * 1.75f;
-	auto& playerTransform = player.addComponent<Transform>(Vector2D(stageWidth / 2 - scaledPlayerWidth / 2, stageHeight - scaledPlayerHeight), 0.0f, 1.0f);
+	float playerStartingX = stageWidth / 2 - scaledPlayerWidth / 2;
+	float playerStartingY = stageHeight - scaledPlayerHeight;
+	auto& playerTransform = player.addComponent<Transform>(Vector2D(playerStartingX, playerStartingY), 0.0f, 1.0f);
 	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, scaledPlayerWidth, scaledPlayerHeight};
 
 	player.addComponent<Sprite>(texture, playerSrc, playerDst);
 
 	auto& playerCollider = player.addComponent<Collider>("player");
-	playerCollider.rect.w = playerDst.w;
-	playerCollider.rect.h = playerDst.h;
+
+	// Make the collider a square with side lengths of 1/8th the width of the player destination rect.
+	playerCollider.rect.w = playerDst.w / 8;
+	playerCollider.rect.h = playerDst.w / 8;
+
+	// Add offset to the collider to it's centered on the player destination rect.
+	playerCollider.offset.x = (playerDst.w  - playerCollider.rect.w) / 2.0f;
+	playerCollider.offset.y = (playerDst.h - playerCollider.rect.h) / 2.0f;
 
 	player.addComponent<PlayerTag>();
-	player.addComponent<Health>(Game::gameState.playerHealth);
+	player.addComponent<KeyboardInput>();
+	player.addComponent<InvincibilityFrames>();
+	player.addComponent<PlayerStats>(Game::gameState.playerHealth, Game::gameState.playerBombs,
+		Vector2D(playerStartingX, playerStartingY)); // TODO: remove test values.
 
+	// TODO: purge.
 	auto& spawner(world.createEntity());
-	Transform t = spawner.addComponent<Transform>(Vector2D(windowWidth / 2, windowHeight - 5), 0.0f, 1.0f);
+	Transform t = spawner.addComponent<Transform>(Vector2D(stageWidth - 150, stageHeight - 5), 0.0f, 1.0f);
 	spawner.addComponent<TimedSpawner>(2.0f, [this, t] {
 		// Create the projectile (birds).
 		auto& e(world.createDeferredEntity());
@@ -154,21 +192,56 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		SDL_FRect dest { t.position.x, t.position.y, 32, 32 };
 		e.addComponent<Sprite>(tex, src, dest);
 
-		Collider c = e.addComponent<Collider>("projectile");
-		c.rect.w = dest.w;
-		c.rect.h = dest.h;
+		auto& c = e.addComponent<Collider>("projectile");
+		c.rect.w = dest.w / 1.5;
+		c.rect.h = dest.h / 1.5;
+
+		c.offset.x = (dest.w  - c.rect.w) / 2.0f;
+		c.offset.y = (dest.h - c.rect.h) / 2.0f;
 
 		e.addComponent<ProjectileTag>();
 	});
 
+	// Test spawners for items. TODO: remove when no longer needed.
+	auto& pointSpawner(world.createEntity());
+	Transform pointSpawnerTransform = pointSpawner.addComponent<Transform>(Vector2D(50, 250), 0.0f, 1.0f);
+	pointSpawner.addComponent<TimedSpawner>(3.0f, [this, pointSpawnerTransform] {
+		auto& itemEntity(world.createDeferredEntity());
+		ItemFactory::createItem(itemEntity, Point, pointSpawnerTransform.position);
+	});
+
+	auto& smallPowerSpawner(world.createEntity());
+	Transform smallPowerSpawnerTransform = smallPowerSpawner.addComponent<Transform>(Vector2D(125, 250), 0.0f, 1.0f);
+	smallPowerSpawner.addComponent<TimedSpawner>(3.0f, [this, smallPowerSpawnerTransform] {
+		auto& itemEntity(world.createDeferredEntity());
+		ItemFactory::createItem(itemEntity, SmallPower, smallPowerSpawnerTransform.position);
+	});
+
+	auto& largePowerSpawner(world.createEntity());
+	Transform largePowerSpawnerTransform = largePowerSpawner.addComponent<Transform>(Vector2D(200, 250), 0.0f, 1.0f);
+	largePowerSpawner.addComponent<TimedSpawner>(3.0f, [this, largePowerSpawnerTransform] {
+		auto& itemEntity(world.createDeferredEntity());
+		ItemFactory::createItem(itemEntity, LargePower, largePowerSpawnerTransform.position);
+	});
+
+	auto& bombSpawner(world.createEntity());
+	Transform bombSpawnerTransform = bombSpawner.addComponent<Transform>(Vector2D(275, 250), 0.0f, 1.0f);
+	bombSpawner.addComponent<TimedSpawner>(3.0f, [this, bombSpawnerTransform] {
+		auto& itemEntity(world.createDeferredEntity());
+		ItemFactory::createItem(itemEntity, Bomb, bombSpawnerTransform.position);
+	});
+
+	// Radial danmaku spawner.
+	auto& radialDanmaku(world.createEntity());
+	auto radialDanmakuTransform = radialDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
 
 
 	// // Radial danmaku spawner.
 	// auto& radialDanmaku(world.createEntity());
 	// auto radialDanmakuTransform = radialDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
 	//
-	// float rotationSpeed = 50.0f;
-	// radialDanmaku.addComponent<AngularVelocity>(rotationSpeed);
+	float rotationSpeed = 50.0f;
+	radialDanmaku.addComponent<AngularVelocity>(rotationSpeed);
 	//
 	// float frequency = 0.17f;
 	// float bulletEmissionSpeed = 150.0f;
@@ -238,62 +311,200 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	//
 	// 		e.addComponent<ProjectileTag>();
 	// 	});
+	float frequency = 0.17f;
+	float bulletEmissionSpeed = 150.0f;
+	float bulletEmissionAngularVelocity = 20.0f;
+	float radius = 30.0f;
+	float duration = 10.0f;
+	float delay = 2.0f;
+	int bulletsPerBurst = 6;
+
+	// RadialSpawner component takes a callback which spawns individual bullets.
+	auto& radialSpawner = radialDanmaku.addComponent<RadialSpawner>(false, rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
+		radius, bulletsPerBurst,
+		[this, radialDanmakuTransform, bulletEmissionSpeed, bulletEmissionAngularVelocity, radius](Vector2D direction) {
+			auto& e(world.createDeferredEntity());
+
+			Vector2D bulletSpawnPositionOffset = direction * radius;
+
+			e.addComponent<Transform>(radialDanmakuTransform.position + bulletSpawnPositionOffset, 0.0f, 1.0f);
+			e.addComponent<Velocity>(direction, bulletEmissionSpeed, true);
+
+			e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
+			SDL_FRect src { 0, 0, 32, 32 };
+			SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 32 };
+			e.addComponent<Sprite>(tex, src, dest);
+
+			auto& c = e.addComponent<Collider>("projectile");
+			c.rect.w = dest.w / 1.5;
+			c.rect.h = dest.h / 1.5;
+
+			c.offset.x = (dest.w  - c.rect.w) / 2.0f;
+			c.offset.y = (dest.h - c.rect.h) / 2.0f;
+
+			e.addComponent<ProjectileTag>();
+		});
+
+	// Linear danmaku spawner.
+	auto& linearDanmaku(world.createEntity());
+	linearDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
+	linearDanmaku.addComponent<LookAtRotator>(playerTransform, 0.0f);
+
+	bool isFanPattern = false;
+	float bulletEmissionSpeedMultiplier = 1.0f;
+
+	std::vector<Vector2D> bulletSpawnPositions;
+	bulletSpawnPositions.emplace_back(0, 30);
+	bulletSpawnPositions.emplace_back(0, 40);
+	bulletSpawnPositions.emplace_back(0, 50);
+	bulletSpawnPositions.emplace_back(10, 20);
+	bulletSpawnPositions.emplace_back(-10, 20);
+	bulletSpawnPositions.emplace_back(15, 20);
+	bulletSpawnPositions.emplace_back(-15, 20);
+
+	auto& linearSpawner = linearDanmaku.addComponent<LinearSpawner>(false, isFanPattern, bulletEmissionSpeed, bulletEmissionSpeedMultiplier,
+		bulletSpawnPositions, frequency,
+		[this](Vector2D position, Vector2D direction, float speed) {
+			auto& e(world.createDeferredEntity());
+
+			e.addComponent<Transform>(position, 0.0f, 1.0f);
+			e.addComponent<Velocity>(direction, speed, false);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
+			SDL_FRect src { 0, 0, 32, 32 };
+			SDL_FRect dest { position.x, position.y, 32, 32 };
+			e.addComponent<Sprite>(tex, src, dest);
+
+			auto& c = e.addComponent<Collider>("projectile");
+			c.rect.w = dest.w / 1.5;
+			c.rect.h = dest.h / 1.5;
+
+			c.offset.x = (dest.w  - c.rect.w) / 2.0f;
+			c.offset.y = (dest.h - c.rect.h) / 2.0f;
+
+			e.addComponent<ProjectileTag>();
+		});
 
 
-	// Add timeline object (experimental, this will actually spawn enemy convoys later).
+	// Add timeline object (for testing danmaku scripting).
 	auto& timelineManager(world.createEntity());
 	auto& debugTimeline = timelineManager.addComponent<Timeline>();
 
-	debugTimeline.timeline.emplace_back(1.0, [] {
-		std::cout << "Hello" << std::endl;
+	debugTimeline.timeline.emplace_back(1.0, [&radialSpawner] {
+		std::cout << "Radial start!" << std::endl;
+		radialSpawner.isActive = true;
 	});
-	debugTimeline.timeline.emplace_back(2.0, [] {
-		std::cout << "World" << std::endl;
+	debugTimeline.timeline.emplace_back(2.0, [&linearSpawner] {
+		std::cout << "Linear start!" << std::endl;
+		linearSpawner.isActive = true;
 	});
-	debugTimeline.timeline.emplace_back(4.0, [] {
-		std::cout << "Welcome ";
+	debugTimeline.timeline.emplace_back(10.0, [&radialSpawner] {
+		std::cout << "Radial end!" << std::endl;
+		radialSpawner.isActive = false;
 	});
-	debugTimeline.timeline.emplace_back(4.5, [] {
-		std::cout << "to ";
-	});
-	debugTimeline.timeline.emplace_back(5.0, [] {
-		std::cout << "Touhou ";
-	});
-	debugTimeline.timeline.emplace_back(5.5, [] {
-		std::cout << "Miko ";
-	});
-	debugTimeline.timeline.emplace_back(6.0, [] {
-		std::cout << "Warfare";
-	});
-	debugTimeline.timeline.emplace_back(6.0, [] {
-		std::cout << "!!" << std::endl;
+	debugTimeline.timeline.emplace_back(11.0, [&linearSpawner] {
+		std::cout << "Linear end!" << std::endl;
+		linearSpawner.isActive = false;
 	});
 
 	// Add scene state.
 	auto& state(world.createEntity());
 	state.addComponent<SceneState>();
 
-	// Pause menu overlay.
+	// Create pause menu overlay.
 	createPauseMenuOverlay(windowWidth, windowHeight);
 
 	// Create FPS counter label.
-	createFPSCounterLabel(windowWidth, windowHeight);
+	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40, {240, 240, 240, 255},
+		"pop1", "0.000fps", "fpsCounter", LabelType::FPSCounter);
+	fpsCounter.addComponent<FPSCounter>();
 
-	// Create UI labels.
-	createUILabels(windowWidth, windowHeight, stageWidth, stageHeight);
+	// Create sidebar UI labels.
+	createSidebarUILabels(windowWidth, windowHeight, stageWidth, stageHeight);
+}
+
+void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight) {
+	const char* staticLabelFont = "DFPPOPCorn";
+	const char* dynamicLabelFont = "pop1";
+
+	// The base distance the UI labels should be from the left and top of the screen.
+	int paddingX = windowWidth * 0.05;
+	int paddingY = (windowHeight - stageHeight) / 2 * 3;
+
+	// Font height and leading for calculating how distance is needed between each row of labels.
+	int fontHeight = TTF_GetFontSize(AssetManager::getFont(staticLabelFont));
+	int leading = 5;
+
+	// The distance for each column from the left side of the screen.
+	// The static labels are the unchanging text labels (i.e. HiScore:) while the dynamic labels are the actual number value.
+	int staticLeftPadding = stageWidth + paddingX + 35;
+	int dynamicLeftPadding = staticLeftPadding + 142;
+
+	// Colours for the labels.
+	SDL_Color offWhite = {240, 240, 240, 255};
+	SDL_Color grey = {171, 166, 169, 255};
+	SDL_Color lightPink = {170, 126, 176, 255};
+	SDL_Color hotPink = {180, 85, 172, 255};
+
+	// HiScore static and dynamic labels.
+	UIUtils::createLabel(world, staticLeftPadding, paddingY, grey, staticLabelFont,
+		"HiScore", "HiScoreLabel", LabelType::Static);
+	UIUtils::createLabel(world, dynamicLeftPadding, paddingY, offWhite, dynamicLabelFont,
+		"000000000", "HiScore", LabelType::HiScore);
+
+	// Score static and dynamic labels.
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) + paddingY, grey, staticLabelFont,
+		"Score","ScoreLabel", LabelType::Static);
+	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) + paddingY, offWhite, dynamicLabelFont,
+		"000000000","Score", LabelType::Score);
+
+	// Player health static and dynamic labels.
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont,
+		"Player", "HealthLabel", LabelType::Static);
+	UIUtils::createIconLabel(world, dynamicLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, PlayerStats::MAX_HEALTH,
+		fontHeight, fontHeight, IconCounterType::Health, "../asset/ui/red-star.png");
+
+	// Bomb static and dynamic labels.
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont,
+		"Bomb", "BombLabel", LabelType::Static);
+	UIUtils::createIconLabel(world, dynamicLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, PlayerStats::MAX_BOMBS,
+		fontHeight, fontHeight, IconCounterType::Bomb, "../asset/ui/blue-star.png");
+
+	// Power static and dynamic labels.
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, hotPink, staticLabelFont,
+		"Power", "PowerLabel", LabelType::Static);
+	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, offWhite, dynamicLabelFont,
+		"0", "Power", LabelType::Power);
+
+	// Graze static and dynamic labels.
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
+		"Graze", "GrazeLabel", LabelType::Static);
+	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
+		"0", "Graze", LabelType::Graze);
+
+	// Point static and dynamic labels.
+	std::string initialPointString = "0/" + std::to_string(PlayerStats::MAX_POINTS);
+	const char* initialPoint = initialPointString.c_str();
+
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, hotPink, staticLabelFont,
+		"Point", "PointLabel", LabelType::Static);
+	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, offWhite, dynamicLabelFont,
+		initialPoint, "Point", LabelType::Point);
 }
 
 Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
 	auto &overlay(world.createEntity());
-	SDL_Texture *overlayTex = TextureManager::load("../asset/ui/settings.jpg");
-	SDL_FRect overlaySrc {0, 0, windowWidth * 0.85f, windowHeight  * 0.85f};
-	SDL_FRect overlayDest {(float)windowWidth / 2 - overlaySrc.w / 2, (float)windowHeight / 2 - overlaySrc.h / 2, overlaySrc.w, overlaySrc.h};
+	SDL_Texture *overlayTex = TextureManager::load("../asset/ui/darken.png");
+	SDL_FRect overlaySrc {0, 0, static_cast<float>(overlayTex->w), static_cast<float>(overlayTex->h)};
+	SDL_FRect overlayDest = StageUtils::CalculateStageRect(windowWidth, windowHeight);
 	overlay.addComponent<Transform>(Vector2D(overlayDest.x, overlayDest.y), 0.0f, 1.0f);
 	overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDest, RenderLayer::UI, false);
 
-	createPauseMenuUComponents(overlay);
+	createPauseMenuUComponents(overlay, windowWidth, windowHeight);
 
-	// Toggleable component so escape key can toggle the pause menu.
+	// Add a toggleable component so the escape key can toggle the pause menu.
 	overlay.addComponent<Toggleable>([this, &overlay]() {
 		toggleOverlayVisibility(overlay);
 	});
@@ -303,79 +514,79 @@ Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
 	return overlay;
 }
 
-void Scene::createPauseMenuUComponents(Entity& overlay) {
+void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int windowHeight) {
 	if (!overlay.hasComponent<Children>()) {
 		overlay.addComponent<Children>();
 	}
 
-	auto& overlayTransform = overlay.getComponent<Transform>();
+	auto& parentChildren = overlay.getComponent<Children>();
+
+	// Label colours and font.
+	SDL_Color selectedColour {202, 101, 101, 255};
+	SDL_Color unselectedColour {48, 55, 69, 255};
+	SDL_Color pausedColour {240, 240, 240, 255};
+	const char* font = "pop1";
+	float fontHeight = TTF_GetFontSize(AssetManager::getFont(font));
+
 	auto& overlaySprite = overlay.getComponent<Sprite>();
 
-	float baseX = overlayTransform.position.x;
-	float baseY = overlayTransform.position.y;
+	float overlayMiddleX = overlaySprite.dst.w / 2;
+	float overlayMiddleY = overlaySprite.dst.h / 2;
+	float stagePaddingX = StageUtils::CalculateStagePaddingX(windowWidth);
+	float stagePaddingY = StageUtils::CalculateStagePaddingY(windowHeight);
 
-	auto& closeButton = world.createEntity();
-	auto& closeTransform = closeButton.addComponent<Transform>(Vector2D(baseX + overlaySprite.dst.w - 40, baseY + 10), 0.0f, 1.0f);
+	// Create paused title label.
+	auto& pauseTitle =  UIUtils::createLabel(world, 0, 0, pausedColour, font,
+		"Pause", "PauseLabel", LabelType::Static);
+	auto& pauseTransform = pauseTitle.getComponent<Transform>();
+	auto& pauseLabel = pauseTitle.getComponent<Label>();
+	pauseLabel.visible = false;
 
-	SDL_Texture* texture = TextureManager::load("../asset/ui/close.png");
-	SDL_FRect closeSrc {0, 0, 32, 32};
-	SDL_FRect closeDst {closeTransform.position.x, closeTransform.position.y, closeSrc.w, closeSrc.h};
-	closeButton.addComponent<Sprite>(texture, closeSrc, closeDst, RenderLayer::UI, false);
-	closeButton.addComponent<Collider>("ui", closeDst);
+	// Have to position the label after it's texture has been created.
+	pauseTransform.position.x = stagePaddingX + overlayMiddleX - pauseLabel.texture->w / 2;
+	pauseTransform.position.y = stagePaddingY + overlayMiddleY - pauseLabel.texture->h / 2 - fontHeight * 3;
 
-	auto& selectable = closeButton.addComponent<SelectableUI>();
+	// Add overlay as parent to the label.
+	pauseTitle.addComponent<Parent>(&overlay);
+	parentChildren.children.push_back(&pauseTitle);
 
-	selectable.onPressed = [this, &overlay, &closeTransform] {
-		toggleOverlayVisibility(overlay);
-		std::cout << "button 1 pressed" << std::endl;
-		closeTransform.scale = 1.0f;
-	};
+	// Create resume button.
+	auto& resumeButton =  UIUtils::createSelectableButton(world, overlay, font, selectedColour, unselectedColour,
+		"Resume Game", "ResumeButton", [] {
+			// Resume game by pushing an escape key down event to toggle the pause menu.
+			SDL_Event event;
+			event.type = SDL_EVENT_KEY_DOWN;
+			event.key.key = SDLK_ESCAPE;
+			SDL_PushEvent(&event);
+		});
+	auto& resumeTransform = resumeButton.getComponent<Transform>();
+	auto& resumeLabel = resumeButton.getComponent<Label>();
 
-	selectable.onReleased = [&closeTransform] {
-		closeTransform.scale = 1.0f;
-	};
+	resumeTransform.position.x = stagePaddingX + overlayMiddleX - resumeLabel.texture->w / 2;
+	resumeTransform.position.y = stagePaddingY + overlayMiddleY - resumeLabel.texture->h / 2;
+	auto& resumeSelectable = resumeButton.getComponent<SelectableUI>();
 
-	selectable.onSelect = [&closeTransform] {
-		closeTransform.scale = 1.25f;
-	};
+	// Create quit button.
+	auto& quitButton =  UIUtils::createSelectableButton(world, overlay, font, selectedColour, unselectedColour,
+		"Quit Game", "QuitButton", [] {
+			// Quit game by pushing a quit event.
+			SDL_Event event;
+			event.type = SDL_EVENT_QUIT;
+			SDL_PushEvent(&event);
+		});
+	auto& quitTransform = quitButton.getComponent<Transform>();
+	auto& quitLabel = quitButton.getComponent<Label>();
 
-	closeButton.addComponent<Parent>(&overlay);
-	auto& parentChildren = overlay.getComponent<Children>();
-	parentChildren.children.push_back(&closeButton);
-
-	// Second close button for testing.
-	auto& closeButton2 = world.createEntity();
-	auto& closeTransform2 = closeButton2.addComponent<Transform>(Vector2D(baseX + overlaySprite.dst.w - 40, baseY + 50), 0.0f, 1.0f);
-	SDL_FRect closeSrc2 {0, 0, 32, 32};
-	SDL_FRect closeDst2 {closeTransform2.position.x, closeTransform2.position.y, closeSrc2.w, closeSrc2.h};
-	closeButton2.addComponent<Sprite>(texture, closeSrc2, closeDst2, RenderLayer::UI, false);
-	closeButton2.addComponent<Collider>("ui", closeDst2);
-
-	auto& selectable2 = closeButton2.addComponent<SelectableUI>();
-
-	selectable2.onPressed = [this, &overlay, &closeTransform2] {
-		toggleOverlayVisibility(overlay);
-		std::cout << "button 2 pressed" << std::endl;
-		closeTransform2.scale = 1.0f;
-	};
-
-	selectable2.onReleased = [&closeTransform2] {
-		closeTransform2.scale = 1.0f;
-	};
-
-	selectable2.onSelect = [&closeTransform2] {
-		closeTransform2.scale = 1.25f;
-	};
-
-	closeButton2.addComponent<Parent>(&overlay);
-	parentChildren.children.push_back(&closeButton2);
+	quitTransform.position.x = stagePaddingX + overlayMiddleX - quitLabel.texture->w / 2;
+	quitTransform.position.y = stagePaddingY + overlayMiddleY - quitLabel.texture->h / 2 + fontHeight + 15;
+	auto& quitSelectable = quitButton.getComponent<SelectableUI>();
 
 	// Set up selection doubly linked list.
-	selectable.next = &selectable2;
-	selectable.previous = &selectable2;
+	resumeSelectable.next = &quitButton;
+	resumeSelectable.previous = &quitButton;
 
-	selectable2.next = &selectable;
-	selectable2.previous = &selectable;
+	quitSelectable.next = &resumeButton;
+	quitSelectable.previous = &resumeButton;
 }
 
 void Scene::toggleOverlayVisibility(Entity& overlay) {
@@ -383,16 +594,16 @@ void Scene::toggleOverlayVisibility(Entity& overlay) {
 	bool newVisibility = !sprite.visible;
 	sprite.visible = newVisibility;
 
+	if (newVisibility) {
+		AudioManager::playSfx("pause");
+	}
+
 	if (overlay.hasComponent<Children>()) {
 		auto& c = overlay.getComponent<Children>();
 
 		for (auto& child : c.children) {
-			if (child && child->hasComponent<Sprite>()) {
-				child->getComponent<Sprite>().visible = newVisibility;
-			}
-
-			if (child && child->hasComponent<Collider>()) {
-				child->getComponent<Collider>().enabled = newVisibility;
+			if (child && child->hasComponent<Label>()) {
+				child->getComponent<Label>().visible = newVisibility;
 			}
 
 			if (child && child->hasComponent<SelectableUI>()) {
@@ -403,109 +614,16 @@ void Scene::toggleOverlayVisibility(Entity& overlay) {
 			}
 		}
 
-		// Set the first selectable entity as the default selected, if visible.
 		if (newVisibility) {
-			auto& selected = c.children.front()->getComponent<SelectableUI>();
-			selected.selected = true;
-			selected.onSelect();
+			// Set the first selectable entity as the default selected, if visible.
+			for (auto& child : c.children) {
+				if (child && child->hasComponent<SelectableUI>()) {
+					auto& selected = child->getComponent<SelectableUI>();
+					selected.selected = true;
+					selected.onSelect();
+					break;
+				}
+			}
 		}
 	}
-}
-
-// TODO: purge.
-Entity& Scene::createPlayerPosLabel() {
-	auto& playerPosLabel(world.createEntity());
-	Label label = {
-		"Test String",
-		AssetManager::getFont("pop1"),
-		{240, 240, 240, 255},
-		LabelType::PlayerPosition,
-		"playerPos"
-	};
-
-	TextureManager::loadLabel(label);
-	playerPosLabel.addComponent<Label>(label);
-	playerPosLabel.addComponent<Transform>(Vector2D(10, 10), 0.0f, 1.0f);
-
-	return playerPosLabel;
-}
-
-Entity& Scene::createFPSCounterLabel(int windowWidth, int windowHeight) {
-	auto& fpsCounterLabel(world.createEntity());
-	Label label = {
-		"0.000fps",
-		AssetManager::getFont("pop1"),
-		{240, 240, 240, 255},
-		LabelType::FPSCounter,
-		"fpsCounter"
-	};
-
-	TextureManager::loadLabel(label);
-	fpsCounterLabel.addComponent<Label>(label);
-	fpsCounterLabel.addComponent<Transform>(Vector2D(windowWidth - 170, windowHeight - 40), 0.0f, 1.0f);
-	fpsCounterLabel.addComponent<FPSCounter>();
-
-	return fpsCounterLabel;
-}
-
-Entity& Scene::createStaticLabel(int x, int y, SDL_Color colour, const char* fontName, const char* text) {
-	auto& fpsCounterLabel(world.createEntity());
-	Label label = {
-		text,
-		AssetManager::getFont(fontName),
-		colour,
-		LabelType::Static,
-		text
-	};
-
-	// Immediately mark the label as dirty so it renders.
-	label.dirty = true;
-
-	TextureManager::loadLabel(label);
-	fpsCounterLabel.addComponent<Label>(label);
-	fpsCounterLabel.addComponent<Transform>(Vector2D(x, y), 0.0f, 1.0f);
-
-	return fpsCounterLabel;
-}
-
-void Scene::createUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight) {
-	const char* staticLabelFont = "DFPPOPCorn";
-
-	int paddingX = windowWidth * 0.05;
-	int paddingY = (windowHeight - stageHeight) / 2 * 3;
-
-	int fontHeight = TTF_GetFontSize(AssetManager::getFont(staticLabelFont));
-	int leading = 5;
-	int leftPadding = stageWidth + paddingX + 50;
-
-	SDL_Color grey = {171, 166, 169, 255};
-	SDL_Color lightPink = {170, 126, 176, 255};
-	SDL_Color hotPink = {180, 85, 172, 255};
-
-	createStaticLabel(leftPadding, paddingY, grey, staticLabelFont, "HiScore");
-	createStaticLabel(leftPadding, (fontHeight + leading) + paddingY, grey, staticLabelFont, "Score");
-
-	createStaticLabel(leftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont, "Player");
-	createStaticLabel(leftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont, "Bomb");
-
-	createStaticLabel(leftPadding, (fontHeight + leading) * 4 + paddingY * 2, hotPink, staticLabelFont, "Power");
-	createStaticLabel(leftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont, "Graze");
-	createStaticLabel(leftPadding, (fontHeight + leading) * 6 + paddingY * 2, hotPink, staticLabelFont, "Point");
-
-	// TODO: dynamic labels.
-}
-
-Entity& Scene::createStageBackground(float stageWidth, float stageHeight, float startingY, float scrollSpeedY, const char* texturePath) {
-	SDL_Texture* tex = TextureManager::load(texturePath);
-	SDL_FRect src {0, 0, static_cast<float>(tex->w), static_cast<float>(tex->h)};
-	SDL_FRect dst = {0, 0, stageWidth, stageHeight};
-
-	// Create backgrounds.
-	auto& stageBackground = world.createEntity();
-	stageBackground.addComponent<Transform>(Vector2D(0, startingY), 0.0f, 1.0f);
-	stageBackground.addComponent<Velocity>(Vector2D(0, 1), scrollSpeedY);
-	stageBackground.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
-	stageBackground.addComponent<StageBackground>(stageWidth, stageHeight, scrollSpeedY, 0.0f, tex);
-
-	return stageBackground;
 }

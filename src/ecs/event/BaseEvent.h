@@ -1,10 +1,13 @@
 #pragma once
+#include "Component.h"
 #include "Entity.h"
 
 enum class EventType {
     Collision,
     PlayerAction,
-    UIInteraction
+    UIInteraction,
+    Pause,
+    Debug
 };
 
 struct BaseEvent {
@@ -40,5 +43,19 @@ struct UIInteractionEvent : BaseEvent {
     UIInteractionState state{};
     UIInteractionEvent(Entity* entity, UIInteractionState state) : entity(entity), state(state) {
         type = EventType::UIInteraction;
+    }
+};
+
+struct PauseEvent : BaseEvent {
+    bool isPaused;
+    PauseEvent(bool isPaused) : isPaused(isPaused) {
+        type = EventType::Pause;
+    }
+};
+
+struct DebugEvent : BaseEvent {
+    bool isDebugging;
+    DebugEvent(bool isDebugging) : isDebugging(isDebugging) {
+        type = EventType::Debug;
     }
 };

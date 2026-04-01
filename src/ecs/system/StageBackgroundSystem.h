@@ -15,7 +15,8 @@ public:
                 auto& transform = entity->getComponent<Transform>();
                 auto& sprite = entity->getComponent<Sprite>();
 
-                // Track how far the background has moved down the screen.
+                // Track how far the background should have moved down the screen.
+                // Note that the MovementSystem is responsible for doing the actual movement.
                 float offset = stageBackground.scrollSpeedY * dt;
                 stageBackground.offsetY += offset;
 

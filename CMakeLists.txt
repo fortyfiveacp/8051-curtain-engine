@@ -48,7 +48,6 @@ set(SRC_FILES
         src/ecs/system/TimelineSystem.h
         src/ecs/system/RadialSpawnerSystem.h
         src/ecs/system/LinearSpawnerSystem.h
-        src/ecs/system/PauseMenuSystem.cpp
         src/ecs/system/UIRenderSystem.cpp
         src/ecs/system/PathSystem.h
         src/scene/StageLoader.h
@@ -60,6 +59,12 @@ set(SRC_FILES
         src/manager/AudioManager.h
         src/manager/AudioManager.cpp
         src/ecs/event/AudioEventQueue.h
+        src/utils/ItemFactory.cpp
+        src/ecs/system/SelectableUISystem.cpp
+        src/ecs/system/PauseMenuSystem.cpp
+        src/ecs/system/DebugRenderSystem.cpp
+        src/utils/UIUtils.cpp
+        src/utils/StageUtils.cpp
         #add all new source files here
 )
 

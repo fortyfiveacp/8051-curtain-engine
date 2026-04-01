@@ -6,7 +6,13 @@
 #include "manager/SceneManager.h"
 
 struct GameState {
+	int hiScore;
+	int score;
 	int playerHealth;
+	int playerBombs;
+	int power;
+	int graze;
+	int point;
 };
 
 class Game {

@@ -28,11 +28,10 @@ public:
                 auto& t = e->getComponent<Transform>();
 
                 // Destroy entity if it goes out the cam view
-                if (
-                    t.position.x > cam.view.x + cam.view.w || // Right edge of view
-                    t.position.x < cam.view.x || // Left edge of view
-                    t.position.y > cam.view.y + cam.view.h || // Bottom edge of view
-                    t.position.y < cam.view.y) // Top edge of view
+                if (t.position.x > cam.view.x + cam.view.w + cam.outOfViewPadding || // Right edge of view
+                    t.position.x < cam.view.x - cam.outOfViewPadding|| // Left edge of view
+                    t.position.y > cam.view.y + cam.view.h + cam.outOfViewPadding|| // Bottom edge of view
+                    t.position.y < cam.view.y - cam.outOfViewPadding) // Top edge of view
                 {
                     e->destroy();
                 }

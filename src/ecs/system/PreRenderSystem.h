@@ -3,6 +3,7 @@
 
 #include "Component.h"
 #include "manager/TextureManager.h"
+#include "utils/UIUtils.h"
 
 class PreRenderSystem {
 public:
@@ -10,6 +11,8 @@ public:
         for (auto& e : entities) {
             if (e->hasComponent<Label>() && e->getComponent<Label>().dirty) {
                 TextureManager::updateLabel(e->getComponent<Label>());
+            } else if (e->hasComponent<IconCounter>()) {
+                UIUtils::updateIconCounter(*e);
             }
         }
     }
