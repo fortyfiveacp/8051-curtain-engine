@@ -237,28 +237,20 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	auto& timelineManager(world.createEntity());
 	auto& debugTimeline = timelineManager.addComponent<Timeline>();
 
-	debugTimeline.timeline.emplace_back(1.0, [] {
-		std::cout << "Radial start!" << std::endl;
-	});
 	debugTimeline.timeline.emplace_back(1.0, [&radialSpawner] {
+		std::cout << "Radial start!" << std::endl;
 		radialSpawner.isActive = true;
 	});
-	debugTimeline.timeline.emplace_back(2.0, [] {
-		std::cout << "Linear start!" << std::endl;
-	});
 	debugTimeline.timeline.emplace_back(2.0, [&linearSpawner] {
+		std::cout << "Linear start!" << std::endl;
 		linearSpawner.isActive = true;
 	});
-	debugTimeline.timeline.emplace_back(4.0, [] {
-		std::cout << "Radial end!" << std::endl;
-	});
 	debugTimeline.timeline.emplace_back(4.0, [&radialSpawner] {
+		std::cout << "Radial end!" << std::endl;
 		radialSpawner.isActive = false;
 	});
-	debugTimeline.timeline.emplace_back(5.0, [] {
-		std::cout << "Linear end!" << std::endl;
-	});
 	debugTimeline.timeline.emplace_back(5.0, [&linearSpawner] {
+		std::cout << "Linear end!" << std::endl;
 		linearSpawner.isActive = false;
 	});
 
