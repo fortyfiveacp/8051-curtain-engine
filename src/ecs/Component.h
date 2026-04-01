@@ -77,6 +77,9 @@ struct TimedSpawner {
 };
 
 struct RadialSpawner {
+    // Whether to emit projectiles.
+    bool isActive{};
+
     // The spawner's rotation speed.
     float rotationSpeed{};
 
@@ -92,12 +95,6 @@ struct RadialSpawner {
     // Inner radius of bullet pattern emitters.
     float radius{};
 
-    // Duration of spawner. Spawner turns off when duration expires.
-    float duration{};
-
-    // Delay before starting spawns.
-    float delay{};
-
     // Number of bullets in each burst.
     int bulletsPerBurst{};
 
@@ -106,12 +103,12 @@ struct RadialSpawner {
 
     // The actual spawn countdown, which triggers spawn when it hits zero then resets.
     float spawnTimer{frequency};
-
-    // Time since the spawner was first updated. Used for timing emission start and end.
-    float lifetime{};
 };
 
 struct LinearSpawner {
+    // Whether to emit projectiles.
+    bool isActive{};
+
     // Whether bullets radiate from emitter center after emission.
     bool isFanPattern;
 
@@ -127,20 +124,11 @@ struct LinearSpawner {
     // The frequency (sec) that one burst of bullets is emitted
     float frequency{};
 
-    // Duration of spawner. Spawner turns off when duration expires.
-    float duration{};
-
-    // Delay before starting spawns.
-    float delay{};
-
     // Invoked when spawning, once per bullet, with params global position, direction, speed.
     std::function<void(Vector2D, Vector2D, float)> spawnCallback{};
 
     // The actual spawn countdown, which triggers spawn when it hits zero then resets.
     float spawnTimer{frequency};
-
-    // Time since the spawner was first updated. Used for timing emission start and end.
-    float lifetime{};
 };
 
 // Our game state, might have multiple scenes.

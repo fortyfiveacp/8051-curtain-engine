@@ -12,11 +12,8 @@ public:
             if (entity->hasComponent<RadialSpawner>() && entity->hasComponent<Transform>()) {
                 auto& spawner = entity->getComponent<RadialSpawner>();
                 auto& transform = entity->getComponent<Transform>();
-                spawner.lifetime += dt;
 
-                // We might end up using Timeline for this depending on how complicated our danmaku gets.
-                // For now, we will just be using this simple setup with delay and duration.
-                if (spawner.lifetime < spawner.delay || spawner.lifetime > spawner.delay + spawner.duration) {
+                if (!spawner.isActive) {
                     return;
                 }
 
