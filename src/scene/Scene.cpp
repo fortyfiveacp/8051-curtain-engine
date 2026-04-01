@@ -199,31 +199,31 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// Test spawners for items. TODO: remove when no longer needed.
 	auto& pointSpawner(world.createEntity());
-	Transform t5 = pointSpawner.addComponent<Transform>(Vector2D(50, 250), 0.0f, 1.0f);
-	pointSpawner.addComponent<TimedSpawner>(3.0f, [this, t5] {
+	Transform pointSpawnerTransform = pointSpawner.addComponent<Transform>(Vector2D(50, 250), 0.0f, 1.0f);
+	pointSpawner.addComponent<TimedSpawner>(3.0f, [this, pointSpawnerTransform] {
 		auto& itemEntity(world.createDeferredEntity());
-		ItemFactory::createItem(itemEntity, Point, t5.position);
+		ItemFactory::createItem(itemEntity, Point, pointSpawnerTransform.position);
 	});
 
-	auto& powerSpawner(world.createEntity());
-	Transform t3 = powerSpawner.addComponent<Transform>(Vector2D(125, 250), 0.0f, 1.0f);
-	powerSpawner.addComponent<TimedSpawner>(3.0f, [this, t3] {
+	auto& smallPowerSpawner(world.createEntity());
+	Transform smallPowerSpawnerTransform = smallPowerSpawner.addComponent<Transform>(Vector2D(125, 250), 0.0f, 1.0f);
+	smallPowerSpawner.addComponent<TimedSpawner>(3.0f, [this, smallPowerSpawnerTransform] {
 		auto& itemEntity(world.createDeferredEntity());
-		ItemFactory::createItem(itemEntity, SmallPower, t3.position);
+		ItemFactory::createItem(itemEntity, SmallPower, smallPowerSpawnerTransform.position);
 	});
 
 	auto& largePowerSpawner(world.createEntity());
-	Transform t2 = largePowerSpawner.addComponent<Transform>(Vector2D(200, 250), 0.0f, 1.0f);
-	largePowerSpawner.addComponent<TimedSpawner>(3.0f, [this, t2] {
+	Transform largePowerSpawnerTransform = largePowerSpawner.addComponent<Transform>(Vector2D(200, 250), 0.0f, 1.0f);
+	largePowerSpawner.addComponent<TimedSpawner>(3.0f, [this, largePowerSpawnerTransform] {
 		auto& itemEntity(world.createDeferredEntity());
-		ItemFactory::createItem(itemEntity, LargePower, t2.position);
+		ItemFactory::createItem(itemEntity, LargePower, largePowerSpawnerTransform.position);
 	});
 
 	auto& bombSpawner(world.createEntity());
-	Transform t4 = bombSpawner.addComponent<Transform>(Vector2D(275, 250), 0.0f, 1.0f);
-	bombSpawner.addComponent<TimedSpawner>(3.0f, [this, t4] {
+	Transform bombSpawnerTransform = bombSpawner.addComponent<Transform>(Vector2D(275, 250), 0.0f, 1.0f);
+	bombSpawner.addComponent<TimedSpawner>(3.0f, [this, bombSpawnerTransform] {
 		auto& itemEntity(world.createDeferredEntity());
-		ItemFactory::createItem(itemEntity, Bomb, t4.position);
+		ItemFactory::createItem(itemEntity, Bomb, bombSpawnerTransform.position);
 	});
 
 	// Radial danmaku spawner.
@@ -239,7 +239,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	float radius = 30.0f;
 	float duration = 10.0f;
 	float delay = 2.0f;
-	int bulletsPerBurst = 5;
+	int bulletsPerBurst = 6;
 
 	// RadialSpawner component takes a callback which spawns individual bullets.
 	radialDanmaku.addComponent<RadialSpawner>(rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,

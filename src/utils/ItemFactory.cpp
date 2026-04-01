@@ -3,27 +3,27 @@
 #include "manager/TextureManager.h"
 
 void ItemFactory::createItem(Entity& entity, ItemType type, Vector2D position) {
-    auto& transform = entity.addComponent<Transform>(position, 0.0f, 1.0f);
-
     switch (type) {
         case Point:
-            createPointItem(entity, transform);
+            createPointItem(entity, position);
             break;
         case LargePower:
-            createLargePowerItem(entity, transform);
+            createLargePowerItem(entity, position);
             break;
         case SmallPower:
-            createSmallPowerItem(entity, transform);
+            createSmallPowerItem(entity, position);
             break;
         case Bomb:
-            createBombItem(entity, transform);
+            createBombItem(entity, position);
             break;
         default:
             break;
     }
 }
 
-void ItemFactory::createBaseItem(Entity& entity, Transform transform, float textureX, float textureY) {
+void ItemFactory::createBaseItem(Entity& entity, Vector2D position, float textureX, float textureY) {
+    auto& transform = entity.addComponent<Transform>(position, 0.0f, 1.0f);
+
     SDL_Texture* tex = TextureManager::load("../asset/item-spritesheet.png");
     float texWidth = 16;
     float texHeight = 16;
@@ -46,22 +46,22 @@ void ItemFactory::createBaseItem(Entity& entity, Transform transform, float text
     collider.offset.y = (dst.h - collider.rect.h) / 2.0f;
 }
 
-void ItemFactory::createPointItem(Entity& entity, Transform transform) {
-    createBaseItem(entity, transform, 16, 0);
-    entity.addComponent<Item>(4500, Point);
+void ItemFactory::createPointItem(Entity& entity, Vector2D position) {
+    createBaseItem(entity, position, 16, 0);
+    entity.addComponent<Item>(7500, Point);
 }
 
-void ItemFactory::createLargePowerItem(Entity& entity, Transform transform) {
-    createBaseItem(entity, transform, 32, 0);
+void ItemFactory::createLargePowerItem(Entity& entity, Vector2D position) {
+    createBaseItem(entity, position, 32, 0);
     entity.addComponent<Item>(5, LargePower);
 }
 
-void ItemFactory::createSmallPowerItem(Entity& entity, Transform transform) {
-    createBaseItem(entity, transform, 0, 0);
+void ItemFactory::createSmallPowerItem(Entity& entity, Vector2D position) {
+    createBaseItem(entity, position, 0, 0);
     entity.addComponent<Item>(1, SmallPower);
 }
 
-void ItemFactory::createBombItem(Entity& entity, Transform transform) {
-    createBaseItem(entity, transform, 48, 0);
+void ItemFactory::createBombItem(Entity& entity, Vector2D position) {
+    createBaseItem(entity, position, 48, 0);
     entity.addComponent<Item>(1, Bomb);
 }
