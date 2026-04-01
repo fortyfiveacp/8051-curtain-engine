@@ -40,7 +40,7 @@ public:
                             rotation = std::atan2(displacement.y, displacement.x) + std::numbers::pi / 2;
                         }
                         else {
-                            rotation = 0;
+                            rotation = transform.rotation / (180 / std::numbers::pi);
                         }
 
                         const float spawnSpeed = spawner.bulletEmissionSpeed +
