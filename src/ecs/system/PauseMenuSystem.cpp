@@ -13,10 +13,10 @@ void PauseMenuSystem::update(const std::vector<std::unique_ptr<Entity>>& entitie
                 auto& toggleable = e->getComponent<Toggleable>();
 
                 if (toggleable.enabled) {
-                    // Toggle pause menu and toggle state.
+                    // Toggle pause menu UI.
                     toggleable.toggle();
 
-                    // Toggle game pause.
+                    // Toggle game pause via event.
                     world.getEventManager().emit(PauseEvent{!isPaused});
                     break;
                 }

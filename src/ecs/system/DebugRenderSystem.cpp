@@ -6,8 +6,8 @@
 #include "event/BaseEvent.h"
 
 void DebugRenderSystem::update(World& world, const SDL_Event& event, bool isDebugging) {
-    // Bring up pause menu and pause the game with the escape key.
     if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_TAB) {
+        // Enable debugging via event.
         world.getEventManager().emit(DebugEvent{!isDebugging});
     }
 }
