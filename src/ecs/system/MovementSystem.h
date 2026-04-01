@@ -71,6 +71,6 @@ private:
         const Vector2D displacement = r.target.position - t.position;
 
         t.rotation = std::fmod(std::atan2(displacement.y, displacement.x) * (180 / std::numbers::pi) +
-            r.offsetDegrees, 360.0f);
+            r.offsetDegrees - 90.0f, 360.0f);
     }
 };
