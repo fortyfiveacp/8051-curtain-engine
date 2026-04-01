@@ -21,7 +21,7 @@ public:
                 }
                 else if (entity->hasComponent<LookAtRotator>()) {
                     // Update rotation to look at a specific target.
-                    updateRotationBasedOnTarget(dt, entity);
+                    updateRotationBasedOnTarget(entity);
                 }
             }
         }
@@ -64,7 +64,7 @@ private:
         t.rotation = std::fmod(t.rotation + (v.rotationOverTime * dt), 360.0f);
     }
 
-    static void updateRotationBasedOnTarget(float dt, std::unique_ptr<Entity> &entity) {
+    static void updateRotationBasedOnTarget(std::unique_ptr<Entity> &entity) {
         auto& t = entity->getComponent<Transform>();
         auto& r = entity->getComponent<LookAtRotator>();
 
