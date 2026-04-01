@@ -154,7 +154,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	player.addComponent<Sprite>(texture, playerSrc, playerDst);
 
-	auto& playerCollider = player.addComponent<Collider>("player");
+	auto& playerCollider = player.addComponent<RectCollider>("player");
 
 	// Make the collider a square with side lengths of 1/8th the width of the player destination rect.
 	playerCollider.rect.w = playerDst.w / 8;
@@ -187,7 +187,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		SDL_FRect dest { t.position.x, t.position.y, 32, 32 };
 		e.addComponent<Sprite>(tex, src, dest);
 
-		auto& c = e.addComponent<Collider>("projectile");
+		auto& c = e.addComponent<RectCollider>("projectile");
 		c.rect.w = dest.w / 1.5;
 		c.rect.h = dest.h / 1.5;
 
@@ -259,7 +259,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 			SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 32 };
 			e.addComponent<Sprite>(tex, src, dest);
 
-			auto& c = e.addComponent<Collider>("projectile");
+			auto& c = e.addComponent<RectCollider>("projectile");
 			c.rect.w = dest.w / 1.5;
 			c.rect.h = dest.h / 1.5;
 
@@ -299,7 +299,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 			SDL_FRect dest { position.x, position.y, 32, 32 };
 			e.addComponent<Sprite>(tex, src, dest);
 
-			auto& c = e.addComponent<Collider>("projectile");
+			auto& c = e.addComponent<RectCollider>("projectile");
 			c.rect.w = dest.w / 1.5;
 			c.rect.h = dest.h / 1.5;
 

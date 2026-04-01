@@ -169,12 +169,12 @@ Entity *&other) {
         return false;
     }
 
-    if (!(e.entityA->hasComponent<Collider>() && e.entityB->hasComponent<Collider>())) {
+    if (!(e.entityA->hasComponent<RectCollider>() && e.entityB->hasComponent<RectCollider>())) {
         return false;
     }
 
-    auto& colliderA = e.entityA->getComponent<Collider>();
-    auto& colliderB = e.entityB->getComponent<Collider>();
+    auto& colliderA = e.entityA->getComponent<RectCollider>();
+    auto& colliderB = e.entityB->getComponent<RectCollider>();
 
     if (colliderA.tag == "player" && colliderB.tag == otherTag) {
         player = e.entityA;

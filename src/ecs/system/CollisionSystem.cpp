@@ -17,7 +17,7 @@ void CollisionSystem::update(World& world) {
     // Update all collider positions first
     for (auto entity : collidables) {
         auto& t = entity->getComponent<Transform>();
-        auto& c = entity->getComponent<Collider>();
+        auto& c = entity->getComponent<RectCollider>();
 
         c.rect.x = t.position.x + c.offset.x;
         c.rect.y = t.position.y + c.offset.y;
@@ -30,7 +30,7 @@ void CollisionSystem::update(World& world) {
         // Update the collider position
         auto entityA = collidables[i];
         auto& t = entityA->getComponent<Transform>();
-        auto& colliderA = entityA->getComponent<Collider>();
+        auto& colliderA = entityA->getComponent<RectCollider>();
 
         //colliderA.rect.x = t.position.x + c.offset.x; // TODO: Isn't this redundant?
         //colliderA.rect.y = t.position.y + c.offset.y;
@@ -39,7 +39,7 @@ void CollisionSystem::update(World& world) {
         // Inner loop:
         for (size_t j = i + 1; j < collidables.size(); j++) {
             auto entityB = collidables[j];
-            auto& colliderB = entityB->getComponent<Collider>();
+            auto& colliderB = entityB->getComponent<RectCollider>();
 
             if (Collision::AABB(colliderA, colliderB)) {
                 // std::cout << colliderA.tag << " hit " << colliderB.tag << std::endl;
@@ -68,7 +68,7 @@ std::vector<Entity*> CollisionSystem::queryCollidables(const std::vector<std::un
     std::vector<Entity*> collidables;
 
     for (auto& e : entities) {
-        if (e->hasComponent<Transform>() && e->hasComponent<Collider>()) {
+        if (e->hasComponent<Transform>() && e->hasComponent<RectCollider>()) {
             collidables.push_back(e.get());
         }
     }

@@ -35,7 +35,7 @@ void ItemFactory::createBaseItem(Entity& entity, Vector2D position, float textur
     entity.addComponent<Velocity>(Vector2D(0, -1), 200.0f);
     entity.addComponent<ItemBounce>();
 
-    auto& collider = entity.addComponent<Collider>("item");
+    auto& collider = entity.addComponent<RectCollider>("item");
 
     // Make the collider bigger so it's a bit easier to pick up.
     collider.rect.w = dst.w * 1.8f;

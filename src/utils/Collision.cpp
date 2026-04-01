@@ -19,7 +19,7 @@ bool Collision::AABB(const SDL_FRect& rectA, const SDL_FRect& rectB) {
 }
 
 // Passing in the colliders itself
-bool Collision::AABB(const Collider& colA, const Collider& colB) {
+bool Collision::AABB(const RectCollider& colA, const RectCollider& colB) {
     if (AABB(colA.rect, colB.rect)) {
         return true;
     }
