@@ -32,6 +32,15 @@ struct AngularVelocity {
     float rotationOverTime{};
 };
 
+// Sets the rotation property of the Transform to point toward a different target Transform.
+struct LookAtRotator {
+    // The target so that the rotator will point local space DOWN toward the target.
+    Transform target{};
+
+    // Offset to the target in degrees.
+    float offsetDegrees{};
+};
+
 enum class RenderLayer {
     Background,
     World,
