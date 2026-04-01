@@ -1,4 +1,8 @@
 #pragma once
+#include "Entity.h"
+#include "SDL3/SDL_rect.h"
+
+class World;
 
 class StageUtils {
 public:
@@ -24,6 +28,9 @@ public:
         float paddingX = windowWidth * 0.05;
         float paddingY = ((windowHeight - stageHeight) / 2) - 1;
 
-        return { paddingX, paddingY, stageWidth, stageHeight };
+        return {paddingX, paddingY, stageWidth, stageHeight};
     }
+
+    static Entity& createStageBackground(World& world, float stageWidth, float stageHeight, float startingY,
+        float scrollSpeedY, const char* texturePath);
 };

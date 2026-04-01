@@ -85,12 +85,12 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// Create backgrounds.
 	// The backgrounds are 1 pixel taller to make an overlap that hides the seam between backgrounds.
-	UIUtils::createStageBackground(world, stageWidth, stageHeight + 1, 0, backgroundSpeed, "../asset/stage1.png");
-	UIUtils::createStageBackground(world, stageWidth, stageHeight + 1, -stageHeight, backgroundSpeed, "../asset/stage1.png");
+	StageUtils::createStageBackground(world, stageWidth, stageHeight + 1, 0, backgroundSpeed, "../asset/stage1.png");
+	StageUtils::createStageBackground(world, stageWidth, stageHeight + 1, -stageHeight, backgroundSpeed, "../asset/stage1.png");
 
 	// Create foregrounds.
-	UIUtils::createStageBackground(world, stageWidth, stageHeight, 0, foregroundSpeed, "../asset/foreground1.png");
-	UIUtils::createStageBackground(world, stageWidth, stageHeight, -stageHeight, foregroundSpeed, "../asset/foreground1.png");
+	StageUtils::createStageBackground(world, stageWidth, stageHeight, 0, foregroundSpeed, "../asset/foreground1.png");
+	StageUtils::createStageBackground(world, stageWidth, stageHeight, -stageHeight, foregroundSpeed, "../asset/foreground1.png");
 
 	// TODO: purge unused systems.
 	// Load our map.

@@ -276,7 +276,8 @@ struct Item {
     ItemType type{};
 };
 
-struct ItemBounce { // Note that bounce require a velocity component with an upward direction at the start.
+// Note that bounces require a velocity component with an upward direction at the start.
+struct ItemBounce {
     float bounceDuration = 1.25f; // Duration of upwards movement when the item is created.
     float timer = bounceDuration;
     bool isBouncing = true;

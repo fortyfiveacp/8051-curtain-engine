@@ -57,6 +57,7 @@ set(SRC_FILES
         src/ecs/system/PauseMenuSystem.cpp
         src/ecs/system/DebugRenderSystem.cpp
         src/utils/UIUtils.cpp
+        src/utils/StageUtils.cpp
         #add all new source files here
 )
 

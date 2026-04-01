@@ -19,6 +19,4 @@ public:
         const char* cacheKey, LabelType labelType);
     static Entity& createIconLabel(World& world, int x, int y, int maxNumber, float iconWidth, float iconHeight,
         IconCounterType iconCounterType, const char* texturePath);
-    static Entity& createStageBackground(World& world, float stageWidth, float stageHeight, float startingY,
-        float scrollSpeedY, const char* texturePath);
 };
