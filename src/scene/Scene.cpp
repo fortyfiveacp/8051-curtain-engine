@@ -117,7 +117,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// Create the player.
 	auto& player (world.createEntity());
-	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 380.0f);
+	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 425.0f);
 
 	Animation anim = AssetManager::getAnimation("player");
 	player.addComponent<Animation>(anim);

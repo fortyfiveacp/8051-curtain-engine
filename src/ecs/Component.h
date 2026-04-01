@@ -193,9 +193,12 @@ enum ItemType {
 struct Item {
     int value{};
     ItemType type{};
+};
+
+struct ItemBounce { // Note that bounce require a velocity component with an upward direction at the start.
     float bounceDuration = 1.0f; // Duration of upwards movement when the item is created.
     float timer = bounceDuration;
-    bool isBouncing = true; // Note: non-bouncing items will immediately ramp up speed (see ItemBounceSystem.h).
+    bool isBouncing = true;
 };
 
 struct PlayerTag{};

@@ -70,6 +70,8 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
             return;
         }
 
+        AudioManager::playSfx("item");
+
         auto& item = other->getComponent<Item>();
 
         for (auto& entity : world.getEntities()) {
@@ -99,6 +101,8 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
 
                 break;
             }
+
+            // TODO: purge.
             // if (!entity->hasComponent<SceneState>()) {
             //     continue;
             // }

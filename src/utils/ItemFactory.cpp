@@ -32,22 +32,22 @@ void ItemFactory::createBaseItem(Entity& entity, Transform transform, float text
     entity.addComponent<Sprite>(tex, src, dst);
 
     // Items start with a "bounce" upwards when created.
-    entity.addComponent<Velocity>(Vector2D(0, -1), 275.0f);
+    entity.addComponent<Velocity>(Vector2D(0, -1), 200.0f);
+    entity.addComponent<ItemBounce>();
 
     auto& collider = entity.addComponent<Collider>("item");
 
     // Make the collider bigger so it's a bit easier to pick up.
-    collider.rect.w = dst.w * 1.6;
-    collider.rect.h = dst.w * 1.6;
+    collider.rect.w = dst.w * 1.8f;
+    collider.rect.h = dst.h * 1.8f;
 
     // Add offset to the collider to it's centered on the destination rect.
     collider.offset.x = (dst.w  - collider.rect.w) / 2.0f;
     collider.offset.y = (dst.h - collider.rect.h) / 2.0f;
-
 }
 
 void ItemFactory::createPointItem(Entity& entity, Transform transform) {
-    createBaseItem(entity, transform, 15, 0); // TODO: why is the point sprite off by 1 pixel??
+    createBaseItem(entity, transform, 16, 0);
     entity.addComponent<Item>(4500, Point);
 }
 

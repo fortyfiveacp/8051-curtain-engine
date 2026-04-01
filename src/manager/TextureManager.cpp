@@ -38,6 +38,9 @@ SDL_Texture* TextureManager::load(const char* path) {
         return nullptr;
     }
 
+    // Nearest scale mode is better for pixel art.
+    SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+
     // Store the new texture in the cache.
     textures[path] = texture;
 
