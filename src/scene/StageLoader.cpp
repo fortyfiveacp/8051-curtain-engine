@@ -20,7 +20,6 @@ void StageLoader::loadStage(const char *path, World &world) {
 
             PathPoint point;
             point.position = Vector2D(pt->FloatAttribute("x"), pt->FloatAttribute("y"));
-            // New: Read the waitTime attribute (defaults to 0.0f if not present)
             point.hoverTime = pt->FloatAttribute("waitTime");
 
             path.points.push_back(point);
@@ -29,7 +28,8 @@ void StageLoader::loadStage(const char *path, World &world) {
     }
 
     auto& timelineEntity = world.createEntity();
-    auto& timelineComp = timelineEntity.addComponent<Timeline>();
+    timelineEntity.addComponent<Timeline>();
+    timelineEntity.addComponent<StageState>();
 
     auto* wavesRoot = root->FirstChildElement("Waves");
     for (auto* convoyElement = wavesRoot->FirstChildElement("Convoy");
@@ -44,7 +44,7 @@ void StageLoader::loadStage(const char *path, World &world) {
         data.spawnInterval = convoyElement->FloatAttribute("interval");
         data.speed = convoyElement->FloatAttribute("speed");
 
-        timelineComp.timeline.emplace_back(startTime, [&world, data]() {
+        timelineEntity.getComponent<Timeline>().timeline.emplace_back(startTime, [&world, data]() {
             auto& spawner = world.createDeferredEntity();
             spawner.addComponent<Convoy>(data);
         });

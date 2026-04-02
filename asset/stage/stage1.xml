@@ -103,7 +103,7 @@
         <Convoy start="35.0" enemyType="SmallFairy" pathId="12" numEnemies="3" interval="0.4" speed="150" />
 
         <Convoy start="40.0" enemyType="SmallFairy" pathId="12" numEnemies="3" interval="0.4" speed="150" />
-        <Convoy start="40.2" enemyType="SmallFairy" pathId="13" numEnemies="3" interval="0.4" speed="150" />
+        <Convoy start="40.0" enemyType="SmallFairy" pathId="13" numEnemies="3" interval="0.4" speed="150" />
         <Convoy start="40.0" enemyType="SmallFairy" pathId="14" numEnemies="3" interval="0.4" speed="150" />
     </Waves>
 </Stage>

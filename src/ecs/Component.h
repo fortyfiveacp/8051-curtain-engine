@@ -314,6 +314,11 @@ struct ItemBounce {
     bool isBouncing = true;
 };
 
+struct StageState {
+    bool largeFairiesShouldFire = false;
+};
+
 struct PlayerTag{};
 struct PauseMenuTag{};
 struct ProjectileTag{};
+struct EnemyTag{};

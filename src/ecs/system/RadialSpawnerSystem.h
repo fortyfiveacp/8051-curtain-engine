@@ -14,7 +14,7 @@ public:
                 auto& transform = entity->getComponent<Transform>();
 
                 if (!spawner.isActive) {
-                    return;
+                    continue;
                 }
 
                 spawner.spawnTimer -= dt;

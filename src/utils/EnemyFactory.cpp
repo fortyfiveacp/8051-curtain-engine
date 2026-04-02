@@ -30,13 +30,12 @@ void EnemyFactory::buildSmallFairy(Entity &entity, Transform &transform) {
     SDL_FRect src {0, 0, 32, 32};
     SDL_FRect dst {transform.position.x, transform.position.y, 32, 32};
 
-    Collider col = entity.addComponent<Collider>("projectile");
+    auto& col = entity.addComponent<Collider>("projectile");
     col.rect.w = dst.w;
     col.rect.h = dst.h;
     entity.addComponent<Collider>(col);
 
     entity.addComponent<Sprite>(tex, src, dst);
-    entity.addComponent<Health>(10);
 }
 
 void EnemyFactory::buildLargeFairy(Entity &entity, Transform &transform, World &world) {
@@ -45,31 +44,37 @@ void EnemyFactory::buildLargeFairy(Entity &entity, Transform &transform, World &
     SDL_FRect src {0, 0, 64, 64};
     SDL_FRect dst {transform.position.x, transform.position.y, 64, 64};
 
-    Collider col = entity.addComponent<Collider>("projectile");
-    col.rect.w = dst.w;
-    col.rect.h = dst.h;
-    entity.addComponent<Collider>(col);
+    auto& col = entity.addComponent<Collider>("projectile");
+    col.rect.w = dst.w / 2;
+    col.rect.h = dst.h / 2;
 
     entity.addComponent<Sprite>(tex, src, dst);
-    entity.addComponent<Health>(10);
 
-    float frequency = 1.0f;
-    float bulletSpeed = 150.0f;
-    float bulletAngularVel = 20.0f;
+    bool currentGlobalFiringState = false;
+    for (auto& e : world.getEntities()) {
+        if (e->hasComponent<StageState>()) {
+            currentGlobalFiringState = e->getComponent<StageState>().largeFairiesShouldFire;
+            break;
+        }
+    }
+
+    float frequency = 2.0f;
+    float bulletSpeed = 100.0f;
+    float bulletAngularVel = 0.0f;
     float radius = 30.0f;
-    int bulletsPerBurst = 31;
+    int bulletsPerBurst = 8;
+
+    float rotSpeed = 50.0f;
 
     entity.addComponent<RadialSpawner>(
-        0.0f,                   // rotationSpeed
+        currentGlobalFiringState,
+        rotSpeed,           // rotationSpeed
         frequency,          // frequency
         bulletSpeed,        // bulletEmissionSpeed
         bulletAngularVel,   // bulletEmissionAngularVelocity
         radius,             // radius
-        10.0f,                  // duration
-        2.0f,                   // delay
         bulletsPerBurst,    // bulletsPerBurst
         [&world, &entity, bulletSpeed, bulletAngularVel, radius](Vector2D direction) {
-
             if (!entity.isActive()) {
                 return;
             }
@@ -78,18 +83,16 @@ void EnemyFactory::buildLargeFairy(Entity &entity, Transform &transform, World &
             auto& bullet = world.createDeferredEntity();
 
             Vector2D spawnPos = fairyTransform.position + (direction * radius);
-
             bullet.addComponent<Transform>(spawnPos, 0.0f, 1.0f);
             bullet.addComponent<Velocity>(direction, bulletSpeed, true);
             bullet.addComponent<AngularVelocity>(bulletAngularVel);
             bullet.addComponent<ProjectileTag>();
 
             SDL_Texture* tex = TextureManager::load("../asset/bullet4.png");
-            bullet.addComponent<Sprite>(tex, SDL_FRect{0,0,64,64}, SDL_FRect{0,0,64,64});
-
-            auto& c = bullet.addComponent<Collider>("projectile");
-            c.rect.w = 32;
-            c.rect.h = 32;
+            SDL_FRect src {0, 0, 64, 64};
+            SDL_FRect dst {fairyTransform.position.x, fairyTransform.position.y, 64, 64};
+            bullet.addComponent<Sprite>(tex, src, dst);
+            bullet.addComponent<Collider>("projectile").rect = {0,0,48,48};
         }
     );
 }

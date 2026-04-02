@@ -142,7 +142,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// Create the player.
 	auto& player (world.createEntity());
-	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 400.0f);
+	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 250.0f);
 
 	Animation anim = AssetManager::getAnimation("player");
 	player.addComponent<Animation>(anim);
@@ -311,102 +311,119 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	//
 	// 		e.addComponent<ProjectileTag>();
 	// 	});
-	float frequency = 0.17f;
-	float bulletEmissionSpeed = 150.0f;
-	float bulletEmissionAngularVelocity = 20.0f;
-	float radius = 30.0f;
-	float duration = 10.0f;
-	float delay = 2.0f;
-	int bulletsPerBurst = 6;
-
-	// RadialSpawner component takes a callback which spawns individual bullets.
-	auto& radialSpawner = radialDanmaku.addComponent<RadialSpawner>(false, rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
-		radius, bulletsPerBurst,
-		[this, radialDanmakuTransform, bulletEmissionSpeed, bulletEmissionAngularVelocity, radius](Vector2D direction) {
-			auto& e(world.createDeferredEntity());
-
-			Vector2D bulletSpawnPositionOffset = direction * radius;
-
-			e.addComponent<Transform>(radialDanmakuTransform.position + bulletSpawnPositionOffset, 0.0f, 1.0f);
-			e.addComponent<Velocity>(direction, bulletEmissionSpeed, true);
-
-			e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
-
-			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
-			SDL_FRect src { 0, 0, 32, 32 };
-			SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 32 };
-			e.addComponent<Sprite>(tex, src, dest);
-
-			auto& c = e.addComponent<Collider>("projectile");
-			c.rect.w = dest.w / 1.5;
-			c.rect.h = dest.h / 1.5;
-
-			c.offset.x = (dest.w  - c.rect.w) / 2.0f;
-			c.offset.y = (dest.h - c.rect.h) / 2.0f;
-
-			e.addComponent<ProjectileTag>();
-		});
-
-	// Linear danmaku spawner.
-	auto& linearDanmaku(world.createEntity());
-	linearDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
-	linearDanmaku.addComponent<LookAtRotator>(playerTransform, 0.0f);
-
-	bool isFanPattern = false;
-	float bulletEmissionSpeedMultiplier = 1.0f;
-
-	std::vector<Vector2D> bulletSpawnPositions;
-	bulletSpawnPositions.emplace_back(0, 30);
-	bulletSpawnPositions.emplace_back(0, 40);
-	bulletSpawnPositions.emplace_back(0, 50);
-	bulletSpawnPositions.emplace_back(10, 20);
-	bulletSpawnPositions.emplace_back(-10, 20);
-	bulletSpawnPositions.emplace_back(15, 20);
-	bulletSpawnPositions.emplace_back(-15, 20);
-
-	auto& linearSpawner = linearDanmaku.addComponent<LinearSpawner>(false, isFanPattern, bulletEmissionSpeed, bulletEmissionSpeedMultiplier,
-		bulletSpawnPositions, frequency,
-		[this](Vector2D position, Vector2D direction, float speed) {
-			auto& e(world.createDeferredEntity());
-
-			e.addComponent<Transform>(position, 0.0f, 1.0f);
-			e.addComponent<Velocity>(direction, speed, false);
-
-			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
-			SDL_FRect src { 0, 0, 32, 32 };
-			SDL_FRect dest { position.x, position.y, 32, 32 };
-			e.addComponent<Sprite>(tex, src, dest);
-
-			auto& c = e.addComponent<Collider>("projectile");
-			c.rect.w = dest.w / 1.5;
-			c.rect.h = dest.h / 1.5;
-
-			c.offset.x = (dest.w  - c.rect.w) / 2.0f;
-			c.offset.y = (dest.h - c.rect.h) / 2.0f;
-
-			e.addComponent<ProjectileTag>();
-		});
-
-
-	// Add timeline object (for testing danmaku scripting).
+	// float frequency = 0.17f;
+	// float bulletEmissionSpeed = 150.0f;
+	// float bulletEmissionAngularVelocity = 20.0f;
+	// float radius = 30.0f;
+	// float duration = 10.0f;
+	// float delay = 2.0f;
+	// int bulletsPerBurst = 6;
+	//
+	// // RadialSpawner component takes a callback which spawns individual bullets.
+	// auto& radialSpawner = radialDanmaku.addComponent<RadialSpawner>(false, rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
+	// 	radius, bulletsPerBurst,
+	// 	[this, radialDanmakuTransform, bulletEmissionSpeed, bulletEmissionAngularVelocity, radius](Vector2D direction) {
+	// 		auto& e(world.createDeferredEntity());
+	//
+	// 		Vector2D bulletSpawnPositionOffset = direction * radius;
+	//
+	// 		e.addComponent<Transform>(radialDanmakuTransform.position + bulletSpawnPositionOffset, 0.0f, 1.0f);
+	// 		e.addComponent<Velocity>(direction, bulletEmissionSpeed, true);
+	//
+	// 		e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
+	//
+	// 		SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
+	// 		SDL_FRect src { 0, 0, 32, 32 };
+	// 		SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 32 };
+	// 		e.addComponent<Sprite>(tex, src, dest);
+	//
+	// 		auto& c = e.addComponent<Collider>("projectile");
+	// 		c.rect.w = dest.w / 1.5;
+	// 		c.rect.h = dest.h / 1.5;
+	//
+	// 		c.offset.x = (dest.w  - c.rect.w) / 2.0f;
+	// 		c.offset.y = (dest.h - c.rect.h) / 2.0f;
+	//
+	// 		e.addComponent<ProjectileTag>();
+	// 	});
+	//
+	// // Linear danmaku spawner.
+	// auto& linearDanmaku(world.createEntity());
+	// linearDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
+	// linearDanmaku.addComponent<LookAtRotator>(playerTransform, 0.0f);
+	//
+	// bool isFanPattern = false;
+	// float bulletEmissionSpeedMultiplier = 1.0f;
+	//
+	// std::vector<Vector2D> bulletSpawnPositions;
+	// bulletSpawnPositions.emplace_back(0, 30);
+	// bulletSpawnPositions.emplace_back(0, 40);
+	// bulletSpawnPositions.emplace_back(0, 50);
+	// bulletSpawnPositions.emplace_back(10, 20);
+	// bulletSpawnPositions.emplace_back(-10, 20);
+	// bulletSpawnPositions.emplace_back(15, 20);
+	// bulletSpawnPositions.emplace_back(-15, 20);
+	//
+	// auto& linearSpawner = linearDanmaku.addComponent<LinearSpawner>(false, isFanPattern, bulletEmissionSpeed, bulletEmissionSpeedMultiplier,
+	// 	bulletSpawnPositions, frequency,
+	// 	[this](Vector2D position, Vector2D direction, float speed) {
+	// 		auto& e(world.createDeferredEntity());
+	//
+	// 		e.addComponent<Transform>(position, 0.0f, 1.0f);
+	// 		e.addComponent<Velocity>(direction, speed, false);
+	//
+	// 		SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
+	// 		SDL_FRect src { 0, 0, 32, 32 };
+	// 		SDL_FRect dest { position.x, position.y, 32, 32 };
+	// 		e.addComponent<Sprite>(tex, src, dest);
+	//
+	// 		auto& c = e.addComponent<Collider>("projectile");
+	// 		c.rect.w = dest.w / 1.5;
+	// 		c.rect.h = dest.h / 1.5;
+	//
+	// 		c.offset.x = (dest.w  - c.rect.w) / 2.0f;
+	// 		c.offset.y = (dest.h - c.rect.h) / 2.0f;
+	//
+	// 		e.addComponent<ProjectileTag>();
+	// 	});
+	//
+	//
+	// // Add timeline object (for testing danmaku scripting).
 	auto& timelineManager(world.createEntity());
 	auto& debugTimeline = timelineManager.addComponent<Timeline>();
+	//
+	// debugTimeline.timeline.emplace_back(1.0, [&radialSpawner] {
+	// 	std::cout << "Radial start!" << std::endl;
+	// 	radialSpawner.isActive = true;
+	// });
+	// debugTimeline.timeline.emplace_back(2.0, [&linearSpawner] {
+	// 	std::cout << "Linear start!" << std::endl;
+	// 	linearSpawner.isActive = true;
+	// });
+	// debugTimeline.timeline.emplace_back(10.0, [&radialSpawner] {
+	// 	std::cout << "Radial end!" << std::endl;
+	// 	radialSpawner.isActive = false;
+	// });
+	// debugTimeline.timeline.emplace_back(11.0, [&linearSpawner] {
+	// 	std::cout << "Linear end!" << std::endl;
+	// 	linearSpawner.isActive = false;
+	// });
 
-	debugTimeline.timeline.emplace_back(1.0, [&radialSpawner] {
-		std::cout << "Radial start!" << std::endl;
-		radialSpawner.isActive = true;
-	});
-	debugTimeline.timeline.emplace_back(2.0, [&linearSpawner] {
-		std::cout << "Linear start!" << std::endl;
-		linearSpawner.isActive = true;
-	});
-	debugTimeline.timeline.emplace_back(10.0, [&radialSpawner] {
-		std::cout << "Radial end!" << std::endl;
-		radialSpawner.isActive = false;
-	});
-	debugTimeline.timeline.emplace_back(11.0, [&linearSpawner] {
-		std::cout << "Linear end!" << std::endl;
-		linearSpawner.isActive = false;
+	debugTimeline.timeline.emplace_back(10.0f, [this]() {
+		// 1. Update the Master Switch for future-spawned enemies
+		for (auto& e : world.getEntities()) {
+			if (e->hasComponent<StageState>()) {
+				e->getComponent<StageState>().largeFairiesShouldFire = true;
+				break;
+			}
+		}
+
+		// 2. Update all enemies currently on screen
+		for (auto& e : world.getEntities()) {
+			if (e->hasComponent<EnemyTag>() && e->hasComponent<RadialSpawner>()) {
+				e->getComponent<RadialSpawner>().isActive = true;
+			}
+		}
 	});
 
 	// Add scene state.
