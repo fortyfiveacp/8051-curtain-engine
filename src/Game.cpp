@@ -69,6 +69,8 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	// Load animations.
 	AssetManager::loadAnimation("player", "../asset/animations/reimu_animations.xml");
 	AssetManager::loadAnimation("enemy", "../asset/animations/bird_animations.xml");
+	AssetManager::loadAnimation("redFairy", "../asset/animations/red_fairy_animations.xml");
+	AssetManager::loadAnimation("blueFairy", "../asset/animations/blue_fairy_animations.xml");
 
 	// Load scenes.
 	sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, width, height);

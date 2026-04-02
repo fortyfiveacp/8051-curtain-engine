@@ -179,12 +179,12 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		e.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
 		e.addComponent<Velocity>(Vector2D(0, -1), 100.0f);
 
-		Animation anim = AssetManager::getAnimation("enemy");
+		Animation anim = AssetManager::getAnimation("redFairy");
 		e.addComponent<Animation>(anim);
 
-		SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
-		SDL_FRect src { 0, 0, 32, 32 };
-		SDL_FRect dest { t.position.x, t.position.y, 32, 32 };
+		SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
+		SDL_FRect src = {0, 31, 32, 31};
+		SDL_FRect dest { t.position.x, t.position.y, 32, 31 };
 		e.addComponent<Sprite>(tex, src, dest);
 
 		auto& c = e.addComponent<Collider>("projectile");
@@ -254,9 +254,12 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 			e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
 
-			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
-			SDL_FRect src { 0, 0, 32, 32 };
-			SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 32 };
+			Animation anim = AssetManager::getAnimation("redFairy");
+			e.addComponent<Animation>(anim);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
+			SDL_FRect src = {0, 31, 32, 31};
+			SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 31 };
 			e.addComponent<Sprite>(tex, src, dest);
 
 			auto& c = e.addComponent<Collider>("projectile");
@@ -294,9 +297,12 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, speed, false);
 
-			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
-			SDL_FRect src { 0, 0, 32, 32 };
-			SDL_FRect dest { position.x, position.y, 32, 32 };
+			Animation anim = AssetManager::getAnimation("blueFairy");
+			e.addComponent<Animation>(anim);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
+			SDL_FRect src = {0, 31, 32, 31};
+			SDL_FRect dest { position.x, position.y, 32, 31 };
 			e.addComponent<Sprite>(tex, src, dest);
 
 			auto& c = e.addComponent<Collider>("projectile");
