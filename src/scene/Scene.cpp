@@ -409,7 +409,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	// 	linearSpawner.isActive = false;
 	// });
 
-	debugTimeline.timeline.emplace_back(10.0f, [this]() {
+	debugTimeline.timeline.emplace_back(2.0f, [this]() {
 		// 1. Update the Master Switch for future-spawned enemies
 		for (auto& e : world.getEntities()) {
 			if (e->hasComponent<StageState>()) {

@@ -6,6 +6,7 @@ void EnemyFactory::build(Entity &entity, EnemyType type, int pathId, float speed
     auto& transform = entity.addComponent<Transform>(Vector2D(0.0f, 0.0f), 0.0f, 1.0f);
     entity.addComponent<PathFollower>(pathId, 0.0f, speed);
     entity.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 0.0f);
+    entity.addComponent<EnemyTag>();
 
     switch (type) {
         case EnemyType::SmallFairy:
@@ -31,9 +32,11 @@ void EnemyFactory::buildSmallFairy(Entity &entity, Transform &transform) {
     SDL_FRect dst {transform.position.x, transform.position.y, 32, 32};
 
     auto& col = entity.addComponent<Collider>("projectile");
-    col.rect.w = dst.w;
-    col.rect.h = dst.h;
-    entity.addComponent<Collider>(col);
+    col.rect.w = dst.w / 2.0f;
+    col.rect.h = dst.h / 2.0f;
+
+    col.offset.x = (dst.w - col.rect.w) / 2.0f;
+    col.offset.y = (dst.h - col.rect.h) / 2.0f;
 
     entity.addComponent<Sprite>(tex, src, dst);
 }
@@ -45,8 +48,11 @@ void EnemyFactory::buildLargeFairy(Entity &entity, Transform &transform, World &
     SDL_FRect dst {transform.position.x, transform.position.y, 64, 64};
 
     auto& col = entity.addComponent<Collider>("projectile");
-    col.rect.w = dst.w / 2;
-    col.rect.h = dst.h / 2;
+    col.rect.w = dst.w / 2.0f;
+    col.rect.h = dst.h / 2.0f;
+
+    col.offset.x = (dst.w - col.rect.w) / 2.0f;
+    col.offset.y = (dst.h - col.rect.h) / 2.0f;
 
     entity.addComponent<Sprite>(tex, src, dst);
 
@@ -92,7 +98,13 @@ void EnemyFactory::buildLargeFairy(Entity &entity, Transform &transform, World &
             SDL_FRect src {0, 0, 64, 64};
             SDL_FRect dst {fairyTransform.position.x, fairyTransform.position.y, 64, 64};
             bullet.addComponent<Sprite>(tex, src, dst);
-            bullet.addComponent<Collider>("projectile").rect = {0,0,48,48};
+
+            auto& bulletCol = bullet.addComponent<Collider>("projectile");
+            bulletCol.rect.w = dst.w / 2.5f;
+            bulletCol.rect.h = dst.h / 2.5f;
+
+            bulletCol.offset.x = (dst.w - bulletCol.rect.w) / 2.0f;
+            bulletCol.offset.y = (dst.h - bulletCol.rect.h) / 2.0f;
         }
     );
 }
