@@ -1,0 +1,35 @@
+<animations>
+    <walk_left>
+        <frame x="480" y="31" w="32" h="31" />
+        <frame x="512" y="31" w="32" h="31" />
+        <frame x="544" y="31" w="32" h="31" />
+        <frame x="576" y="31" w="32" h="31" />
+    </walk_left>
+    <walk_right>
+        <frame x="256" y="31" w="32" h="31" />
+        <frame x="288" y="31" w="32" h="31" />
+        <frame x="320" y="31" w="32" h="31" />
+        <frame x="352" y="31" w="32" h="31" />
+    </walk_right>
+    <walk_down>
+        <frame x="0" y="31" w="32" h="31" />
+        <frame x="32" y="31" w="32" h="31" />
+        <frame x="64" y="31" w="32" h="31" />
+        <frame x="96" y="31" w="32" h="31" />
+        <frame x="128" y="31" w="32" h="31" />
+    </walk_down>
+    <walk_up>
+        <frame x="0" y="31" w="32" h="31" />
+        <frame x="32" y="31" w="32" h="31" />
+        <frame x="64" y="31" w="32" h="31" />
+        <frame x="96" y="31" w="32" h="31" />
+        <frame x="128" y="31" w="32" h="31" />
+    </walk_up>
+    <idle_right>
+        <frame x="0" y="31" w="32" h="31" />
+        <frame x="32" y="31" w="32" h="31" />
+        <frame x="64" y="31" w="32" h="31" />
+        <frame x="96" y="31" w="32" h="31" />
+        <frame x="128" y="31" w="32" h="31" />
+    </idle_right>
+</animations>
