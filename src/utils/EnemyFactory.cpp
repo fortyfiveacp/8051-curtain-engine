@@ -6,7 +6,7 @@ void EnemyFactory::build(Entity &entity, EnemyType type, int pathId, float speed
     auto& transform = entity.addComponent<Transform>(Vector2D(0.0f, 0.0f), 0.0f, 1.0f);
     entity.addComponent<PathFollower>(pathId, 0.0f, speed);
     entity.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 0.0f);
-    entity.addComponent<EnemyTag>();
+    entity.addComponent<ProjectileTag>();
 
     switch (type) {
         case EnemyType::SmallFairy:
