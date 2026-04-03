@@ -44,6 +44,9 @@ void ItemFactory::createBaseItem(Entity& entity, Vector2D position, float textur
     // Add offset to the collider to it's centered on the destination rect.
     collider.offset.x = (dst.w  - collider.rect.w) / 2.0f;
     collider.offset.y = (dst.h - collider.rect.h) / 2.0f;
+
+    // Add projectile tag so items are destroyed when they go off-screen.
+    entity.addComponent<ProjectileTag>();
 }
 
 void ItemFactory::createPointItem(Entity& entity, Vector2D position) {
