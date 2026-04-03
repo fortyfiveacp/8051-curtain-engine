@@ -148,7 +148,6 @@ struct SceneState {
 struct PlayerStats {
     int currentHealth{};
     int currentBombs{};
-    Vector2D playerStartingPosition{};
     int currentHiScore{};
     int currentScore{};
     int currentPower{};
@@ -255,7 +254,7 @@ struct KeyboardInput {
 };
 
 struct InvincibilityFrames {
-    float duration = 4.0f;
+    float duration = 4.0f; // Note that the invincibility duration ticks down during respawn delay.
     float timer = 0.0f;
     float flickerFrequency = 10.0f; // The number of sprite flickers per second when invincible.
     bool active = false;
@@ -278,6 +277,13 @@ struct ItemBounce {
     float bounceDuration = 0.75f; // Duration of upwards movement when the item is created.
     float timer = bounceDuration;
     bool isBouncing = true;
+};
+
+struct PlayerRespawn {
+    Vector2D playerStartingPosition{};
+    bool isRespawning = false;
+    float respawnDelay = 0.5f;
+    float timer = 0.0f;
 };
 
 struct PlayerTag{};

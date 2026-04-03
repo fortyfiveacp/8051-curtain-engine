@@ -130,25 +130,29 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
             return;
         }
 
-        auto& invincibilityFrames = player->getComponent<InvincibilityFrames>();
-        auto& playerTransform = player->getComponent<Transform>();
+        if (player->hasComponent<InvincibilityFrames>()) {
+            auto& invincibilityFrames = player->getComponent<InvincibilityFrames>();
 
-        // Ignore hit if invincible.
-        if (invincibilityFrames.active) {
-            return;
+            // Ignore hit if invincible.
+            if (invincibilityFrames.active) {
+                return;
+            }
+
+            // Enable invincibility after being hit.
+            invincibilityFrames.active = true;
         }
 
-        // Enable invincibility frames after hit.
-        invincibilityFrames.active = true;
+        // Enable respawn when hit.
+        if (player->hasComponent<PlayerRespawn>()) {
+            auto& playerRespawn = player->getComponent<PlayerRespawn>();
+            playerRespawn.isRespawning = true;
+        }
 
         world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit"));
 
         // This logic is simple and direct.
         // Ideally, we would only operate on data in an update function (transient entities).
         auto& playerStats = player->getComponent<PlayerStats>();
-
-        // Teleport player back to starting position.
-        playerTransform.position = playerStats.playerStartingPosition;
 
         // Lose 70% of player power on hit.
         playerStats.currentPower *= 0.3;

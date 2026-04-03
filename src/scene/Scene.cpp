@@ -167,8 +167,8 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	player.addComponent<PlayerTag>();
 	player.addComponent<KeyboardInput>();
 	player.addComponent<InvincibilityFrames>();
-	player.addComponent<PlayerStats>(Game::gameState.playerHealth, Game::gameState.playerBombs,
-		Vector2D(playerStartingX, playerStartingY));
+	player.addComponent<PlayerRespawn>(Vector2D(playerStartingX, playerStartingY));
+	player.addComponent<PlayerStats>(Game::gameState.playerHealth, Game::gameState.playerBombs);
 
 	// TODO: purge.
 	auto& spawner(world.createEntity());
@@ -351,7 +351,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 			world.getEventManager().emit(PauseEvent{isOpen});
 
 			// Play sound effect when opening pause menu.
-			if (!isOpen) {
+			if (isOpen) {
 				AudioManager::playSfx("pause");
 			}
 		}
@@ -374,11 +374,6 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 					break;
 				}
-			}
-
-			// Play sound effect when opening continue menu.
-			if (!isOpen) {
-				AudioManager::playSfx("pause");
 			}
 		}
 	);

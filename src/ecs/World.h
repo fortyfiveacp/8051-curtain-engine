@@ -25,6 +25,7 @@
 #include "InvincibilityFramesSystem.h"
 #include "ItemBounceSystem.h"
 #include "PlayerBoundsSystem.h"
+#include "PlayerRespawnSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
 #include "TimelineSystem.h"
@@ -68,6 +69,7 @@ class World {
     DebugRenderSystem debugRenderSystem;
     PlayerBoundsSystem playerBoundsSystem;
     ItemBounceSystem itemBounceSystem;
+    PlayerRespawnSystem playerRespawnSystem;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -89,6 +91,7 @@ public:
             if (!isPaused) {
                 movementSystem.update(entities, dt);
                 collisionSystem.update(*this);
+                playerRespawnSystem.update(entities, dt);
                 invincibilityFramesSystem.update(entities, dt);
                 playerAbilitySystem.update(entities);
                 animationSystem.update(entities, dt);
