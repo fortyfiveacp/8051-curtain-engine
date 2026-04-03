@@ -9,7 +9,7 @@ public:
     static void build(Entity& entity, EnemyType type, int pathId, float speed, World& world);
 
 private:
-    static void buildSmallFairy(Entity& entity, Transform& transform);
+    static void buildSmallFairy(Entity& entity, Transform& transform, World& world);
     static void buildLargeFairy(Entity& entity, Transform& transform, World& world);
     static void buildStageBoss(Entity& entity, Transform& transform);
 };

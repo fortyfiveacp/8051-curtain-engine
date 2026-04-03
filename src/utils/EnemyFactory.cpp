@@ -3,7 +3,7 @@
 class World;
 
 void EnemyFactory::build(Entity &entity, EnemyType type, int pathId, float speed, World& world) {
-    auto& transform = entity.addComponent<Transform>(Vector2D(0.0f, 0.0f), 0.0f, 1.0f);
+    auto& transform = entity.addComponent<Transform>(Vector2D(0.0f, -50.0f), 0.0f, 1.0f);
     entity.addComponent<PathFollower>(pathId, 0.0f, speed);
     entity.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 0.0f);
     entity.addComponent<ProjectileTag>();
@@ -11,7 +11,7 @@ void EnemyFactory::build(Entity &entity, EnemyType type, int pathId, float speed
     switch (type) {
         case EnemyType::SmallFairy:
             // TODO: find spritesheet of small fairy - use bird spritesheet as placeholder for now.
-            buildSmallFairy(entity, transform);
+            buildSmallFairy(entity, transform, world);
             break;
         case EnemyType::LargeFairy:
             // TODO: find spritesheet of large fairy - use spritesheet as placeholder for now.
@@ -25,9 +25,9 @@ void EnemyFactory::build(Entity &entity, EnemyType type, int pathId, float speed
     }
 }
 
-void EnemyFactory::buildSmallFairy(Entity &entity, Transform &transform) {
-    entity.addComponent<Animation>(AssetManager::getAnimation("enemy"));
-    SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
+void EnemyFactory::buildSmallFairy(Entity &entity, Transform &transform, World& world) {
+    entity.addComponent<Animation>(AssetManager::getAnimation("redFairy"));
+    SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
     SDL_FRect src {0, 0, 32, 32};
     SDL_FRect dst {transform.position.x, transform.position.y, 32, 32};
 
@@ -39,9 +39,11 @@ void EnemyFactory::buildSmallFairy(Entity &entity, Transform &transform) {
     col.offset.y = (dst.h - col.rect.h) / 2.0f;
 
     entity.addComponent<Sprite>(tex, src, dst);
+
+    // TODO: implement linear danmaku pattern that targets the player
 }
 
-void EnemyFactory::buildLargeFairy(Entity &entity, Transform &transform, World &world) {
+void EnemyFactory::buildLargeFairy(Entity &entity, Transform &transform, World& world) {
     entity.addComponent<Animation>(AssetManager::getAnimation("enemy"));
     SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
     SDL_FRect src {0, 0, 64, 64};
