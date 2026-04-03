@@ -336,6 +336,14 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		std::cout << "Linear end!" << std::endl;
 		linearSpawner.isActive = false;
 	});
+	// TODO: debug for win screen, remove later.
+	debugTimeline.timeline.emplace_back(12.0, [this] {
+		for (auto& entity : world.getEntities()) {
+			if (entity->hasComponent<WinGameMenuTag>()) {
+				entity->getComponent<Toggleable>().toggle();
+			}
+		}
+	});
 
 	// Add scene state.
 	auto& state(world.createEntity());
@@ -366,7 +374,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		[this](Entity& overlay) {
 			bool isOpen = UIUtils::toggleOverlayVisibility(overlay);
 
-			// Disable pause menu while continue game menu is open.
+			// Disable the ability to toggle pause menu while continue game menu is open.
 			for (auto& entity : world.getEntities()) {
 				if (entity->hasComponent<PauseMenuTag>() && entity->hasComponent<Toggleable>()) {
 					entity->getComponent<Toggleable>().enabled = !isOpen;
@@ -378,6 +386,27 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		}
 	);
 	continueGameOverlay.addComponent<ContinueGameMenuTag>();
+
+	// Create win game overlay.
+	auto& winGameOverlay = UIUtils::createStageOverlay(world, windowWidth, windowHeight, "../asset/ui/win.png",
+		[this](Entity& overlay, int w, int h) {
+			createWinGameMenuUComponents(overlay, w, h);
+		},
+		[this](Entity& overlay) {
+			bool isOpen = UIUtils::toggleOverlayVisibility(overlay);
+
+			// Disable the ability to toggle pause menu while win game menu is open.
+			for (auto& entity : world.getEntities()) {
+				if (entity->hasComponent<PauseMenuTag>() && entity->hasComponent<Toggleable>()) {
+					entity->getComponent<Toggleable>().enabled = !isOpen;
+					world.getEventManager().emit(PauseEvent{isOpen});
+
+					break;
+				}
+			}
+		}
+	);
+	winGameOverlay.addComponent<WinGameMenuTag>();
 
 	// Create FPS counter label.
 	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40, {240, 240, 240, 255},
@@ -545,6 +574,40 @@ void Scene::createContinueGameUIComponents(Entity& overlay, int windowWidth, int
 
 	// Create the overlay with title and buttons.
 	createOverlayUIComponents(overlay, windowWidth, windowHeight, "Continue? Score will be reset", "ContinueLabel", buttons);
+}
+
+void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int windowHeight) {
+	if (!overlay.hasComponent<Toggleable>()) {
+		std::cerr << "Overlay must have Toggleable component!" << std::endl;
+	}
+
+	// Label colours and font.
+	SDL_Color selectedColour {202, 101, 101, 255};
+	SDL_Color unselectedColour {48, 55, 69, 255};
+	const char* font = "pop1";
+
+	// Create quit to title button.
+	auto& quitTitleButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
+		"Quit To Title", "WinQuitTitleButton", [] {
+			// Request scene change to main menu.
+			Game::onSceneChangeRequest("mainmenu");
+		});
+
+	// Create quit game button.
+	auto& quitButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
+		"Quit Game", "WinQuitButton", [] {
+			// Quit game by pushing a quit event.
+			SDL_Event event;
+			event.type = SDL_EVENT_QUIT;
+			SDL_PushEvent(&event);
+		});
+
+	std::vector<Entity*> buttons;
+	buttons.push_back(&quitTitleButton);
+	buttons.push_back(&quitButton);
+
+	// Create the overlay with title and buttons.
+	createOverlayUIComponents(overlay, windowWidth, windowHeight, "Congratulations, You Win!", "WinLabel", buttons);
 }
 
 void Scene::createOverlayUIComponents(Entity& overlay, int windowWidth, int windowHeight, const char* titleText,

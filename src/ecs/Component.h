@@ -289,4 +289,5 @@ struct PlayerRespawn {
 struct PlayerTag{};
 struct PauseMenuTag{};
 struct ContinueGameMenuTag{};
+struct WinGameMenuTag{};
 struct ProjectileTag{};
