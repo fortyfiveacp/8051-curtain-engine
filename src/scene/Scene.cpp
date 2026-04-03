@@ -168,7 +168,15 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	player.addComponent<KeyboardInput>();
 	player.addComponent<InvincibilityFrames>();
 	player.addComponent<PlayerRespawn>(Vector2D(playerStartingX, playerStartingY));
-	player.addComponent<PlayerStats>(Game::gameState.playerHealth, Game::gameState.playerBombs);
+	player.addComponent<PlayerStats>(
+		Game::gameState.hiScore,
+		Game::gameState.score,
+		Game::gameState.playerHealth,
+		Game::gameState.playerBombs,
+		Game::gameState.power,
+		Game::gameState.graze,
+		Game::gameState.point
+		);
 
 	// TODO: purge.
 	auto& spawner(world.createEntity());
@@ -508,7 +516,10 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 
 	// Create quit to title button.
 	auto& quitTitleButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
-		"Quit To Title", "PauseQuitTitleButton", [] {
+		"Quit To Title", "PauseQuitTitleButton", [this] {
+			// Reset game state.
+			resetGameState();
+
 			// Request scene change to main menu.
 			Game::onSceneChangeRequest("mainmenu");
 		});
@@ -563,7 +574,10 @@ void Scene::createContinueGameUIComponents(Entity& overlay, int windowWidth, int
 
 	// Create quit to title button.
 	auto& quitButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
-		"Quit To Title", "ContinueQuitTitleButton", [] {
+		"Quit To Title", "ContinueQuitTitleButton", [this] {
+			// Reset game state.
+			resetGameState();
+
 			// Request scene change to main menu.
 			Game::onSceneChangeRequest("mainmenu");
 		});
@@ -588,7 +602,10 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 
 	// Create quit to title button.
 	auto& quitTitleButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
-		"Quit To Title", "WinQuitTitleButton", [] {
+		"Quit To Title", "WinQuitTitleButton", [this] {
+			// Reset game state.
+			resetGameState();
+
 			// Request scene change to main menu.
 			Game::onSceneChangeRequest("mainmenu");
 		});
@@ -685,4 +702,14 @@ void Scene::createOverlayUIComponents(Entity& overlay, int windowWidth, int wind
 		firstSelectable->previous = previousEntity;
 		previousSelectable->next = firstEntity;
 	}
+}
+
+void Scene::resetGameState() {
+	Game::gameState.hiScore = 0;
+	Game::gameState.score = 0;
+	Game::gameState.playerHealth = 3;
+	Game::gameState.playerBombs = 3;
+	Game::gameState.power = 0;
+	Game::gameState.graze = 0;
+	Game::gameState.point = 0;
 }

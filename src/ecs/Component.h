@@ -146,10 +146,10 @@ struct SceneState {
 };
 
 struct PlayerStats {
-    int currentHealth{};
-    int currentBombs{};
     int currentHiScore{};
     int currentScore{};
+    int currentHealth{};
+    int currentBombs{};
     int currentPower{};
     int currentGraze{};
     int currentPoint{};

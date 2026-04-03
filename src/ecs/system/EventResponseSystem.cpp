@@ -82,17 +82,23 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
             switch(item.type) {
                 case Point:
                     playerStats.currentScore = std::min(playerStats.currentScore + item.value, PlayerStats::MAX_SCORE);
+                    Game::gameState.score = playerStats.currentScore;
+
                     playerStats.currentPoint++;
+                    Game::gameState.point = playerStats.currentPoint;
 
                     // Also update current HiScore if current Score exceeds it.
                     playerStats.currentHiScore = std::max(playerStats.currentHiScore, playerStats.currentScore);
+                    Game::gameState.hiScore = playerStats.currentHiScore;
                     break;
                 case SmallPower:
                 case LargePower:
                     playerStats.currentPower = std::min(playerStats.currentPower + item.value, PlayerStats::MAX_POWER);
+                    Game::gameState.power = playerStats.currentPower;
                     break;
                 case Bomb:
                     playerStats.currentBombs = std::min(playerStats.currentBombs + item.value, PlayerStats::MAX_BOMBS);
+                    Game::gameState.playerBombs = playerStats.currentBombs;
                     break;
                 default:
                     break;
