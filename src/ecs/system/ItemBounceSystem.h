@@ -22,15 +22,17 @@ public:
                         velocity.direction = Vector2D(0, 1);
                         itemBounce.isBouncing = false;
                     }
+
+                    // Modify the item's current speed based on the timer.
+                    // While the item is bouncing up, reduce its speed as it gets closer to the end of the bounce.
+                    velocity.currentSpeed = velocity.baseSpeed * (itemBounce.timer / itemBounce.bounceDuration);
                 } else {
                     // After bouncing, counting up the timer increases speed as it falls.
                     itemBounce.timer += dt;
-                }
 
-                // Modify the item's current speed based on the timer.
-                // While the item is bouncing up, reduce its speed as it gets closer to the end of the bounce.
-                // After bouncing, ramp up its speed as it falls.
-                velocity.currentSpeed = velocity.baseSpeed * (itemBounce.timer / itemBounce.bounceDuration);
+                    // After bouncing, ramp up its speed up to the base speed as it falls.
+                    velocity.currentSpeed = std::min(velocity.baseSpeed * (itemBounce.timer / itemBounce.bounceDuration), velocity.baseSpeed);
+                }
             }
         }
     }
