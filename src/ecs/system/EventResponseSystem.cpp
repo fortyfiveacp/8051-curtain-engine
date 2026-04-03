@@ -150,6 +150,10 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
         // Teleport player back to starting position.
         playerTransform.position = playerStats.playerStartingPosition;
 
+        // Lose 70% of player power on hit.
+        playerStats.currentPower *= 0.3;
+
+        // Decrement player health.
         playerStats.currentHealth--;
         Game::gameState.playerHealth = playerStats.currentHealth;
 

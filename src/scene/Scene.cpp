@@ -446,19 +446,19 @@ void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stage
 	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, offWhite, dynamicLabelFont,
 		"0", "Power", LabelType::Power);
 
-	// Graze static and dynamic labels.
-	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
-		"Graze", "GrazeLabel", LabelType::Static);
-	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
-		"0", "Graze", LabelType::Graze);
+	// Graze static and dynamic labels. Currently hidden since not implemented.
+	// UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
+	// 	"Graze", "GrazeLabel", LabelType::Static);
+	// UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
+	// 	"0", "Graze", LabelType::Graze);
 
 	// Point static and dynamic labels.
 	std::string initialPointString = "0/" + std::to_string(PlayerStats::MAX_POINTS);
 	const char* initialPoint = initialPointString.c_str();
 
-	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, hotPink, staticLabelFont,
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
 		"Point", "PointLabel", LabelType::Static);
-	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, offWhite, dynamicLabelFont,
+	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
 		initialPoint, "Point", LabelType::Point);
 }
 
