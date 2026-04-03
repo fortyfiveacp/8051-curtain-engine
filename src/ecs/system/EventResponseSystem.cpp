@@ -152,13 +152,16 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
 
         playerStats.currentHealth--;
         Game::gameState.playerHealth = playerStats.currentHealth;
-        std::cout << playerStats.currentHealth << std::endl;
 
+        // If the player has no health left, bring up the continue game menu.
         if (playerStats.currentHealth == 0) {
-            player->destroy();
+            for (auto& entity : world.getEntities()) {
+                if (entity->hasComponent<ContinueGameMenuTag>() && entity->hasComponent<Toggleable>()) {
+                    entity->getComponent<Toggleable>().toggle();
 
-            // Change scene (deferred).
-            Game::onSceneChangeRequest("gameover");
+                    break;
+                }
+            }
         }
     }
 }

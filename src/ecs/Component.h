@@ -282,4 +282,5 @@ struct ItemBounce {
 
 struct PlayerTag{};
 struct PauseMenuTag{};
+struct ContinueGameMenuTag{};
 struct ProjectileTag{};

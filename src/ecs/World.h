@@ -82,7 +82,7 @@ public:
         } else {
             keyboardInputSystem.update(entities, event);
             playerBoundsSystem.update(entities);
-            pauseMenuSystem.update(entities,  *this, event, isPaused);
+            pauseMenuSystem.update(entities, event);
             selectableUISystem.update(entities, *this, event);
 
             // Only update gameplay systems if the game isn't paused.

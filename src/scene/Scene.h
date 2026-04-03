@@ -7,9 +7,6 @@
 
 class Scene {
 public:
-    bool isPaused = false;
-    bool isDebugging = false;
-
     Scene(SceneType sceneType, const char* sceneName, const char* mapPath, int windowWidth, int windowHeight);
 
     void update(const float dt, const SDL_Event &e) {
@@ -28,6 +25,8 @@ public:
 private:
     std::string name;
     SceneType type;
+    bool isPaused = false;
+    bool isDebugging = false;
     //void createProjectile(Vector2D pos, Vector2D dir, int speed); TODO: commented out during tutorial, not needed?
 
     void initMainMenu(int windowWidth, int windowHeight);
@@ -35,9 +34,8 @@ private:
 
     // Functions for creating the specific UI in the game.
     void createSidebarUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);
-    Entity& createPauseMenuOverlay(int windowWidth, int windowHeight);
     void createPauseMenuUComponents(Entity& overlay, int windowWidth, int windowHeight);
-
-    // UI related helpers.
-    void toggleOverlayVisibility(Entity& overlay);
+    void createContinueGameUIComponents(Entity& overlay, int windowWidth, int windowHeight);
+    void createOverlayUIComponents(Entity& overlay, int windowWidth, int windowHeight, const char* titleText,
+        const char* titleCacheKey, const std::vector<Entity*> &selectableButtons);
 };

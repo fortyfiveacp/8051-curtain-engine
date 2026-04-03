@@ -33,9 +33,8 @@ void UIUtils::updateIconCounter(Entity& entity) {
     }
 }
 
-Entity& UIUtils::createSelectableButton(World& world, Entity& overlay, const char* font, SDL_Color selectedColour, SDL_Color unselectedColour,
+Entity& UIUtils::createSelectableButton(World& world, const char* font, SDL_Color selectedColour, SDL_Color unselectedColour,
 	const char* text, const char* cacheKey, const std::function<void()>& onPressed) {
-	auto& parentChildren = overlay.getComponent<Children>();
 
 	// Create the button.
 	auto& button = createLabel(world, 0, 0, selectedColour, font,
@@ -65,10 +64,6 @@ Entity& UIUtils::createSelectableButton(World& world, Entity& overlay, const cha
 		label.color = selectedColour;
 		label.dirty = true;
 	};
-
-	// Add overlay as parent to the button.
-	button.addComponent<Parent>(&overlay);
-	parentChildren.children.push_back(&button);
 
 	return button;
 }
@@ -115,4 +110,63 @@ Entity& UIUtils::createIconLabel(World& world, int x, int y, int maxNumber, floa
 	}
 
 	return iconLabel;
+}
+
+Entity& UIUtils::createStageOverlay(World& world,int windowWidth, int windowHeight, const char* backgroundPath,
+		const std::function<void(Entity& overlay, int windowWidth, int windowHeight)>& createUIComponents,
+		const std::function<void(Entity& overlay)>& toggleVisibilityFunction) {
+	auto &overlay(world.createEntity());
+	// Create the background for the overlay that covers the stage.
+	SDL_Texture *overlayTex = TextureManager::load(backgroundPath);
+	SDL_FRect overlaySrc {0, 0, static_cast<float>(overlayTex->w), static_cast<float>(overlayTex->h)};
+	SDL_FRect overlayDest = StageUtils::CalculateStageRect(windowWidth, windowHeight);
+	overlay.addComponent<Transform>(Vector2D(overlayDest.x, overlayDest.y), 0.0f, 1.0f);
+	overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDest, RenderLayer::UI, false);
+
+	// Add a toggleable component so the overlay can be toggled.
+	overlay.addComponent<Toggleable>([&overlay, toggleVisibilityFunction]() {
+		toggleVisibilityFunction(overlay);
+	});
+
+	// Create the specific UI components in the overlay.
+	createUIComponents(overlay, windowWidth, windowHeight);
+
+	return overlay;
+}
+
+bool UIUtils::toggleOverlayVisibility(Entity& overlay) {
+	auto& sprite = overlay.getComponent<Sprite>();
+	bool newVisibility = !sprite.visible;
+	sprite.visible = newVisibility;
+
+	if (overlay.hasComponent<Children>()) {
+		auto& c = overlay.getComponent<Children>();
+
+		for (auto& child : c.children) {
+			if (child && child->hasComponent<Label>()) {
+				child->getComponent<Label>().visible = newVisibility;
+			}
+
+			if (child && child->hasComponent<SelectableUI>()) {
+				// Make sure all entities aren't selected.
+				auto& selectable = child->getComponent<SelectableUI>();
+				selectable.selected = false;
+				selectable.onReleased();
+			}
+		}
+
+		if (newVisibility) {
+			// Set the first selectable entity as the default selected, if visible.
+			for (auto& child : c.children) {
+				if (child && child->hasComponent<SelectableUI>()) {
+					auto& selected = child->getComponent<SelectableUI>();
+					selected.selected = true;
+					selected.onSelect();
+					break;
+				}
+			}
+		}
+	}
+
+	return newVisibility;
 }
