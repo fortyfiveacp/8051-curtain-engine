@@ -8,5 +8,5 @@ class World;
 
 class PauseMenuSystem {
 public:
-    void update(const std::vector<std::unique_ptr<Entity>>& entities, World& world, const SDL_Event& event, bool isPaused);
+    void update(const std::vector<std::unique_ptr<Entity>>& entities, const SDL_Event& event);
 };

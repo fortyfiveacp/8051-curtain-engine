@@ -146,11 +146,10 @@ struct SceneState {
 };
 
 struct PlayerStats {
-    int currentHealth{};
-    int currentBombs{};
-    Vector2D playerStartingPosition{};
     int currentHiScore{};
     int currentScore{};
+    int currentHealth{};
+    int currentBombs{};
     int currentPower{};
     int currentGraze{};
     int currentPoint{};
@@ -326,7 +325,7 @@ struct KeyboardInput {
 };
 
 struct InvincibilityFrames {
-    float duration = 4.0f;
+    float duration = 4.0f; // Note that the invincibility duration ticks down during respawn delay.
     float timer = 0.0f;
     float flickerFrequency = 10.0f; // The number of sprite flickers per second when invincible.
     bool active = false;
@@ -346,12 +345,31 @@ struct Item {
 
 // Note that bounces require a velocity component with an upward direction at the start.
 struct ItemBounce {
-    float bounceDuration = 1.25f; // Duration of upwards movement when the item is created.
+    float bounceDuration = 0.75f; // Duration of upwards movement when the item is created.
     float timer = bounceDuration;
     bool isBouncing = true;
 };
 
+struct PlayerRespawn {
+    Vector2D playerStartingPosition{};
+    bool isRespawning = false;
+    float respawnDelay = 0.5f;
+    float timer = 0.0f;
+};
+
+struct Fade {
+    float fadeDuration = 1.5f;
+    float fadeDelayDuration = 0.0f;
+    Uint8 startingAlpha = 0; // Initial alpha as the fade starts.
+    Uint8 endingAlpha = 255; // Alpha at the end of the fade, default values do a fade in.
+    float delayTimer = 0.0f;
+    float durationTimer = 0.0f;
+    bool isFading = false;
+};
+
 struct PlayerTag{};
 struct PauseMenuTag{};
+struct ContinueGameMenuTag{};
+struct WinGameMenuTag{};
 struct ProjectileTag{};
 struct EnemyTag{};

@@ -82,17 +82,23 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
             switch(item.type) {
                 case Point:
                     playerStats.currentScore = std::min(playerStats.currentScore + item.value, PlayerStats::MAX_SCORE);
+                    Game::gameState.score = playerStats.currentScore;
+
                     playerStats.currentPoint++;
+                    Game::gameState.point = playerStats.currentPoint;
 
                     // Also update current HiScore if current Score exceeds it.
                     playerStats.currentHiScore = std::max(playerStats.currentHiScore, playerStats.currentScore);
+                    Game::gameState.hiScore = playerStats.currentHiScore;
                     break;
                 case SmallPower:
                 case LargePower:
                     playerStats.currentPower = std::min(playerStats.currentPower + item.value, PlayerStats::MAX_POWER);
+                    Game::gameState.power = playerStats.currentPower;
                     break;
                 case Bomb:
                     playerStats.currentBombs = std::min(playerStats.currentBombs + item.value, PlayerStats::MAX_BOMBS);
+                    Game::gameState.playerBombs = playerStats.currentBombs;
                     break;
                 default:
                     break;
@@ -130,16 +136,23 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
             return;
         }
 
-        auto& invincibilityFrames = player->getComponent<InvincibilityFrames>();
-        auto& playerTransform = player->getComponent<Transform>();
+        if (player->hasComponent<InvincibilityFrames>()) {
+            auto& invincibilityFrames = player->getComponent<InvincibilityFrames>();
 
-        // Ignore hit if invincible.
-        if (invincibilityFrames.active) {
-            return;
+            // Ignore hit if invincible.
+            if (invincibilityFrames.active) {
+                return;
+            }
+
+            // Enable invincibility after being hit.
+            invincibilityFrames.active = true;
         }
 
-        // Enable invincibility frames after hit.
-        invincibilityFrames.active = true;
+        // Enable respawn when hit.
+        if (player->hasComponent<PlayerRespawn>()) {
+            auto& playerRespawn = player->getComponent<PlayerRespawn>();
+            playerRespawn.isRespawning = true;
+        }
 
         world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit"));
 
@@ -147,18 +160,22 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
         // Ideally, we would only operate on data in an update function (transient entities).
         auto& playerStats = player->getComponent<PlayerStats>();
 
-        // Teleport player back to starting position.
-        playerTransform.position = playerStats.playerStartingPosition;
+        // Lose 70% of player power on hit.
+        playerStats.currentPower *= 0.3;
 
+        // Decrement player health.
         playerStats.currentHealth--;
         Game::gameState.playerHealth = playerStats.currentHealth;
-        std::cout << playerStats.currentHealth << std::endl;
 
+        // If the player has no health left, bring up the continue game menu.
         if (playerStats.currentHealth == 0) {
-            player->destroy();
+            for (auto& entity : world.getEntities()) {
+                if (entity->hasComponent<ContinueGameMenuTag>() && entity->hasComponent<Toggleable>()) {
+                    entity->getComponent<Toggleable>().toggle();
 
-            // Change scene (deferred).
-            Game::onSceneChangeRequest("gameover");
+                    break;
+                }
+            }
         }
     }
 }

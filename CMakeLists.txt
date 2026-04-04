@@ -68,6 +68,8 @@ set(SRC_FILES
         src/ecs/system/PathSystem.cpp
         src/utils/DanmakuFactory.h
         src/utils/DanmakuFactory.cpp
+        src/ecs/system/PlayerRespawnSystem.h
+        src/ecs/system/PlayerAbilitySystem.cpp
         #add all new source files here
 )
 

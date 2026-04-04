@@ -11,6 +11,7 @@
 #include "DestructionSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
+#include "FadeSystem.h"
 #include "FPSCounterSystem.h"
 #include "HUDSystem.h"
 #include "IconCounterSystem.h"
@@ -27,6 +28,7 @@
 #include "InvincibilityFramesSystem.h"
 #include "ItemBounceSystem.h"
 #include "PlayerBoundsSystem.h"
+#include "PlayerRespawnSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
 #include "TimelineSystem.h"
@@ -39,7 +41,7 @@
 #include "event/AudioEventQueue.h"
 
 class World {
-    Map map;
+    Map map; // TODO purge.
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     std::unordered_map<int, Path> pathLibrary;
@@ -72,6 +74,8 @@ class World {
     DebugRenderSystem debugRenderSystem;
     PlayerBoundsSystem playerBoundsSystem;
     ItemBounceSystem itemBounceSystem;
+    PlayerRespawnSystem playerRespawnSystem;
+    FadeSystem fadeSystem;
 
     // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
@@ -89,13 +93,14 @@ public:
             keyboardInputSystem.update(entities, event);
             cameraSystem.update(entities);
             playerBoundsSystem.update(entities);
-            pauseMenuSystem.update(entities,  *this, event, isPaused);
+            pauseMenuSystem.update(entities, event);
             selectableUISystem.update(entities, *this, event);
 
             // Only update gameplay systems if the game isn't paused.
             if (!isPaused) {
                 movementSystem.update(entities, dt);
                 collisionSystem.update(*this);
+                playerRespawnSystem.update(entities, dt);
                 invincibilityFramesSystem.update(entities, dt);
                 playerAbilitySystem.update(entities);
                 convoySystem.update(*this, dt);
@@ -119,6 +124,7 @@ public:
         fpsCounterSystem.update(entities, dt);
         audioEventQueue.process(); // Process all the audio events.
         preRenderSystem.update(entities);
+        fadeSystem.update(entities, dt);
 
         synchronizeEntities();
         cleanup();

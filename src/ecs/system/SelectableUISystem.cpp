@@ -3,7 +3,7 @@
 #include "World.h"
 #include "event/BaseEvent.h"
 
-void SelectableUISystem::update(const std::vector<std::unique_ptr<Entity> > &entities, World& world, const SDL_Event &event) {
+void SelectableUISystem::update(const std::vector<std::unique_ptr<Entity>> &entities, World& world, const SDL_Event &event) {
     Entity* currentlySelectedEntity = nullptr;
     SelectableUI *currentlySelectedUI = nullptr;
 
