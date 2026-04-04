@@ -33,6 +33,21 @@ void UIUtils::updateIconCounter(Entity& entity) {
     }
 }
 
+Entity& UIUtils::createFadeInMenuLayer(World& world, float width, float height, const char* texturePath, float fadeDuration, float fadeDelay) {
+	auto& entity(world.createEntity());
+	entity.addComponent<Transform>(Vector2D(0, 0), 0.0f, 1.0f);
+
+	SDL_Texture* text = TextureManager::load(texturePath);
+	SDL_FRect src {0, 0, static_cast<float>(text->w), static_cast<float>(text->h)};
+	SDL_FRect dst {0, 0, width, height};
+	entity.addComponent<Sprite>(text, src, dst, RenderLayer::UI);
+
+	auto& charFade = entity.addComponent<Fade>(fadeDuration, fadeDelay);
+	charFade.isFading = true;
+
+	return entity;
+}
+
 Entity& UIUtils::createSelectableButton(World& world, const char* font, SDL_Color selectedColour, SDL_Color unselectedColour,
 	const char* text, const char* cacheKey, const std::function<void()>& onPressed) {
 

@@ -13,6 +13,7 @@ public:
     static void updateIconCounter(Entity& entity);
 
     // Functions for creating UI elements.
+    static Entity& createFadeInMenuLayer(World& world, float width, float height, const char* texturePath, float fadeDuration, float fadeDelay);
     static Entity& createSelectableButton(World& world, const char* font, SDL_Color selectedColour,
         SDL_Color unselectedColour, const char* text, const char* cacheKey, const std::function<void()>& onPressed);
     static Entity& createLabel(World& world, int x, int y, SDL_Color colour, const char* fontName, const char* text,

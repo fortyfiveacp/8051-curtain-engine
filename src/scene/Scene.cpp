@@ -21,14 +21,24 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	auto& cam = world.createEntity();
 	cam.addComponent<Camera>();
 
-	// Menu.
-	auto& menu(world.createEntity());
-	auto menuTransform = menu.addComponent<Transform>(Vector2D(0, 0), 0.0f, 1.0f);
+	// Create the main menu.
+	auto width = static_cast<float>(windowWidth);
+	auto height = static_cast<float>(windowHeight);
 
-	SDL_Texture* texture = TextureManager::load("../asset/main-menu-scaled.png");
-	SDL_FRect menuSrc {0, 0, (float)windowWidth, (float)windowHeight};
-	SDL_FRect menuDst {menuTransform.position.x, menuTransform.position.y, menuSrc.w, menuSrc.h};
-	menu.addComponent<Sprite>(texture, menuSrc, menuDst, RenderLayer::Background);
+	// Menu background.
+	auto& background(world.createEntity());
+	background.addComponent<Transform>(Vector2D(0, 0), 0.0f, 1.0f);
+	SDL_Texture* backTex = TextureManager::load("../asset/menu/main-menu-background.png");
+	SDL_FRect backSrc {0, 0, static_cast<float>(backTex->w), static_cast<float>(backTex->h)};
+	SDL_FRect menuDst {0, 0, width, height };
+	background.addComponent<Sprite>(backTex, backSrc, menuDst, RenderLayer::Background);
+
+	// Menu characters.
+	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-characters.png", 1.5f, 0.3f);
+
+	// Menu text.
+	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-title.png", 1.5f, 1.9f);
+	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-start.png", 1.5f, 1.9f);
 
 	// FPS counter.
 	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40,
