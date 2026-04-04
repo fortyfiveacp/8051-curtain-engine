@@ -106,7 +106,6 @@ public:
                 stageBackgroundSystem.update(entities, dt);
             }
 
-            fadeSystem.update(entities, dt);
             debugRenderSystem.update(*this, event, isDebugging);
             destructionSystem.update(entities);
             hudSystem.update(entities);
@@ -116,6 +115,7 @@ public:
         fpsCounterSystem.update(entities, dt);
         audioEventQueue.process(); // Process all the audio events.
         preRenderSystem.update(entities);
+        fadeSystem.update(entities, dt);
 
         synchronizeEntities();
         cleanup();
