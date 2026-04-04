@@ -35,7 +35,7 @@ public:
                         }
                     }
 
-                    // Update the alpha of entities, sprite or label are supported.
+                    // Update the alpha of entities. Sprite and label are supported.
                     // If the delay timer isn't up yet this will set the alpha to the starting value.
                     if (entity->hasComponent<Sprite>()) {
                         auto& sprite = entity->getComponent<Sprite>();
@@ -44,7 +44,7 @@ public:
                         auto& label = entity->getComponent<Label>();
                         SDL_SetTextureAlphaMod(label.texture, currentAlpha);
                     } else {
-                        std::cerr << "Entity trying to fade doesn't have Sprite or Label Component!" << std::endl;
+                        std::cerr << "Entity trying to fade doesn't have a supported texture component!" << std::endl;
                     }
                 }
             }
