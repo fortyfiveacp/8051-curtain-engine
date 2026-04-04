@@ -70,8 +70,22 @@
         </Path>
     </Paths>
     <Waves>
-        <Convoy start="2.0" enemyType="SmallBlueFairy" pathId="0" numEnemies="10" interval="0.5" speed="200" />
-        <Convoy start="2.0" enemyType="SmallRedFairy" pathId="1" numEnemies="10" interval="0.5" speed="200" />
+        <Convoy start="2.0" enemyType="SmallBlueFairy" pathId="0" numEnemies="10" interval="0.5" speed="200">
+            <Pattern type="Linear" bullet="Circle" startTime="0.2" endTime="2.0"
+                     frequency="0.2" bulletSpeed="400.0" isFan="true" targeted="true" speedMultiplier="1.0">
+                <BulletPositions>
+                    <Pos x="0" y="0" />
+                </BulletPositions>
+            </Pattern>
+        </Convoy>
+        <Convoy start="2.0" enemyType="SmallRedFairy" pathId="1" numEnemies="10" interval="0.5" speed="200">
+            <Pattern type="Linear" bullet="Circle" startTime="0.2" endTime="2.0"
+                     frequency="0.2" bulletSpeed="400.0" isFan="true" targeted="true" speedMultiplier="1.0">
+                <BulletPositions>
+                    <Pos x="0" y="0" />
+                </BulletPositions>
+            </Pattern>
+        </Convoy>
 
         <Convoy start="5.0" enemyType="LargeFairy" pathId="8" numEnemies="1" speed="300">
             <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
@@ -79,16 +93,10 @@
         </Convoy>
 
         <Convoy start="10.0" enemyType="SmallRedFairy" pathId="2" numEnemies="1" speed="150">
-            <Pattern type="Linear" bullet="Circle" startTime="0.5" endTime="6.0"
-                     frequency="0.5" bulletSpeed="150.0" isFan="true" targeted="true" speedMultiplier="1.0">
+            <Pattern type="Linear" bullet="Circle" startTime="0.2" endTime="2.0"
+                     frequency="0.2" bulletSpeed="400.0" isFan="true" targeted="true" speedMultiplier="1.0">
                 <BulletPositions>
-                    <Pos x="0" y="30" />
-                    <Pos x="0" y="40" />
-                    <Pos x="0" y="50" />
-                    <Pos x="10" y="20" />
-                    <Pos x="-10" y="20" />
-                    <Pos x="15" y="20" />
-                    <Pos x="-15" y="20" />
+                    <Pos x="0" y="0" />
                 </BulletPositions>
             </Pattern>
         </Convoy>

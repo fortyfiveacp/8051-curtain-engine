@@ -9,42 +9,44 @@ class MovementSystem {
 public:
     void update(std::vector<std::unique_ptr<Entity>>& entities, float dt) {
         for (auto& entity : entities) {
-            if (entity->hasComponent<Transform>() && !entity->hasComponent<PathFollower>()) {
-                if (entity->hasComponent<Velocity>()) {
-                    auto& v = entity->getComponent<Velocity>();
+            if (entity->hasComponent<Transform>()) {
+                if (!entity->hasComponent<PathFollower>()) {
+                    if (entity->hasComponent<Velocity>()) {
+                        auto& v = entity->getComponent<Velocity>();
 
-                    // If the entity is controlled by keyboard input, handle direction change first.
-                    if (entity->hasComponent<KeyboardInput>()) {
-                        auto& keyboardInput = entity->getComponent<KeyboardInput>();
+                        // If the entity is controlled by keyboard input, handle direction change first.
+                        if (entity->hasComponent<KeyboardInput>()) {
+                            auto& keyboardInput = entity->getComponent<KeyboardInput>();
 
-                        // Determine horizontal direction, with left priority.
-                        if (keyboardInput.left) {
-                            v.direction.x = -1;
-                        } else if (keyboardInput.right) {
-                            v.direction.x = 1;
-                        } else {
-                            v.direction.x = 0;
+                            // Determine horizontal direction, with left priority.
+                            if (keyboardInput.left) {
+                                v.direction.x = -1;
+                            } else if (keyboardInput.right) {
+                                v.direction.x = 1;
+                            } else {
+                                v.direction.x = 0;
+                            }
+
+                            // Determine vertical direction, with down priority.
+                            if (keyboardInput.down) {
+                                v.direction.y = 1;
+                            } else if (keyboardInput.up) {
+                                v.direction.y = -1;
+                            } else {
+                                v.direction.y = 0;
+                            }
+
+                            // Slow down current speed if in focus mode.
+                            if (keyboardInput.focus) {
+                                v.currentSpeed = v.baseSpeed * keyboardInput.focusMultiplier;
+                            } else {
+                                v.currentSpeed = v.baseSpeed;
+                            }
                         }
 
-                        // Determine vertical direction, with down priority.
-                        if (keyboardInput.down) {
-                            v.direction.y = 1;
-                        } else if (keyboardInput.up) {
-                            v.direction.y = -1;
-                        } else {
-                            v.direction.y = 0;
-                        }
-
-                        // Slow down current speed if in focus mode.
-                        if (keyboardInput.focus) {
-                            v.currentSpeed = v.baseSpeed * keyboardInput.focusMultiplier;
-                        } else {
-                            v.currentSpeed = v.baseSpeed;
-                        }
+                        // Update position.
+                        updatePosition(dt, entity);
                     }
-
-                    // Update position.
-                    updatePosition(dt, entity);
                 }
 
                 if (entity->hasComponent<AngularVelocity>()) {

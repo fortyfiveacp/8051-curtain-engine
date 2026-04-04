@@ -8,5 +8,5 @@ public:
     void update(World& world, float dt);
 
 private:
-    void spawnEnemy(World& world, const Convoy& convoy);
+    void spawnEnemy(World &world, const Convoy &convoy);
 };
