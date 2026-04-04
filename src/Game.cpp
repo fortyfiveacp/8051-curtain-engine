@@ -73,9 +73,8 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	AssetManager::loadAnimation("blueFairy", "../asset/animations/blue_fairy_animations.xml");
 
 	// Load scenes.
-	sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, width, height);
-	sceneManager.loadScene(SceneType::Gameplay, "level1", "../asset/map.tmx", width, height);
-	sceneManager.loadScene(SceneType::Gameplay, "level2", "../asset/map2.tmx", width, height);
+	sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, nullptr, width, height);
+	sceneManager.loadScene(SceneType::Gameplay, "level1", "../asset/stage/stage1.png", "../asset/stage/foreground1.png", width, height);
 
 	// Init game data / state.
 	gameState.hiScore = 0;
@@ -94,19 +93,19 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 
 	// Resolve scene callback.
 	onSceneChangeRequest = [this](std::string sceneName) {
-
+		// TODO purge.
 		// Some game state happening here.
-		if (sceneManager.currentScene->getName() == "level2" && sceneName == "level2") {
-			std::cout << "You win!" << std::endl;
-			isRunning = false;
-			return;
-		}
-
-		if (sceneName == "gameover") {
-			std::cout << "Mission failed we'll get'em next time" << std::endl;
-			isRunning = false;
-			return;
-		}
+		// if (sceneManager.currentScene->getName() == "level2" && sceneName == "level2") {
+		// 	std::cout << "You win!" << std::endl;
+		// 	isRunning = false;
+		// 	return;
+		// }
+		//
+		// if (sceneName == "gameover") {
+		// 	std::cout << "Mission failed we'll get'em next time" << std::endl;
+		// 	isRunning = false;
+		// 	return;
+		// }
 
 		sceneManager.changeSceneDeferred(sceneName);
 	};

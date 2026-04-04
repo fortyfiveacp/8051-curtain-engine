@@ -5,15 +5,15 @@
 #include "StageUtils.h"
 #include "../manager/AudioManager.h"
 
-Scene::Scene(SceneType sceneType, const char* sceneName, const char* mapPath, const int windowWidth,
-             const int windowHeight) : name(sceneName), type(sceneType) {
+Scene::Scene(SceneType sceneType, const char* sceneName, const char* stageBackgroundPath, const char* foregroundPath,
+			 const int windowWidth, const int windowHeight) : name(sceneName), type(sceneType) {
 
 	if (sceneType == SceneType::MainMenu) {
 		initMainMenu(windowWidth, windowHeight);
 		return;
 	}
 
-	initGameplay(mapPath, windowWidth, windowHeight);
+	initGameplay(stageBackgroundPath, foregroundPath, windowWidth, windowHeight);
 }
 
 void Scene::initMainMenu(int windowWidth, int windowHeight) {
@@ -36,7 +36,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	fpsCounter.addComponent<FPSCounter>();
 }
 
-void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
+void Scene::initGameplay(const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight) {
 	// Subscribe to event for pausing the game.
 	world.getEventManager().subscribe([this](const BaseEvent& e) {
 		if (e.type != EventType::Pause) {
@@ -85,50 +85,12 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// Create backgrounds.
 	// The backgrounds are 1 pixel taller to make an overlap that hides the seam between backgrounds.
-	StageUtils::createStageBackground(world, stageWidth, stageHeight + 1, 0, backgroundSpeed, "../asset/stage1.png");
-	StageUtils::createStageBackground(world, stageWidth, stageHeight + 1, -stageHeight, backgroundSpeed, "../asset/stage1.png");
+	StageUtils::createStageBackground(world, stageWidth, stageHeight + 1, 0, backgroundSpeed, stageBackgroundPath);
+	StageUtils::createStageBackground(world, stageWidth, stageHeight + 1, -stageHeight, backgroundSpeed, stageBackgroundPath);
 
 	// Create foregrounds.
-	StageUtils::createStageBackground(world, stageWidth, stageHeight, 0, foregroundSpeed, "../asset/foreground1.png");
-	StageUtils::createStageBackground(world, stageWidth, stageHeight, -stageHeight, foregroundSpeed, "../asset/foreground1.png");
-
-	// TODO: purge unused systems.
-	// Load our map.
-	// world.getMap().load(mapPath, TextureManager::load("../asset/tileset.png"));
-	// for (auto& collider : world.getMap().colliders) {
-	// 	auto& e = world.createEntity();
-	// 	e.addComponent<Transform>(Vector2D(collider.rect.x, collider.rect.y), 0.0f, 1.0f);
-	// 	auto& c = e.addComponent<Collider>("no-wall");
-	// 	c.rect.x = collider.rect.x;
-	// 	c.rect.y = collider.rect.y;
-	// 	c.rect.w = collider.rect.w;
-	// 	c.rect.h = collider.rect.h;
-	//
-	// 	// Have a visual of the colliders
-	// 	SDL_Texture* tex = TextureManager::load("../asset/tileset.png");
-	// 	SDL_FRect colSrc {0, 32, 32, 32};
-	// 	SDL_FRect colDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
-	// 	e.addComponent<Sprite>(tex, colSrc, colDst);
-	// }
-
-	// Player.
-	// player = new GameObject("../asset/ball.png", 0, 0);
-
-	// Add entities.
-	// for (auto& itemCollider : world.getMap().itemColliders) {
-	// 	auto& e = world.createEntity();
-	// 	e.addComponent<Transform>(Vector2D(itemCollider.rect.x, itemCollider.rect.y), 0.0f, 1.0f);
-	// 	auto& c = e.addComponent<Collider>("item");
-	// 	c.rect.x = itemCollider.rect.x;
-	// 	c.rect.y = itemCollider.rect.y;
-	// 	c.rect.w = itemCollider.rect.w;
-	// 	c.rect.h = itemCollider.rect.h;
-	//
-	// 	SDL_Texture* itemTex = TextureManager::load("../asset/coin.png");
-	// 	SDL_FRect itemSrc {0, 0, 32, 32};
-	// 	SDL_FRect itemDst {c.rect.x, c.rect.y, 32, 32};
-	// 	e.addComponent<Sprite>(itemTex, itemSrc, itemDst);
-	// }
+	StageUtils::createStageBackground(world, stageWidth, stageHeight, 0, foregroundSpeed, foregroundPath);
+	StageUtils::createStageBackground(world, stageWidth, stageHeight, -stageHeight, foregroundSpeed, foregroundPath);
 
 	auto& cam = world.createEntity();
 	SDL_FRect camView {0, 0, stageWidth, stageHeight};
@@ -655,7 +617,14 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 	// Add a delayed fade in to all the children of the overlay for the win game menu.
 	for (auto& entity : overlay.getComponent<Children>().children) {
 		auto& fade = entity->addComponent<Fade>();
-		fade.fadeDelayDuration = 1.5f;
+		fade.fadeDelayDuration = 3.5f;
+
+		// Make the title duration a bit shorter.
+		if (entity->hasComponent<Label>()) {
+			if (entity->getComponent<Label>().text == "Congratulations, You Win!") {
+				fade.fadeDelayDuration = 1.0f;
+			}
+		}
 	}
 
 	// Add a short fade in to the overlay.

@@ -158,7 +158,7 @@ void UIUtils::addOverlayUIComponents(World& world, Entity& overlay, int windowWi
 	float stagePaddingY = StageUtils::CalculateStagePaddingY(windowHeight);
 
 	// Create title label.
-	auto& continueTitle =  UIUtils::createLabel(world, 0, 0, titleColour, font, titleText, titleCacheKey, LabelType::Static);
+	auto& continueTitle = createLabel(world, 0, 0, titleColour, font, titleText, titleCacheKey, LabelType::Static);
 	auto& pauseTransform = continueTitle.getComponent<Transform>();
 	auto& pauseLabel = continueTitle.getComponent<Label>();
 	pauseLabel.visible = false;

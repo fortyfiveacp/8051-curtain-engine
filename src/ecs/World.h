@@ -39,7 +39,7 @@
 #include "event/AudioEventQueue.h"
 
 class World {
-    Map map;
+    Map map; // TODO purge.
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     MovementSystem movementSystem;

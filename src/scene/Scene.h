@@ -7,7 +7,7 @@
 
 class Scene {
 public:
-    Scene(SceneType sceneType, const char* sceneName, const char* mapPath, int windowWidth, int windowHeight);
+    Scene(SceneType sceneType, const char* sceneName, const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight);
 
     void update(const float dt, const SDL_Event &e) {
         world.update(dt, e, type, isPaused, isDebugging);
@@ -30,7 +30,7 @@ private:
     //void createProjectile(Vector2D pos, Vector2D dir, int speed); TODO: commented out during tutorial, not needed?
 
     void initMainMenu(int windowWidth, int windowHeight);
-    void initGameplay(const char* mapPath, int windowWidth, int windowHeight);
+    void initGameplay(const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight);
 
     // Functions for creating the specific UI in the game.
     void createSidebarUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);
