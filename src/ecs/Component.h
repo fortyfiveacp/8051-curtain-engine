@@ -214,7 +214,8 @@ struct PathFollower {
 };
 
 enum class EnemyType {
-    SmallFairy,
+    SmallBlueFairy,
+    SmallRedFairy,
     LargeFairy,
     Boss
 };
@@ -222,16 +223,6 @@ enum class EnemyType {
 enum class BulletType {
     Circle,
     LargeOrb
-};
-
-struct RadialConfig {
-    float frequency = 1.0f;
-    float bulletSpeed = 150.0f;
-    int bulletsPerBurst = 12;
-    float rotationSpeed = 0.0f;
-    float bulletAngularVel = 0.0f;
-    float radius = 30.0f;
-    BulletType type = BulletType::Circle;
 };
 
 enum class DanmakuType {
@@ -243,11 +234,24 @@ struct DanmakuPattern {
     bool hasPattern = false;
     DanmakuType danmakuType = DanmakuType::Radial;
     BulletType bulletType = BulletType::Circle;
+
+    // Common Timing
     float startTime{};
     float endTime{};
-    int bulletsPerBurst{};
     float frequency{};
     float bulletSpeed{};
+
+    // Radial Specific
+    int bulletsPerBurst{};
+    float rotationSpeed{};
+    float bulletAngularVel{};
+    float radius{};
+
+    // Linear Specific
+    bool isFanPattern = false;
+    bool shouldTargetPlayer = true;
+    float speedMultiplier = 1.0f;
+    std::vector<Vector2D> bulletPositions{};
 };
 
 struct Convoy {

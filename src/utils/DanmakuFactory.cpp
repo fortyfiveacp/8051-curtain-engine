@@ -1,30 +1,28 @@
 #include "DanmakuFactory.h"
 #include "World.h"
 
-void DanmakuFactory::initRadialPattern(Entity& entity, World& world, const RadialConfig& config) {
-    Entity* entityPtr = &entity;
-
+void DanmakuFactory::initRadialPattern(Entity& entity, World& world, const DanmakuPattern& danmakuPattern) {
     entity.addComponent<RadialSpawner>(
         true,
-        config.rotationSpeed,
-        config.frequency,
-        config.bulletSpeed,
-        config.bulletAngularVel,
-        config.radius,
-        config.bulletsPerBurst,
-        [&world, config, entityPtr](Vector2D direction) {
-            if (!entityPtr) {
+        danmakuPattern.rotationSpeed,
+        danmakuPattern.frequency,
+        danmakuPattern.bulletSpeed,
+        danmakuPattern.bulletAngularVel,
+        danmakuPattern.radius,
+        danmakuPattern.bulletsPerBurst,
+        [&world, danmakuPattern, &entity](Vector2D direction) {
+            if (!entity.isActive()) {
                 return;
             }
 
-            auto& tf = entityPtr->getComponent<Transform>();
-            Vector2D spawnPos = tf.position + (direction * config.radius);
+            auto& tf = entity.getComponent<Transform>();
+            Vector2D spawnPos = tf.position + (direction * danmakuPattern.radius);
 
             auto& bullet = world.createDeferredEntity();
 
             bullet.addComponent<Transform>(spawnPos, 0.0f, 1.0f);
-            bullet.addComponent<Velocity>(direction, config.bulletSpeed, true);
-            bullet.addComponent<AngularVelocity>(config.bulletAngularVel);
+            bullet.addComponent<Velocity>(direction, danmakuPattern.bulletSpeed, true);
+            bullet.addComponent<AngularVelocity>(danmakuPattern.bulletAngularVel);
             bullet.addComponent<ProjectileTag>();
 
             // TODO: If multiple bullet types are implemented, should probably move this to a helper method.
@@ -43,19 +41,67 @@ void DanmakuFactory::initRadialPattern(Entity& entity, World& world, const Radia
     );
 }
 
-void DanmakuFactory::buildRadialDanmaku(Entity& entity, World& world, const DanmakuPattern& danmakuPattern, const RadialConfig& config) {
-    auto& timeline = entity.hasComponent<Timeline>() ? entity.getComponent<Timeline>() : entity.addComponent<Timeline>();
-    Entity* entityPtr = &entity;
+void DanmakuFactory::initLinearPattern(Entity &entity, World &world, const DanmakuPattern &danmakuPattern) {
+    entity.addComponent<LinearSpawner>(
+        true,
+        danmakuPattern.isFanPattern,
+        danmakuPattern.bulletSpeed,
+        danmakuPattern.speedMultiplier,
+        danmakuPattern.bulletPositions,
+        danmakuPattern.frequency,
+        [&world, &entity, danmakuPattern](Vector2D pos, Vector2D dir, float speed) {
+            if (!entity.isActive()) {
+                return;
+            }
+            auto& bullet = world.createDeferredEntity();
+            bullet.addComponent<Transform>(pos, 0.0f, 1.0f);
+            bullet.addComponent<Velocity>(dir, speed, false);
+            bullet.addComponent<ProjectileTag>();
 
-    timeline.timeline.emplace_back(danmakuPattern.startTime, [entityPtr, &world, config]() {
-        if (entityPtr && entityPtr->isActive()) {
-            initRadialPattern(*entityPtr, world, config);
+            // TODO: If multiple bullet types are implemented, should probably move this to a helper method.
+            SDL_Texture* tex = TextureManager::load("../asset/bullet4.png");
+            SDL_FRect src {192, 0, 64, 64};
+            SDL_FRect dst {pos.x, pos.y, 32, 32};
+            bullet.addComponent<Sprite>(tex, src, dst);
+
+            auto& bulletCol = bullet.addComponent<Collider>("projectile");
+            bulletCol.rect.w = dst.w / 2.5f;
+            bulletCol.rect.h = dst.h / 2.5f;
+
+            bulletCol.offset.x = (dst.w - bulletCol.rect.w) / 2.0f;
+            bulletCol.offset.y = (dst.h - bulletCol.rect.h) / 2.0f;
+        }
+    );
+}
+
+void DanmakuFactory::buildRadialDanmaku(Entity& entity, World& world, const DanmakuPattern& danmakuPattern) {
+    auto& timeline = entity.hasComponent<Timeline>() ? entity.getComponent<Timeline>() : entity.addComponent<Timeline>();
+
+    timeline.timeline.emplace_back(danmakuPattern.startTime, [&entity, &world, danmakuPattern]() {
+        if (entity.isActive()) {
+            initRadialPattern(entity, world, danmakuPattern);
         }
     });
 
-    timeline.timeline.emplace_back(danmakuPattern.endTime, [entityPtr]() {
-        if (entityPtr && entityPtr->hasComponent<RadialSpawner>()) {
-            entityPtr->getComponent<RadialSpawner>().isActive = false;
+    timeline.timeline.emplace_back(danmakuPattern.endTime, [&entity]() {
+        if (entity.isActive() && entity.hasComponent<RadialSpawner>()) {
+            entity.getComponent<RadialSpawner>().isActive = false;
+        }
+    });
+}
+
+void DanmakuFactory::buildLinearDanmaku(Entity& entity, World& world, const DanmakuPattern& danmakuPattern) {
+    auto& timeline = entity.hasComponent<Timeline>() ? entity.getComponent<Timeline>() : entity.addComponent<Timeline>();
+
+    timeline.timeline.emplace_back(danmakuPattern.startTime, [&entity, &world, danmakuPattern]() {
+        if (entity.isActive()) {
+            initLinearPattern(entity, world, danmakuPattern);
+        }
+    });
+
+    timeline.timeline.emplace_back(danmakuPattern.endTime, [&entity]() {
+        if (entity.isActive() && entity.hasComponent<LinearSpawner>()) {
+            entity.getComponent<LinearSpawner>().isActive = false;
         }
     });
 }
@@ -64,14 +110,11 @@ void DanmakuFactory::buildDanmaku(Entity &entity, World &world, const DanmakuPat
     if (danmakuPattern.hasPattern) {
         switch (danmakuPattern.danmakuType) {
             case DanmakuType::Linear:
+                buildLinearDanmaku(entity, world, danmakuPattern);
                 break;
             case DanmakuType::Radial:
-                RadialConfig config{};
-                config.frequency = danmakuPattern.frequency;
-                config.bulletSpeed = danmakuPattern.bulletSpeed;
-                config.bulletsPerBurst = danmakuPattern.bulletsPerBurst;
-
-                buildRadialDanmaku(entity, world, danmakuPattern, config);
+                buildRadialDanmaku(entity, world, danmakuPattern);
+                break;
         }
     }
 }

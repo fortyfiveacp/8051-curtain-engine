@@ -7,7 +7,7 @@ public:
     static void buildEnemy(Entity &entity, World &world, const Convoy &convoyData);
 
 private:
-    static void buildSmallFairy(Entity& entity, Transform& transform, World& world);
+    static void buildSmallFairy(Entity &entity, World& world, const EnemyType& enemyType, const DanmakuPattern& danmakuPattern);
     static void buildLargeFairy(Entity &entity, World &world, const DanmakuPattern &danmakuPattern);
 
     // TODO: implement.

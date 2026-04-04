@@ -50,9 +50,29 @@ void StageLoader::loadStage(const char *path, World &world) {
             data.danmakuPattern.bulletType = stringToBulletType(danmakuPatternElem->Attribute("bullet"));
             data.danmakuPattern.startTime = danmakuPatternElem->FloatAttribute("startTime");
             data.danmakuPattern.endTime = danmakuPatternElem->FloatAttribute("endTime");
-            data.danmakuPattern.bulletsPerBurst = danmakuPatternElem->IntAttribute("bulletsPerBurst");
             data.danmakuPattern.frequency = danmakuPatternElem->FloatAttribute("frequency");
             data.danmakuPattern.bulletSpeed = danmakuPatternElem->FloatAttribute("bulletSpeed");
+
+            data.danmakuPattern.bulletsPerBurst = danmakuPatternElem->IntAttribute("bulletsPerBurst");
+            data.danmakuPattern.rotationSpeed = danmakuPatternElem->FloatAttribute("rotationSpeed");
+            data.danmakuPattern.bulletAngularVel = danmakuPatternElem->FloatAttribute("bulletAngularVel");
+            data.danmakuPattern.radius = danmakuPatternElem->FloatAttribute("radius");
+
+            data.danmakuPattern.isFanPattern = danmakuPatternElem->BoolAttribute("isFanPattern");
+            data.danmakuPattern.shouldTargetPlayer = danmakuPatternElem->BoolAttribute("targeted");
+            data.danmakuPattern.speedMultiplier = danmakuPatternElem->FloatAttribute("speedMultiplier");
+
+            auto* bulletPosRoot = danmakuPatternElem->FirstChildElement("BulletPositions");
+            if (bulletPosRoot) {
+                for (auto* pos = bulletPosRoot->FirstChildElement("Pos");
+                     pos;
+                     pos = pos->NextSiblingElement("Pos")) {
+
+                    float posX = pos->FloatAttribute("x");
+                    float posY = pos->FloatAttribute("y");
+                    data.danmakuPattern.bulletPositions.emplace_back(posX, posY);
+                }
+            }
         }
 
         timelineEntity.getComponent<Timeline>().timeline.emplace_back(startTime, [&world, data]() {
@@ -63,8 +83,12 @@ void StageLoader::loadStage(const char *path, World &world) {
 }
 
 EnemyType StageLoader::stringToEnemyType(const std::string &name) {
-    if (name == "SmallFairy") {
-        return EnemyType::SmallFairy;
+    if (name == "SmallBlueFairy") {
+        return EnemyType::SmallBlueFairy;
+    }
+
+    if (name == "SmallRedFairy") {
+        return EnemyType::SmallRedFairy;
     }
 
     if (name == "LargeFairy") {

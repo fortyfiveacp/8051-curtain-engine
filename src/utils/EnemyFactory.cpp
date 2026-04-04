@@ -12,8 +12,9 @@ void EnemyFactory::buildEnemy(Entity &entity, World& world, const Convoy& convoy
     entity.addComponent<EnemyTag>();
 
     switch (convoyData.enemyType) {
-        case EnemyType::SmallFairy:
-            buildSmallFairy(entity, transform, world);
+        case EnemyType::SmallBlueFairy:
+        case EnemyType::SmallRedFairy:
+            buildSmallFairy(entity, world, convoyData.enemyType, convoyData.danmakuPattern);
             break;
         case EnemyType::LargeFairy:
             // TODO: find spritesheet of large fairy - use small fairy spritesheet as placeholder.
@@ -27,10 +28,24 @@ void EnemyFactory::buildEnemy(Entity &entity, World& world, const Convoy& convoy
     }
 }
 
-void EnemyFactory::buildSmallFairy(Entity &entity, Transform &transform, World& world) {
-    initBaseFairy(entity, "redFairy", "../asset/animations/small_fairies_anim.png", 32);
+void EnemyFactory::buildSmallFairy(Entity &entity, World& world, const EnemyType& enemyType, const DanmakuPattern& danmakuPattern) {
+    if (enemyType == EnemyType::SmallRedFairy) {
+        initBaseFairy(entity, "redFairy", "../asset/animations/small_fairies_anim.png", 32);
+    } else {
+        initBaseFairy(entity, "blueFairy", "../asset/animations/small_fairies_anim.png", 32);
+    }
 
-    // TODO: implement linear danmaku pattern that targets the player
+    if (danmakuPattern.shouldTargetPlayer) {
+        for (auto& e : world.getEntities()) {
+            if (e->hasComponent<PlayerTag>()) {
+                auto& playerTransform = e->getComponent<Transform>();
+                entity.addComponent<LookAtRotator>(playerTransform, 0.0f);
+                break;
+            }
+        }
+    }
+
+    DanmakuFactory::buildDanmaku(entity, world, danmakuPattern);
 }
 
 void EnemyFactory::buildLargeFairy(Entity &entity, World& world, const DanmakuPattern& danmakuPattern) {
