@@ -18,7 +18,7 @@
         </Path>
         <Path id="2" name="StraightDownLeft">
             <Point x="40" y="-50" />
-            <Point x="40" y="250" waitTime="5.0" />
+            <Point x="40" y="250" />
             <Point x="40" y="1000" />
         </Path>
         <Path id="3" name="StraightDownRight">
