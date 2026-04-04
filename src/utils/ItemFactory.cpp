@@ -32,7 +32,7 @@ void ItemFactory::createBaseItem(Entity& entity, Vector2D position, float textur
     entity.addComponent<Sprite>(tex, src, dst);
 
     // Items start with a "bounce" upwards when created.
-    entity.addComponent<Velocity>(Vector2D(0, -1), 200.0f);
+    entity.addComponent<Velocity>(Vector2D(0, -1), 220.0f);
     entity.addComponent<ItemBounce>();
 
     auto& collider = entity.addComponent<Collider>("item");
@@ -44,6 +44,9 @@ void ItemFactory::createBaseItem(Entity& entity, Vector2D position, float textur
     // Add offset to the collider to it's centered on the destination rect.
     collider.offset.x = (dst.w  - collider.rect.w) / 2.0f;
     collider.offset.y = (dst.h - collider.rect.h) / 2.0f;
+
+    // Add projectile tag so items are destroyed when they go off-screen.
+    entity.addComponent<ProjectileTag>();
 }
 
 void ItemFactory::createPointItem(Entity& entity, Vector2D position) {

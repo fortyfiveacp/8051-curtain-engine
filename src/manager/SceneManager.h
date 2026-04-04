@@ -9,7 +9,8 @@
 struct SceneParams {
     SceneType sceneType;
     const char* name;
-    const char* mapPath;
+    const char* stageBackgroundPath;
+    const char* foregroundPath;
     int windowWidth;
     int windowHeight;
 };
@@ -28,7 +29,8 @@ class SceneManager {
             currentScene = std::make_unique<Scene>(
                 params.sceneType,
                 params.name,
-                params.mapPath,
+                params.stageBackgroundPath,
+                params.foregroundPath,
                 params.windowWidth,
                 params.windowHeight
             );
@@ -40,8 +42,8 @@ class SceneManager {
 
 public:
     std::unique_ptr<Scene> currentScene;
-    void loadScene(SceneType sceneType, const char* sceneName, const char* mapPath, int windowWidth, int windowHeight) {
-        sceneParams[sceneName] = {sceneType, sceneName, mapPath, windowWidth, windowHeight};
+    void loadScene(SceneType sceneType, const char* sceneName, const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight) {
+        sceneParams[sceneName] = {sceneType, sceneName, stageBackgroundPath, foregroundPath, windowWidth, windowHeight};
     }
 
     void changeSceneDeferred(const std::string& name) {

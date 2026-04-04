@@ -6,7 +6,7 @@
 
 // Create a const that is evaluated at compile time (constexpr)
 // 32 components fits perfectly in a 32-bit integer
-constexpr std::size_t MAX_COMPONENTS = 32;
+constexpr std::size_t MAX_COMPONENTS = 64;
 
 // Bitset is an array with only 0 or 1 as values
 // bitset[0] = 1  entity has component 0
