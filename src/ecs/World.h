@@ -10,6 +10,7 @@
 #include "DestructionSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
+#include "FadeSystem.h"
 #include "FPSCounterSystem.h"
 #include "HUDSystem.h"
 #include "IconCounterSystem.h"
@@ -70,6 +71,7 @@ class World {
     PlayerBoundsSystem playerBoundsSystem;
     ItemBounceSystem itemBounceSystem;
     PlayerRespawnSystem playerRespawnSystem;
+    FadeSystem fadeSystem;
 
     // Reactive systems
     EventResponseSystem eventResponseSystem{*this};
@@ -104,6 +106,7 @@ public:
                 stageBackgroundSystem.update(entities, dt);
             }
 
+            fadeSystem.update(entities, dt);
             debugRenderSystem.update(*this, event, isDebugging);
             destructionSystem.update(entities);
             hudSystem.update(entities);

@@ -286,6 +286,16 @@ struct PlayerRespawn {
     float timer = 0.0f;
 };
 
+struct Fade {
+    float fadeDuration = 1.5f;
+    float fadeDelayDuration = 0.0f;
+    Uint8 startingAlpha = 0; // Initial alpha as the fade starts.
+    Uint8 endingAlpha = 255; // Alpha at the end of the fade, default values do a fade in.
+    float delayTimer = 0.0f;
+    float durationTimer = 0.0f;
+    bool isFading = false;
+};
+
 struct PlayerTag{};
 struct PauseMenuTag{};
 struct ContinueGameMenuTag{};

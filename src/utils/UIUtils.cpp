@@ -123,6 +123,12 @@ Entity& UIUtils::createStageOverlay(World& world,int windowWidth, int windowHeig
 	overlay.addComponent<Transform>(Vector2D(overlayDest.x, overlayDest.y), 0.0f, 1.0f);
 	overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDest, RenderLayer::UI, false);
 
+	// Add children to overlay.
+	overlay.addComponent<Children>();
+
+	// Add a short fade in to the overlay.
+	overlay.addComponent<Fade>(0.15f);
+
 	// Add a toggleable component so the overlay can be toggled.
 	overlay.addComponent<Toggleable>([&overlay, toggleVisibilityFunction]() {
 		toggleVisibilityFunction(overlay);
@@ -134,10 +140,91 @@ Entity& UIUtils::createStageOverlay(World& world,int windowWidth, int windowHeig
 	return overlay;
 }
 
+void UIUtils::addOverlayUIComponents(World& world, Entity& overlay, int windowWidth, int windowHeight, const char* titleText,
+	const char* titleCacheKey, const std::vector<Entity*> &selectableButtons) {
+	if (!overlay.hasComponent<Children>()) {
+		overlay.addComponent<Children>();
+	}
+
+	auto& parentChildren = overlay.getComponent<Children>();
+
+	// Label colours and font.
+	SDL_Color titleColour {240, 240, 240, 255};
+	const char* font = "pop1";
+	float fontHeight = TTF_GetFontSize(AssetManager::getFont(font));
+
+	auto& overlaySprite = overlay.getComponent<Sprite>();
+
+	float overlayMiddleX = overlaySprite.dst.w / 2;
+	float overlayMiddleY = overlaySprite.dst.h / 2;
+	float stagePaddingX = StageUtils::CalculateStagePaddingX(windowWidth);
+	float stagePaddingY = StageUtils::CalculateStagePaddingY(windowHeight);
+
+	// Create title label.
+	auto& continueTitle =  UIUtils::createLabel(world, 0, 0, titleColour, font, titleText, titleCacheKey, LabelType::Static);
+	auto& pauseTransform = continueTitle.getComponent<Transform>();
+	auto& pauseLabel = continueTitle.getComponent<Label>();
+	pauseLabel.visible = false;
+
+	// Position label centered horizontally and slightly up the screen vertically.
+	pauseTransform.position.x = stagePaddingX + overlayMiddleX - pauseLabel.texture->w / 2.0f;
+	pauseTransform.position.y = stagePaddingY + overlayMiddleY - pauseLabel.texture->h / 2.0f - fontHeight * 3;
+
+	// Add overlay as parent to the label.
+	continueTitle.addComponent<Parent>(&overlay);
+	parentChildren.children.push_back(&continueTitle);
+
+	// Set up all the selectable buttons.
+	Entity* firstEntity = nullptr;
+	SelectableUI* firstSelectable = nullptr;
+
+	Entity* previousEntity = nullptr;
+	SelectableUI* previousSelectable = nullptr;
+
+	float buttonIndex = 0.0f;
+	for (auto buttonEntity : selectableButtons) {
+		auto& buttonTransform = buttonEntity->getComponent<Transform>();
+		auto& buttonLabel = buttonEntity->getComponent<Label>();
+
+		// Add overlay as parent to the button.
+		buttonEntity->addComponent<Parent>(&overlay);
+		parentChildren.children.push_back(buttonEntity);
+
+		// Position button
+		buttonTransform.position.x = stagePaddingX + overlayMiddleX - buttonLabel.texture->w / 2.0f;
+		buttonTransform.position.y = stagePaddingY + overlayMiddleY - buttonLabel.texture->h / 2.0f + buttonIndex * (fontHeight + 20);
+		auto& buttonSelectable = buttonEntity->getComponent<SelectableUI>();
+
+		// Set up doubly linked list for selectable UI.
+		if (previousEntity != nullptr && previousSelectable != nullptr) {
+			buttonSelectable.previous = previousEntity;
+			previousSelectable->next = buttonEntity;
+		} else {
+			firstEntity = buttonEntity;
+			firstSelectable = &buttonSelectable;
+		}
+
+		previousEntity = buttonEntity;
+		previousSelectable = &buttonSelectable;
+
+		buttonIndex++;
+	}
+
+	// Set up the first and list selectables to wrap around.
+	if (firstSelectable != nullptr && previousSelectable != nullptr) {
+		firstSelectable->previous = previousEntity;
+		previousSelectable->next = firstEntity;
+	}
+}
+
 bool UIUtils::toggleOverlayVisibility(Entity& overlay) {
 	auto& sprite = overlay.getComponent<Sprite>();
 	bool newVisibility = !sprite.visible;
 	sprite.visible = newVisibility;
+
+	if (overlay.hasComponent<Fade>()) {
+		overlay.getComponent<Fade>().isFading = newVisibility;
+	}
 
 	if (overlay.hasComponent<Children>()) {
 		auto& c = overlay.getComponent<Children>();
@@ -145,6 +232,14 @@ bool UIUtils::toggleOverlayVisibility(Entity& overlay) {
 		for (auto& child : c.children) {
 			if (child && child->hasComponent<Label>()) {
 				child->getComponent<Label>().visible = newVisibility;
+			}
+
+			if (child && child->hasComponent<Sprite>()) {
+				child->getComponent<Sprite>().visible = newVisibility;
+			}
+
+			if (child && child->hasComponent<Fade>()) {
+				child->getComponent<Fade>().isFading = newVisibility;
 			}
 
 			if (child && child->hasComponent<SelectableUI>()) {

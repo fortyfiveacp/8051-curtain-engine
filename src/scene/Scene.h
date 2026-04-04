@@ -37,8 +37,6 @@ private:
     void createPauseMenuUComponents(Entity& overlay, int windowWidth, int windowHeight);
     void createContinueGameUIComponents(Entity& overlay, int windowWidth, int windowHeight);
     void createWinGameMenuUComponents(Entity& overlay, int windowWidth, int windowHeight);
-    void createOverlayUIComponents(Entity& overlay, int windowWidth, int windowHeight, const char* titleText,
-        const char* titleCacheKey, const std::vector<Entity*> &selectableButtons);
 
     void resetGameState();
 };

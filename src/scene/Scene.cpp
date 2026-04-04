@@ -539,7 +539,12 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 	buttons.push_back(&quitButton);
 
 	// Create the overlay with title and buttons.
-	createOverlayUIComponents(overlay, windowWidth, windowHeight, "Pause", "PauseLabel", buttons);
+	UIUtils::addOverlayUIComponents(world, overlay, windowWidth, windowHeight, "Pause", "PauseLabel", buttons);
+
+	// Add a short fade in to all the children of the overlay.
+	for (auto& entity : overlay.getComponent<Children>().children) {
+		entity->addComponent<Fade>(0.15f);
+	}
 }
 
 void Scene::createContinueGameUIComponents(Entity& overlay, int windowWidth, int windowHeight) {
@@ -587,7 +592,12 @@ void Scene::createContinueGameUIComponents(Entity& overlay, int windowWidth, int
 	buttons.push_back(&quitButton);
 
 	// Create the overlay with title and buttons.
-	createOverlayUIComponents(overlay, windowWidth, windowHeight, "Continue? Score will be reset", "ContinueLabel", buttons);
+	UIUtils::addOverlayUIComponents(world, overlay, windowWidth, windowHeight, "Continue? Score will be reset", "ContinueLabel", buttons);
+
+	// Add a short fade in to all the children of the overlay.
+	for (auto& entity : overlay.getComponent<Children>().children) {
+		entity->addComponent<Fade>(0.15f);
+	}
 }
 
 void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int windowHeight) {
@@ -599,6 +609,16 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 	SDL_Color selectedColour {202, 101, 101, 255};
 	SDL_Color unselectedColour {48, 55, 69, 255};
 	const char* font = "pop1";
+
+	auto& darken = world.createEntity();
+	SDL_Texture *darkenTex = TextureManager::load("../asset/ui/darken.png");
+	SDL_FRect src {0, 0, static_cast<float>(darkenTex->w), static_cast<float>(darkenTex->h)};
+	SDL_FRect dst = StageUtils::CalculateStageRect(windowWidth, windowHeight);
+	darken.addComponent<Transform>(Vector2D(dst.x, dst.y), 0.0f, 1.0f);
+	darken.addComponent<Sprite>(darkenTex, src, dst, RenderLayer::UI, false);
+
+	darken.addComponent<Parent>(&overlay);
+	overlay.getComponent<Children>().children.push_back(&darken);
 
 	// Create quit to title button.
 	auto& quitTitleButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
@@ -624,83 +644,12 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 	buttons.push_back(&quitButton);
 
 	// Create the overlay with title and buttons.
-	createOverlayUIComponents(overlay, windowWidth, windowHeight, "Congratulations, You Win!", "WinLabel", buttons);
-}
+	UIUtils::addOverlayUIComponents(world, overlay, windowWidth, windowHeight, "Congratulations, You Win!", "WinLabel", buttons);
 
-void Scene::createOverlayUIComponents(Entity& overlay, int windowWidth, int windowHeight, const char* titleText,
-	const char* titleCacheKey, const std::vector<Entity*> &selectableButtons) {
-	if (!overlay.hasComponent<Children>()) {
-		overlay.addComponent<Children>();
-	}
-
-	auto& parentChildren = overlay.getComponent<Children>();
-
-	// Label colours and font.
-	SDL_Color titleColour {240, 240, 240, 255};
-	const char* font = "pop1";
-	float fontHeight = TTF_GetFontSize(AssetManager::getFont(font));
-
-	auto& overlaySprite = overlay.getComponent<Sprite>();
-
-	float overlayMiddleX = overlaySprite.dst.w / 2;
-	float overlayMiddleY = overlaySprite.dst.h / 2;
-	float stagePaddingX = StageUtils::CalculateStagePaddingX(windowWidth);
-	float stagePaddingY = StageUtils::CalculateStagePaddingY(windowHeight);
-
-	// Create title label.
-	auto& continueTitle =  UIUtils::createLabel(world, 0, 0, titleColour, font, titleText, titleCacheKey, LabelType::Static);
-	auto& pauseTransform = continueTitle.getComponent<Transform>();
-	auto& pauseLabel = continueTitle.getComponent<Label>();
-	pauseLabel.visible = false;
-
-	// Position label centered horizontally and slightly up the screen vertically.
-	pauseTransform.position.x = stagePaddingX + overlayMiddleX - pauseLabel.texture->w / 2.0f;
-	pauseTransform.position.y = stagePaddingY + overlayMiddleY - pauseLabel.texture->h / 2.0f - fontHeight * 3;
-
-	// Add overlay as parent to the label.
-	continueTitle.addComponent<Parent>(&overlay);
-	parentChildren.children.push_back(&continueTitle);
-
-	// Set up all the selectable buttons.
-	Entity* firstEntity = nullptr;
-	SelectableUI* firstSelectable = nullptr;
-
-	Entity* previousEntity = nullptr;
-	SelectableUI* previousSelectable = nullptr;
-
-	float buttonIndex = 0.0f;
-	for (auto buttonEntity : selectableButtons) {
-		auto& buttonTransform = buttonEntity->getComponent<Transform>();
-		auto& buttonLabel = buttonEntity->getComponent<Label>();
-
-		// Add overlay as parent to the button.
-		buttonEntity->addComponent<Parent>(&overlay);
-		parentChildren.children.push_back(buttonEntity);
-
-		// Position button
-		buttonTransform.position.x = stagePaddingX + overlayMiddleX - buttonLabel.texture->w / 2.0f;
-		buttonTransform.position.y = stagePaddingY + overlayMiddleY - buttonLabel.texture->h / 2.0f + buttonIndex * (fontHeight + 20);
-		auto& buttonSelectable = buttonEntity->getComponent<SelectableUI>();
-
-		// Set up doubly linked list for selectable UI.
-		if (previousEntity != nullptr && previousSelectable != nullptr) {
-			buttonSelectable.previous = previousEntity;
-			previousSelectable->next = buttonEntity;
-		} else {
-			firstEntity = buttonEntity;
-			firstSelectable = &buttonSelectable;
-		}
-
-		previousEntity = buttonEntity;
-		previousSelectable = &buttonSelectable;
-
-		buttonIndex++;
-	}
-
-	// Set up the first and list selectables to wrap around.
-	if (firstSelectable != nullptr && previousSelectable != nullptr) {
-		firstSelectable->previous = previousEntity;
-		previousSelectable->next = firstEntity;
+	// Add a delayed fade in to all the children of the overlay for the win game menu.
+	for (auto& entity : overlay.getComponent<Children>().children) {
+		auto& fade = entity->addComponent<Fade>();
+		fade.fadeDelayDuration = 1.25f;
 	}
 }
 

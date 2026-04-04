@@ -22,6 +22,8 @@ public:
     static Entity& createStageOverlay(World& world, int windowWidth, int windowHeight, const char* backgroundPath,
         const std::function<void(Entity& overlay, int windowWidth, int windowHeight)>& createUIComponents,
         const std::function<void(Entity& overlay)>& toggleVisibilityFunction);
+    static void addOverlayUIComponents(World& world, Entity& overlay, int windowWidth, int windowHeight, const char* titleText,
+    const char* titleCacheKey, const std::vector<Entity*> &selectableButtons);
 
     static bool toggleOverlayVisibility(Entity &overlay);
 };
