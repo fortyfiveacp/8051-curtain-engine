@@ -34,11 +34,11 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	background.addComponent<Sprite>(backTex, backSrc, menuDst, RenderLayer::Background);
 
 	// Menu characters.
-	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-characters.png", 1.5f, 0.3f);
+	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-characters.png", 1.25f, 0.3f);
 
 	// Menu text.
-	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-title.png", 1.5f, 1.9f);
-	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-start.png", 1.5f, 1.9f);
+	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-title.png", 1.5f, 1.7f);
+	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-start.png", 1.5f, 1.7f);
 
 	// FPS counter.
 	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40,
