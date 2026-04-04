@@ -126,9 +126,6 @@ Entity& UIUtils::createStageOverlay(World& world,int windowWidth, int windowHeig
 	// Add children to overlay.
 	overlay.addComponent<Children>();
 
-	// Add a short fade in to the overlay.
-	overlay.addComponent<Fade>(0.15f);
-
 	// Add a toggleable component so the overlay can be toggled.
 	overlay.addComponent<Toggleable>([&overlay, toggleVisibilityFunction]() {
 		toggleVisibilityFunction(overlay);

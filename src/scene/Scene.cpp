@@ -545,6 +545,9 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 	for (auto& entity : overlay.getComponent<Children>().children) {
 		entity->addComponent<Fade>(0.15f);
 	}
+
+	// Add a short fade in to the overlay.
+	overlay.addComponent<Fade>(0.15f);
 }
 
 void Scene::createContinueGameUIComponents(Entity& overlay, int windowWidth, int windowHeight) {
@@ -598,6 +601,9 @@ void Scene::createContinueGameUIComponents(Entity& overlay, int windowWidth, int
 	for (auto& entity : overlay.getComponent<Children>().children) {
 		entity->addComponent<Fade>(0.15f);
 	}
+
+	// Add a short fade in to the overlay.
+	overlay.addComponent<Fade>(0.15f);
 }
 
 void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int windowHeight) {
@@ -649,8 +655,11 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 	// Add a delayed fade in to all the children of the overlay for the win game menu.
 	for (auto& entity : overlay.getComponent<Children>().children) {
 		auto& fade = entity->addComponent<Fade>();
-		fade.fadeDelayDuration = 1.25f;
+		fade.fadeDelayDuration = 1.5f;
 	}
+
+	// Add a short fade in to the overlay.
+	overlay.addComponent<Fade>(0.5f);
 }
 
 void Scene::resetGameState() {
