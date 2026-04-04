@@ -31,11 +31,12 @@ Vector2D PathSystem::evaluatePath(const Path& path, float distance) {
 
 void PathSystem::update(World& world, std::vector<std::unique_ptr<Entity>>& entities, float dt) {
     for (auto& e : entities) {
-        if (!e->hasComponent<PathFollower>() || !e->hasComponent<Transform>())
+        if (!e->hasComponent<PathFollower>() || !e->hasComponent<Transform>() || !e->hasComponent<Velocity>())
             continue;
 
         auto& pf = e->getComponent<PathFollower>();
         auto& tf = e->getComponent<Transform>();
+        auto& vel = e->getComponent<Velocity>();
         if (!pf.active) continue;
 
         // const Path& path = (*pathLibrary)[pf.pathId];
@@ -72,7 +73,13 @@ void PathSystem::update(World& world, std::vector<std::unique_ptr<Entity>>& enti
 
         if (!isHovering) {
             pf.distance = nextDistance;
-            tf.position = evaluatePath(path, pf.distance);
+            Vector2D nextPosition = evaluatePath(path, nextDistance);
+
+            Vector2D direction = nextPosition - tf.position;
+            vel.direction = direction.normalize();
+
+            tf.position = nextPosition;
+
         }
     }
 }

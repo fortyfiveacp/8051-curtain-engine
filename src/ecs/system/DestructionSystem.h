@@ -24,7 +24,7 @@ public:
         auto& cam = cameraEntity->getComponent<Camera>();
 
         for (auto& e : entities) {
-            if (e->hasComponent<Transform>() && e->hasComponent<ProjectileTag>()) {
+            if (e->hasComponent<Transform>() && (e->hasComponent<ProjectileTag>() || e->hasComponent<EnemyTag>())) {
                 auto& t = e->getComponent<Transform>();
 
                 // Destroy entity if it goes out the cam view

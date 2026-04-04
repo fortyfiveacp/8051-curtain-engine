@@ -4,6 +4,7 @@
 
 #include "Component.h"
 #include "Entity.h"
+#include "../manager/AudioManager.h"
 
 class RadialSpawnerSystem {
 public:
@@ -21,6 +22,9 @@ public:
 
                 if (spawner.spawnTimer <= 0) {
                     spawner.spawnTimer += spawner.frequency;
+
+                    // TODO: implement way to differentiate between bullet types, if we have time.
+                    AudioManager::playSfx("circle-bullet-shot");
 
                     float angleBetweenBullets = 360.0f / spawner.bulletsPerBurst;
 

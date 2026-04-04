@@ -66,6 +66,8 @@ set(SRC_FILES
         src/utils/UIUtils.cpp
         src/utils/StageUtils.cpp
         src/ecs/system/PathSystem.cpp
+        src/utils/DanmakuFactory.h
+        src/utils/DanmakuFactory.cpp
         #add all new source files here
 )
 

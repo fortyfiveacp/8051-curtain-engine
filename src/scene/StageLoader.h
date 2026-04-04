@@ -10,4 +10,6 @@ public:
 
 private:
     static EnemyType stringToEnemyType(const std::string& name);
+    static DanmakuType stringToDanmakuType(const std::string& name);
+    static BulletType stringToBulletType(const std::string& name);
 };

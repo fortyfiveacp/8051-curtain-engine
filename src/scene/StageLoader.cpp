@@ -29,7 +29,6 @@ void StageLoader::loadStage(const char *path, World &world) {
 
     auto& timelineEntity = world.createEntity();
     timelineEntity.addComponent<Timeline>();
-    timelineEntity.addComponent<StageState>();
 
     auto* wavesRoot = root->FirstChildElement("Waves");
     for (auto* convoyElement = wavesRoot->FirstChildElement("Convoy");
@@ -43,6 +42,18 @@ void StageLoader::loadStage(const char *path, World &world) {
         data.numEnemies = convoyElement->IntAttribute("numEnemies");
         data.spawnInterval = convoyElement->FloatAttribute("interval");
         data.speed = convoyElement->FloatAttribute("speed");
+
+        auto* danmakuPatternElem = convoyElement->FirstChildElement("Pattern");
+        if (danmakuPatternElem) {
+            data.danmakuPattern.hasPattern = true;
+            data.danmakuPattern.danmakuType = stringToDanmakuType(danmakuPatternElem->Attribute("type"));
+            data.danmakuPattern.bulletType = stringToBulletType(danmakuPatternElem->Attribute("bullet"));
+            data.danmakuPattern.startTime = danmakuPatternElem->FloatAttribute("startTime");
+            data.danmakuPattern.endTime = danmakuPatternElem->FloatAttribute("endTime");
+            data.danmakuPattern.bulletsPerBurst = danmakuPatternElem->IntAttribute("bulletsPerBurst");
+            data.danmakuPattern.frequency = danmakuPatternElem->FloatAttribute("frequency");
+            data.danmakuPattern.bulletSpeed = danmakuPatternElem->FloatAttribute("bulletSpeed");
+        }
 
         timelineEntity.getComponent<Timeline>().timeline.emplace_back(startTime, [&world, data]() {
             auto& spawner = world.createDeferredEntity();
@@ -61,4 +72,21 @@ EnemyType StageLoader::stringToEnemyType(const std::string &name) {
     }
 
     return EnemyType::Boss;
+}
+
+DanmakuType StageLoader::stringToDanmakuType(const std::string &name) {
+    if (name == "Linear") {
+        return DanmakuType::Linear;
+    }
+
+    return DanmakuType::Radial;
+}
+
+BulletType StageLoader::stringToBulletType(const std::string &name) {
+    // TODO: Implement more bullet types, if we have time.
+    if (name == "LargeOrb") {
+        return BulletType::LargeOrb;
+    }
+
+    return BulletType::Circle;
 }

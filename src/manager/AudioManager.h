@@ -10,6 +10,7 @@ class AudioManager {
     MIX_Track* musicTrack = nullptr;
     static std::vector<MIX_Track*> sfxTracks;
     static std::unordered_map<std::string, MIX_Audio*> audio;
+    static std::unordered_map<std::string, double> sfxLastPlayedTimes;
 
 public:
     AudioManager();

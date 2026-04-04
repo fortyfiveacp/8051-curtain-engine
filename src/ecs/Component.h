@@ -219,6 +219,37 @@ enum class EnemyType {
     Boss
 };
 
+enum class BulletType {
+    Circle,
+    LargeOrb
+};
+
+struct RadialConfig {
+    float frequency = 1.0f;
+    float bulletSpeed = 150.0f;
+    int bulletsPerBurst = 12;
+    float rotationSpeed = 0.0f;
+    float bulletAngularVel = 0.0f;
+    float radius = 30.0f;
+    BulletType type = BulletType::Circle;
+};
+
+enum class DanmakuType {
+    Radial,
+    Linear
+};
+
+struct DanmakuPattern {
+    bool hasPattern = false;
+    DanmakuType danmakuType = DanmakuType::Radial;
+    BulletType bulletType = BulletType::Circle;
+    float startTime{};
+    float endTime{};
+    int bulletsPerBurst{};
+    float frequency{};
+    float bulletSpeed{};
+};
+
 struct Convoy {
     EnemyType enemyType{};
     int pathId{};
@@ -226,6 +257,8 @@ struct Convoy {
     float speed{};
     float spawnInterval{};
     float timer = 0.0f;
+
+    DanmakuPattern danmakuPattern{};
 };
 
 enum class LabelType {
@@ -312,10 +345,6 @@ struct ItemBounce {
     float bounceDuration = 1.25f; // Duration of upwards movement when the item is created.
     float timer = bounceDuration;
     bool isBouncing = true;
-};
-
-struct StageState {
-    bool largeFairiesShouldFire = false;
 };
 
 struct PlayerTag{};

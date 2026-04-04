@@ -27,5 +27,5 @@ void ConvoySystem::update(World& world, float dt) {
 
 void ConvoySystem::spawnEnemy(World &world, const Convoy &convoy){
     auto& enemy = world.createDeferredEntity();
-    EnemyFactory::build(enemy, convoy.enemyType, convoy.pathId, convoy.speed, world);
+    EnemyFactory::buildEnemy(enemy, world, convoy);
 }

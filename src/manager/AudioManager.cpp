@@ -2,9 +2,12 @@
 
 #include <iostream>
 #include <ostream>
+#include <unordered_map>
+#include <chrono>
 
 std::vector<MIX_Track*> AudioManager::sfxTracks;
 std::unordered_map<std::string, MIX_Audio*> AudioManager::audio;
+std::unordered_map<std::string, double> AudioManager::sfxLastPlayedTimes;
 constexpr int MAX_SFX_TRACKS = 32;
 
 AudioManager::AudioManager() {
@@ -60,15 +63,28 @@ void AudioManager::stopMusic(const std::string &name) const {
 }
 
 void AudioManager::playSfx(const std::string &name) {
+    auto now = std::chrono::system_clock::now().time_since_epoch();
+    double currentTimeMS = std::chrono::duration<double, std::milli>(now).count();
+    double cooldown = 25.0;
+
+    /*
+     * Check if a specific sound effect is being played at the same frame.
+     * Skip playing the sound effect if it is, preventing sfx stacking and
+     * bleeding ears.
+     */
+    if (sfxLastPlayedTimes.contains(name)) {
+        if (currentTimeMS - sfxLastPlayedTimes[name] < cooldown) {
+            return;
+        }
+    }
+
     for (auto* track : sfxTracks) {
         if (!MIX_TrackPlaying(track)) {
             if (MIX_SetTrackAudio(track, audio[name]) == 0) {
-                std::cout << "MIX_SetTrackAudio() Failed" << std::endl;
                 return;
             }
-
             MIX_PlayTrack(track, 0);
-            std::cout << "Playing sfx: " << name << std::endl;
+            sfxLastPlayedTimes[name] = currentTimeMS;
             return;
         }
     }
