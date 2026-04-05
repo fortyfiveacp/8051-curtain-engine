@@ -35,18 +35,15 @@ void PlayerAbilitySystem::update(World& world, float deltaTime) {
 }
 
 void PlayerAbilitySystem::castBomb(Entity& entity, const Transform& transform, World& world) {
-    const auto& playerSprite = entity.getComponent<Sprite>();
-    float playerCenterX = transform.position.x + (playerSprite.dst.w / 2.0f);
-    float playerCenterY = transform.position.y + (playerSprite.dst.h / 2.0f);
-
     float bombSize = 150.0f;
-    float bombX = playerCenterX - (bombSize / 2.0f);
-    float bombY = playerCenterY - (bombSize / 2.0f);
+    float bombX = transform.position.x - (bombSize / 2.0f);
+    float bombY = transform.position.y - (bombSize / 2.0f);
 
     PlayerBombFactory::buildBasicBomb(world, Vector2D(bombX, bombY), bombSize);
 
     if (entity.hasComponent<InvincibilityFrames>()) {
         auto& iFrames = entity.getComponent<InvincibilityFrames>();
         iFrames.active = true;
+        iFrames.timer = 0.0f;
     }
 }

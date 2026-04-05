@@ -184,11 +184,18 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
 
 // TODO: Decide whether to make onCollision accept any two entities and merge this function's logic into it.
 void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
+    if (e.entityA == nullptr || e.entityB == nullptr) return;
+
+    // Guard: Ensure both entities actually have CircleColliders before accessing them
+    if (!e.entityA->hasComponent<CircleCollider>() || !e.entityB->hasComponent<CircleCollider>()) {
+        return;
+    }
+
     Entity* bomb = nullptr;
     Entity* other = nullptr;
 
-    auto& colA = e.entityA->getComponent<Collider>();
-    auto& colB = e.entityB->getComponent<Collider>();
+    auto& colA = e.entityA->getComponent<CircleCollider>();
+    auto& colB = e.entityB->getComponent<CircleCollider>();
 
     if (colA.tag == "bomb") {
         bomb = e.entityA;
@@ -200,7 +207,8 @@ void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
 
     if (!bomb || !other) return;
 
-    auto& otherCol = other->getComponent<Collider>();
+    // Now it is safe to check the tag of the "other" entity
+    auto& otherCol = other->getComponent<CircleCollider>();
 
     if (otherCol.tag == "projectile") {
         other->destroy();

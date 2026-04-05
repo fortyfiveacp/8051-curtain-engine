@@ -169,6 +169,12 @@ struct PlayerStats {
     static constexpr int MAX_POINTS = 50; // TODO: how many points are there?
 };
 
+struct PlayerBomb {
+    float timer = 0.0f;
+    float duration = 3.0f;
+
+};
+
 struct SelectableUI {
     std::function<void()> onPressed{};
     std::function<void()> onReleased{};
