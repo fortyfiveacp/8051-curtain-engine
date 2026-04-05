@@ -89,28 +89,19 @@
 
         <Convoy start="5.0" enemyType="LargeFairy" pathId="8" numEnemies="1" speed="300">
             <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
-                    bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="0.0"/>
-        </Convoy>
-
-        <Convoy start="10.0" enemyType="SmallRedFairy" pathId="2" numEnemies="1" speed="150">
-            <Pattern type="Linear" bullet="Circle" startTime="0.2" endTime="2.0"
-                     frequency="0.2" bulletSpeed="400.0" isFan="true" targeted="true" speedMultiplier="1.0">
-                <BulletPositions>
-                    <Pos x="0" y="0" />
-                </BulletPositions>
-            </Pattern>
+                    bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="12.0"/>
         </Convoy>
 
         <Convoy start="15.0" enemyType="SmallBlueFairy" pathId="2" numEnemies="5" interval="1.0" speed="200" />
         <Convoy start="15.0" enemyType="SmallRedFairy" pathId="3" numEnemies="5" interval="1.0" speed="200" />
 
         <Convoy start="20.0" enemyType="LargeFairy" pathId="6" numEnemies="3" interval="2.0" speed="200">
-            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" bulletsPerBurst="16"
-                     frequency="1.0" bulletSpeed="150.0"/>
+            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
+                     bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="12.0"/>
         </Convoy>
         <Convoy start="20.0" enemyType="LargeFairy" pathId="7" numEnemies="3" interval="2.0" speed="200">
-            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" bulletsPerBurst="16"
-                     frequency="0.5" bulletSpeed="150.0"/>
+            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
+                     bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="12.0"/>
         </Convoy>
 
         <Convoy start="40.0" enemyType="SmallBlueFairy" pathId="9" numEnemies="5" interval="0.5" speed="300" />
@@ -130,17 +121,17 @@
         <Convoy start="55.0" enemyType="SmallRedFairy" pathId="14" numEnemies="3" interval="0.4" speed="300" />
 
         <Convoy start="65.0" enemyType="LargeFairy" pathId="8" numEnemies="2" interval="3.0" speed="300">
-            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" bulletsPerBurst="32"
-                     frequency="0.5" bulletSpeed="200.0"/>
+            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
+                     bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="12.0"/>
         </Convoy>
 
         <Convoy start="80.0" enemyType="LargeFairy" pathId="6" numEnemies="3" interval="5.0" speed="200">
-            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" bulletsPerBurst="16"
-                     frequency="0.5" bulletSpeed="150.0"/>
+            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
+                     bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="12.0"/>
         </Convoy>
         <Convoy start="80.0" enemyType="LargeFairy" pathId="7" numEnemies="3" interval="5.0" speed="200">
-            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" bulletsPerBurst="16"
-                     frequency="0.5" bulletSpeed="150.0"/>
+            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
+                     bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="12.0"/>
         </Convoy>
     </Waves>
 </Stage>

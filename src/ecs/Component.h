@@ -242,19 +242,18 @@ struct DanmakuPattern {
     DanmakuType danmakuType = DanmakuType::Radial;
     BulletType bulletType = BulletType::Circle;
 
-    // Common Timing
     float startTime{};
     float endTime{};
     float frequency{};
     float bulletSpeed{};
 
-    // Radial Specific
+    // Radial Specific.
     int bulletsPerBurst{};
     float rotationSpeed{};
     float bulletAngularVel{};
     float radius{};
 
-    // Linear Specific
+    // Linear Specific.
     bool isFanPattern = false;
     bool shouldTargetPlayer = true;
     float speedMultiplier = 1.0f;

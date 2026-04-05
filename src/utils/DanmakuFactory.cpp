@@ -15,12 +15,12 @@ void DanmakuFactory::initRadialPattern(Entity& entity, World& world, const Danma
                 return;
             }
 
-            auto& tf = entity.getComponent<Transform>();
-            Vector2D spawnPos = tf.position + (direction * danmakuPattern.radius);
+            auto& transform = entity.getComponent<Transform>();
+            Vector2D spawnPos = transform.position + (direction * danmakuPattern.radius);
 
             auto& bullet = world.createDeferredEntity();
 
-            bullet.addComponent<Transform>(spawnPos, 0.0f, 1.0f);
+            auto& bulletTransform = bullet.addComponent<Transform>(spawnPos, 0.0f, 1.0f);
             bullet.addComponent<Velocity>(direction, danmakuPattern.bulletSpeed, true);
             bullet.addComponent<AngularVelocity>(danmakuPattern.bulletAngularVel);
             bullet.addComponent<ProjectileTag>();
@@ -31,12 +31,12 @@ void DanmakuFactory::initRadialPattern(Entity& entity, World& world, const Danma
             SDL_FRect dst {spawnPos.x, spawnPos.y, 64, 64};
             bullet.addComponent<Sprite>(tex, src, dst);
 
-            auto& bulletCol = bullet.addComponent<Collider>("projectile");
-            bulletCol.rect.w = dst.w / 2.5f;
-            bulletCol.rect.h = dst.h / 2.5f;
-
-            bulletCol.offset.x = (dst.w - bulletCol.rect.w) / 2.0f;
-            bulletCol.offset.y = (dst.h - bulletCol.rect.h) / 2.0f;
+            Vector2D bulletSpawnPositionOffset = direction * danmakuPattern.radius;
+            auto& bulletCol = bullet.addComponent<CircleCollider>("projectile");
+            bulletCol.centerPosition = bulletTransform.position + bulletSpawnPositionOffset;
+            bulletCol.offset.x = dst.w / 2;
+            bulletCol.offset.y = dst.h / 2;
+            bulletCol.radius = danmakuPattern.radius;
         }
     );
 }
@@ -49,27 +49,26 @@ void DanmakuFactory::initLinearPattern(Entity &entity, World &world, const Danma
         danmakuPattern.speedMultiplier,
         danmakuPattern.bulletPositions,
         danmakuPattern.frequency,
-        [&world, &entity, danmakuPattern](Vector2D pos, Vector2D dir, float speed) {
+        [&world, &entity, danmakuPattern](Vector2D position, Vector2D direction, float speed) {
             if (!entity.isActive()) {
                 return;
             }
             auto& bullet = world.createDeferredEntity();
-            bullet.addComponent<Transform>(pos, 0.0f, 1.0f);
-            bullet.addComponent<Velocity>(dir, speed, false);
+            bullet.addComponent<Transform>(position, 0.0f, 1.0f);
+            bullet.addComponent<Velocity>(direction, speed, false);
             bullet.addComponent<ProjectileTag>();
 
             // TODO: If multiple bullet types are implemented, should probably move this to a helper method.
             SDL_Texture* tex = TextureManager::load("../asset/bullet4.png");
             SDL_FRect src {192, 0, 64, 64};
-            SDL_FRect dst {pos.x, pos.y, 32, 32};
+            SDL_FRect dst {position.x, position.y, 32, 32};
             bullet.addComponent<Sprite>(tex, src, dst);
 
-            auto& bulletCol = bullet.addComponent<Collider>("projectile");
-            bulletCol.rect.w = dst.w / 2.5f;
-            bulletCol.rect.h = dst.h / 2.5f;
-
-            bulletCol.offset.x = (dst.w - bulletCol.rect.w) / 2.0f;
-            bulletCol.offset.y = (dst.h - bulletCol.rect.h) / 2.0f;
+            auto& bulletCol = bullet.addComponent<CircleCollider>("projectile");
+            bulletCol.centerPosition = position;
+            bulletCol.offset.x = dst.w / 2;
+            bulletCol.offset.y = dst.h / 2;
+            bulletCol.radius = 10;
         }
     );
 }

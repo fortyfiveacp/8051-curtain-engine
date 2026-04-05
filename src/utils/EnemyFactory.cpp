@@ -6,7 +6,6 @@
 class World;
 
 void EnemyFactory::buildEnemy(Entity &entity, World& world, const Convoy& convoyData) {
-    auto& transform = entity.addComponent<Transform>(Vector2D(0.0f, -50.0f), 0.0f, 1.0f);
     entity.addComponent<PathFollower>(convoyData.pathId, 0.0f, convoyData.speed);
     entity.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 0.0f);
     entity.addComponent<EnemyTag>();
@@ -58,6 +57,7 @@ void EnemyFactory::buildStageBoss(Entity &entity, Transform &transform) {
 }
 
 void EnemyFactory::initBaseFairy(Entity &entity, const std::string& animName, const char* spritesheetPath, float size) {
+    auto& transform = entity.addComponent<Transform>(Vector2D(0.0f, -50.0f), 0.0f, 1.0f);
     entity.addComponent<Animation>(AssetManager::getAnimation(animName));
 
     SDL_Texture* tex = TextureManager::load(spritesheetPath);
@@ -66,9 +66,11 @@ void EnemyFactory::initBaseFairy(Entity &entity, const std::string& animName, co
 
     entity.addComponent<Sprite>(tex, src, dst);
 
-    auto& col = entity.addComponent<Collider>("projectile");
-    col.rect.w = dst.w / 2.0f;
-    col.rect.h = dst.w / 2.0f;
-    col.offset.x = (dst.w - col.rect.w) / 2.0f;
-    col.offset.y = (dst.h - col.rect.h) / 2.0f;
+    float radius = size / 2.0f;
+    Vector2D bulletSpawnPositionOffset = transform.position * radius;
+    auto& bulletCol = entity.addComponent<CircleCollider>("projectile");
+    bulletCol.centerPosition = transform.position + bulletSpawnPositionOffset;
+    bulletCol.offset.x = dst.w / 2;
+    bulletCol.offset.y = dst.h / 2;
+    bulletCol.radius = radius / 2;
 }
