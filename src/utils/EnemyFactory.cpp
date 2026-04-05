@@ -49,7 +49,7 @@ void EnemyFactory::buildSmallFairy(Entity &entity, World& world, const EnemyType
 }
 
 void EnemyFactory::buildLargeFairy(Entity &entity, World& world, const DanmakuPattern& danmakuPattern) {
-    initBaseFairy(entity, "redFairy", "../asset/animations/small_fairies_anim.png", 64);
+    initBaseFairy(entity, "largeFairy", "../asset/animations/large_fairy_anim.png", 64);
     DanmakuFactory::buildDanmaku(entity, world, danmakuPattern);
 }
 

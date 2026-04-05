@@ -73,6 +73,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	AssetManager::loadAnimation("sanae", "../asset/animations/sanae_animations.xml");
 	AssetManager::loadAnimation("redFairy", "../asset/animations/red_fairy_animations.xml");
 	AssetManager::loadAnimation("blueFairy", "../asset/animations/blue_fairy_animations.xml");
+	AssetManager::loadAnimation("largeFairy", "../asset/animations/large_fairy_animations.xml");
 
 	// Load scenes.
 	sceneManager.loadScene(
