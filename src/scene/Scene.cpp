@@ -130,15 +130,10 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 
 	player.addComponent<Sprite>(texture, playerSrc, playerDst);
 
-	auto& playerCollider = player.addComponent<Collider>("player");
-
-	// Make the collider a square with side lengths of 1/8th the width of the player destination rect.
-	playerCollider.rect.w = playerDst.w / 8;
-	playerCollider.rect.h = playerDst.w / 8;
-
-	// Add offset to the collider to it's centered on the player destination rect.
-	playerCollider.offset.x = (playerDst.w  - playerCollider.rect.w) / 2.0f;
-	playerCollider.offset.y = (playerDst.h - playerCollider.rect.h) / 2.0f;
+	auto& playerCircleCollider = player.addComponent<CircleCollider>("player");
+	playerCircleCollider.radius = 4;
+	playerCircleCollider.offset.x = playerDst.w / 2.0f;
+	playerCircleCollider.offset.y = playerDst.h / 2.0f;
 
 	player.addComponent<PlayerTag>();
 	player.addComponent<KeyboardInput>();
@@ -153,7 +148,6 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		Game::gameState.graze,
 		Game::gameState.point
 		);
-
 
 	// Test spawners for items. TODO: remove when no longer needed.
 	auto& pointSpawner(world.createEntity());
@@ -184,93 +178,92 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		ItemFactory::createItem(itemEntity, Bomb, bombSpawnerTransform.position);
 	});
 
-	// // Radial danmaku spawner.
-	// auto& radialDanmaku(world.createEntity());
-	// auto radialDanmakuTransform = radialDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
-	// float rotationSpeed = 50.0f;
-	// radialDanmaku.addComponent<AngularVelocity>(rotationSpeed);
-	//
-	// float frequency = 0.17f;
-	// float bulletEmissionSpeed = 150.0f;
-	// float bulletEmissionAngularVelocity = 20.0f;
-	// float radius = 30.0f;
-	// int bulletsPerBurst = 6;
-	//
-	// // RadialSpawner component takes a callback which spawns individual bullets.
-	// auto& radialSpawner = radialDanmaku.addComponent<RadialSpawner>(false, rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
-	// 	radius, bulletsPerBurst,
-	// 	[this, radialDanmakuTransform, bulletEmissionSpeed, bulletEmissionAngularVelocity, radius](Vector2D direction) {
-	// 		auto& e(world.createDeferredEntity());
-	//
-	// 		Vector2D bulletSpawnPositionOffset = direction * radius;
-	//
-	// 		e.addComponent<Transform>(radialDanmakuTransform.position + bulletSpawnPositionOffset, 0.0f, 1.0f);
-	// 		e.addComponent<Velocity>(direction, bulletEmissionSpeed, true);
-	//
-	// 		e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
-	//
-	// 		Animation anim = AssetManager::getAnimation("redFairy");
-	// 		e.addComponent<Animation>(anim);
-	//
-	// 		SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
-	// 		SDL_FRect src = {0, 31, 32, 31};
-	// 		SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 31 };
-	// 		e.addComponent<Sprite>(tex, src, dest);
-	//
-	// 		auto& c = e.addComponent<Collider>("projectile");
-	// 		c.rect.w = dest.w / 1.5;
-	// 		c.rect.h = dest.h / 1.5;
-	//
-	// 		c.offset.x = (dest.w  - c.rect.w) / 2.0f;
-	// 		c.offset.y = (dest.h - c.rect.h) / 2.0f;
-	//
-	// 		e.addComponent<ProjectileTag>();
-	// 	});
-	//
-	// // Linear danmaku spawner.
-	// auto& linearDanmaku(world.createEntity());
-	// linearDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
-	// linearDanmaku.addComponent<LookAtRotator>(playerTransform, 0.0f);
-	//
-	// bool isFanPattern = false;
-	// float bulletEmissionSpeedMultiplier = 1.0f;
-	//
-	// std::vector<Vector2D> bulletSpawnPositions;
-	// bulletSpawnPositions.emplace_back(0, 30);
-	// bulletSpawnPositions.emplace_back(0, 40);
-	// bulletSpawnPositions.emplace_back(0, 50);
-	// bulletSpawnPositions.emplace_back(10, 20);
-	// bulletSpawnPositions.emplace_back(-10, 20);
-	// bulletSpawnPositions.emplace_back(15, 20);
-	// bulletSpawnPositions.emplace_back(-15, 20);
-	//
-	// auto& linearSpawner = linearDanmaku.addComponent<LinearSpawner>(false, isFanPattern, bulletEmissionSpeed, bulletEmissionSpeedMultiplier,
-	// 	bulletSpawnPositions, frequency,
-	// 	[this](Vector2D position, Vector2D direction, float speed) {
-	// 		auto& e(world.createDeferredEntity());
-	//
-	// 		e.addComponent<Transform>(position, 0.0f, 1.0f);
-	// 		e.addComponent<Velocity>(direction, speed, false);
-	//
-	// 		Animation anim = AssetManager::getAnimation("blueFairy");
-	// 		e.addComponent<Animation>(anim);
-	//
-	// 		SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
-	// 		SDL_FRect src = {0, 31, 32, 31};
-	// 		SDL_FRect dest { position.x, position.y, 32, 31 };
-	// 		e.addComponent<Sprite>(tex, src, dest);
-	//
-	// 		auto& c = e.addComponent<Collider>("projectile");
-	// 		c.rect.w = dest.w / 1.5;
-	// 		c.rect.h = dest.h / 1.5;
-	//
-	// 		c.offset.x = (dest.w  - c.rect.w) / 2.0f;
-	// 		c.offset.y = (dest.h - c.rect.h) / 2.0f;
-	//
-	// 		e.addComponent<ProjectileTag>();
-	// 	});
-	//
-	//
+	// Radial danmaku spawner.
+	auto& radialDanmaku(world.createEntity());
+	auto radialDanmakuTransform = radialDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
+
+	float rotationSpeed = 50.0f;
+	radialDanmaku.addComponent<AngularVelocity>(rotationSpeed);
+
+	float frequency = 0.17f;
+	float bulletEmissionSpeed = 150.0f;
+	float bulletEmissionAngularVelocity = 20.0f;
+	float radius = 30.0f;
+	int bulletsPerBurst = 6;
+
+	// RadialSpawner component takes a callback which spawns individual bullets.
+	auto& radialSpawner = radialDanmaku.addComponent<RadialSpawner>(false, rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
+		radius, bulletsPerBurst,
+		[this, radialDanmakuTransform, bulletEmissionSpeed, bulletEmissionAngularVelocity, radius](Vector2D direction) {
+			auto& e(world.createDeferredEntity());
+
+			Vector2D bulletSpawnPositionOffset = direction * radius;
+
+			e.addComponent<Transform>(radialDanmakuTransform.position + bulletSpawnPositionOffset, 0.0f, 1.0f);
+			e.addComponent<Velocity>(direction, bulletEmissionSpeed, true);
+
+			e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
+
+			Animation anim = AssetManager::getAnimation("redFairy");
+			e.addComponent<Animation>(anim);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
+			SDL_FRect src = {0, 31, 32, 31};
+			SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 31 };
+			e.addComponent<Sprite>(tex, src, dest);
+
+			auto& c = e.addComponent<CircleCollider>("projectile");
+			c.centerPosition = radialDanmakuTransform.position + bulletSpawnPositionOffset;
+			c.offset.x = dest.w / 2;
+			c.offset.y = dest.h / 2;
+			c.radius = 10;
+
+			e.addComponent<ProjectileTag>();
+		});
+
+	// Linear danmaku spawner.
+	auto& linearDanmaku(world.createEntity());
+	linearDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
+	linearDanmaku.addComponent<LookAtRotator>(playerTransform, 0.0f);
+
+	bool isFanPattern = false;
+	float bulletEmissionSpeedMultiplier = 1.0f;
+
+	std::vector<Vector2D> bulletSpawnPositions;
+	bulletSpawnPositions.emplace_back(0, 30);
+	bulletSpawnPositions.emplace_back(0, 40);
+	bulletSpawnPositions.emplace_back(0, 50);
+	bulletSpawnPositions.emplace_back(10, 20);
+	bulletSpawnPositions.emplace_back(-10, 20);
+	bulletSpawnPositions.emplace_back(15, 20);
+	bulletSpawnPositions.emplace_back(-15, 20);
+
+	auto& linearSpawner = linearDanmaku.addComponent<LinearSpawner>(false, isFanPattern, bulletEmissionSpeed, bulletEmissionSpeedMultiplier,
+		bulletSpawnPositions, frequency,
+		[this](Vector2D position, Vector2D direction, float speed) {
+			auto& e(world.createDeferredEntity());
+
+			e.addComponent<Transform>(position, 0.0f, 1.0f);
+			e.addComponent<Velocity>(direction, speed, false);
+
+			Animation anim = AssetManager::getAnimation("blueFairy");
+			e.addComponent<Animation>(anim);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
+			SDL_FRect src = {0, 31, 32, 31};
+			SDL_FRect dest { position.x, position.y, 32, 31 };
+			e.addComponent<Sprite>(tex, src, dest);
+
+			auto& c = e.addComponent<CircleCollider>("projectile");
+			c.centerPosition = position;
+			c.offset.x = dest.w / 2;
+			c.offset.y = dest.h / 2;
+			c.radius = 10;
+
+			e.addComponent<ProjectileTag>();
+		});
+
+
 	// Add timeline object (for testing danmaku scripting).
 	auto& timelineManager(world.createEntity());
 	auto& debugTimeline = timelineManager.addComponent<Timeline>();

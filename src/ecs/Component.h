@@ -57,10 +57,18 @@ struct Sprite {
     bool visible = true;
 };
 
-struct Collider {
+struct RectCollider {
     std::string tag;
     SDL_FRect rect{};
     Vector2D offset{}; // Offset for collider positioning relative to the entity's transform.
+    bool enabled = true;
+};
+
+struct CircleCollider {
+    std::string tag;
+    float radius{}; // Radius of the circle used for detecting collisions.
+    Vector2D centerPosition{}; // Position of the collider (this is the actual position, updated by collision system).
+    Vector2D offset{}; // Offset for collider center relative to the entity's transform.
     bool enabled = true;
 };
 

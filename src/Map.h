@@ -15,6 +15,6 @@ public:
     SDL_Texture* tileset = nullptr;
     int width{}, height{};
     std::vector<std::vector<int>> tileData;
-    std::vector<Collider> colliders;
-    std::vector<Collider> itemColliders;
+    std::vector<RectCollider> colliders;
+    std::vector<RectCollider> itemColliders;
 };

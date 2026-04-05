@@ -60,7 +60,7 @@ void Map::load(const char* path, SDL_Texture* ts) {
             obj != nullptr;
             obj = obj->NextSiblingElement("object"))
         {
-            Collider c;
+            RectCollider c;
             c.rect.x = obj->FloatAttribute("x");
             c.rect.y = obj->FloatAttribute("y");
             c.rect.w = obj->FloatAttribute("width");
@@ -76,7 +76,7 @@ void Map::load(const char* path, SDL_Texture* ts) {
             obj != nullptr;
             obj = obj->NextSiblingElement("object"))
         {
-            Collider itemCollider;
+            RectCollider itemCollider;
             itemCollider.rect.x = obj->FloatAttribute("x");
             itemCollider.rect.y = obj->FloatAttribute("y");
             itemCollider.rect.w = 32;
