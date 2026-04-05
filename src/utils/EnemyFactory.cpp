@@ -64,13 +64,12 @@ void EnemyFactory::initBaseFairy(Entity &entity, const std::string& animName, co
     SDL_FRect src {0, 0, size, size};
     SDL_FRect dst {0, 0, size, size};
 
-    entity.addComponent<Sprite>(tex, src, dst);
+    Vector2D pivotOffset = Vector2D(dst.w / 2.0f, dst.h / 2.0f);
+    entity.addComponent<Sprite>(tex, src, dst, RenderLayer::World, pivotOffset);
 
     float radius = size / 2.0f;
     Vector2D bulletSpawnPositionOffset = transform.position * radius;
     auto& bulletCol = entity.addComponent<CircleCollider>("projectile");
     bulletCol.centerPosition = transform.position + bulletSpawnPositionOffset;
-    bulletCol.offset.x = dst.w / 2;
-    bulletCol.offset.y = dst.h / 2;
     bulletCol.radius = radius / 2;
 }
