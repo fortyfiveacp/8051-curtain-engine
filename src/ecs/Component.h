@@ -171,13 +171,10 @@ struct PlayerShot {
     float baseDamage = 1.0f;
 };
 
-// Simple circle bomb
 struct PlayerBomb {
     float duration = 3.0f;
     float timer = 0.0f;
-    float radius = 75.0f;
     float damage = 10.0f;
-    float speed = 150.0f;
 };
 
 struct SelectableUI {
