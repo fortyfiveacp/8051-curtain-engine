@@ -136,7 +136,7 @@ Entity& UIUtils::createStageOverlay(World& world,int windowWidth, int windowHeig
 	SDL_FRect overlaySrc {0, 0, static_cast<float>(overlayTex->w), static_cast<float>(overlayTex->h)};
 	SDL_FRect overlayDest = StageUtils::CalculateStageRect(windowWidth, windowHeight);
 	overlay.addComponent<Transform>(Vector2D(overlayDest.x, overlayDest.y), 0.0f, 1.0f);
-	overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDest, RenderLayer::UI, false);
+	overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDest, RenderLayer::UI, Vector2D(0, 0), false);
 
 	// Add children to overlay.
 	overlay.addComponent<Children>();

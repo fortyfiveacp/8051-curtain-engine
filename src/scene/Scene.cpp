@@ -561,7 +561,7 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 	SDL_FRect src {0, 0, static_cast<float>(darkenTex->w), static_cast<float>(darkenTex->h)};
 	SDL_FRect dst = StageUtils::CalculateStageRect(windowWidth, windowHeight);
 	darken.addComponent<Transform>(Vector2D(dst.x, dst.y), 0.0f, 1.0f);
-	darken.addComponent<Sprite>(darkenTex, src, dst, RenderLayer::UI, false);
+	darken.addComponent<Sprite>(darkenTex, src, dst, RenderLayer::UI, Vector2D(0, 0), false);
 
 	darken.addComponent<Parent>(&overlay);
 	overlay.getComponent<Children>().children.push_back(&darken);
