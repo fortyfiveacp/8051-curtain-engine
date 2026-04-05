@@ -12,6 +12,6 @@ public:
     static bool Circle(const CircleCollider& colA, const CircleCollider& colB);
 
     // Circle x AABB collision.
-    static bool CircleAABB(const SDL_FRect& colA, const Vector2D& colBCenterPosition, const float& colBRadius);
-    static bool CircleAABB(const RectCollider& colA, const CircleCollider& colB);
+    static bool AABBCircle(const SDL_FRect& colA, const Vector2D& colBCenterPosition, const float& colBRadius);
+    static bool AABBCircle(const RectCollider& colA, const CircleCollider& colB);
 };

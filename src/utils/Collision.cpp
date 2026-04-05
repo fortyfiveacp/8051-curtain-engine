@@ -37,7 +37,7 @@ bool Collision::Circle(const CircleCollider& colA, const CircleCollider& colB) {
 }
 
 // AABB x Circle collision.
-bool Collision::CircleAABB(const SDL_FRect& colA, const Vector2D& colBCenterPosition, const float& colBRadius) {
+bool Collision::AABBCircle(const SDL_FRect& colA, const Vector2D& colBCenterPosition, const float& colBRadius) {
     // Convert colB position and radius into an FRect square approximation.
     const SDL_FRect& colB = SDL_FRect(
         colBCenterPosition.x - colBRadius, colBCenterPosition.y - colBRadius, colBRadius * 2, colBRadius * 2);
@@ -46,6 +46,6 @@ bool Collision::CircleAABB(const SDL_FRect& colA, const Vector2D& colBCenterPosi
 }
 
 // AABB x Circle collision.
-bool Collision::CircleAABB(const RectCollider& colA, const CircleCollider& colB) {
-    return CircleAABB(colA.rect, colB.centerPosition, colB.radius);
+bool Collision::AABBCircle(const RectCollider& colA, const CircleCollider& colB) {
+    return AABBCircle(colA.rect, colB.centerPosition, colB.radius);
 }

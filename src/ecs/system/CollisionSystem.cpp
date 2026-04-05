@@ -12,10 +12,10 @@
 // This can be improved (e.g. for bullet hell)
 void CollisionSystem::update(World& world) {
     // Get a list of entities that have colliders and transforms.
-    const std::vector<Entity*> collidables = queryCollidables(world.getEntities());
+    const auto& [rectCollidables, circleCollidables] = queryCollidables(world.getEntities());
 
     // Update all collider positions first
-    for (auto entity : collidables) {
+    for (auto entity : rectCollidables) {
         auto& t = entity->getComponent<Transform>();
 
         if (entity->hasComponent<RectCollider>()) {
@@ -24,6 +24,10 @@ void CollisionSystem::update(World& world) {
             c.rect.x = t.position.x + c.offset.x;
             c.rect.y = t.position.y + c.offset.y;
         }
+    }
+
+    for (auto entity : circleCollidables) {
+        auto& t = entity->getComponent<Transform>();
 
         if (entity->hasComponent<CircleCollider>()) {
             auto& c = entity->getComponent<CircleCollider>();
@@ -35,34 +39,44 @@ void CollisionSystem::update(World& world) {
 
     std::set<CollisionKey> currentCollisions;
 
-    // TODO: handle circle colliders
-
     // Outer loop:
-    for (size_t i = 0; i < collidables.size(); i++) {
-        // Update the collider position
-        auto entityA = collidables[i];
-        auto& t = entityA->getComponent<Transform>();
+    for (size_t i = 0; i < rectCollidables.size(); i++) {
+        auto entityA = rectCollidables[i];
         auto& colliderA = entityA->getComponent<RectCollider>();
 
-        //colliderA.rect.x = t.position.x + c.offset.x; // TODO: Isn't this redundant?
-        //colliderA.rect.y = t.position.y + c.offset.y;
-
-        // Check for collider collision.
+        // Check for rect x rect collision.
         // Inner loop:
-        for (size_t j = i + 1; j < collidables.size(); j++) {
-            auto entityB = collidables[j];
+        for (size_t j = i + 1; j < rectCollidables.size(); j++) {
+            auto entityB = rectCollidables[j];
             auto& colliderB = entityB->getComponent<RectCollider>();
 
             if (Collision::AABB(colliderA, colliderB)) {
-                // std::cout << colliderA.tag << " hit " << colliderB.tag << std::endl;
-                CollisionKey key = makeKey(entityA, entityB);
-                currentCollisions.insert(key);
+                emitOnCollisionEvent(*entityA, *entityB, currentCollisions, world);
+            }
+        }
 
-                if (!activeCollisions.contains(key)) {
-                    world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Enter});
-                }
+        // Check for rect x circle collision.
+        for (size_t j = 0; j < circleCollidables.size(); j++) {
+            auto entityB = circleCollidables[j];
+            auto& colliderB = entityB->getComponent<CircleCollider>();
 
-                world.getEventManager().emit(CollisionEvent{entityA, entityB, CollisionState::Stay});
+            if (Collision::AABBCircle(colliderA, colliderB)) {
+                emitOnCollisionEvent(*entityA, *entityB, currentCollisions, world);
+            }
+        }
+    }
+
+    // Check for circle x circle collision.
+    for (size_t i = 0; i < circleCollidables.size(); i++) {
+        auto entityA = circleCollidables[i];
+        auto& colliderA = entityA->getComponent<CircleCollider>();
+
+        for (size_t j = i + 1; j < circleCollidables.size(); j++) {
+            auto entityB = circleCollidables[j];
+            auto& colliderB = entityB->getComponent<CircleCollider>();
+
+            if (Collision::Circle(colliderA, colliderB)) {
+                emitOnCollisionEvent(*entityA, *entityB, currentCollisions, world);
             }
         }
     }
@@ -76,14 +90,32 @@ void CollisionSystem::update(World& world) {
     activeCollisions = std::move(currentCollisions); // Update with current collisions.
 }
 
-std::vector<Entity*> CollisionSystem::queryCollidables(const std::vector<std::unique_ptr<Entity>> &entities) {
-    std::vector<Entity*> collidables;
+void CollisionSystem::emitOnCollisionEvent(Entity& entityA, Entity& entityB, std::set<CollisionKey>& currentCollisions, World& world) {
+    // std::cout << colliderA.tag << " hit " << colliderB.tag << std::endl;
+    CollisionKey key = makeKey(&entityA, &entityB);
+    currentCollisions.insert(key);
+
+    if (!activeCollisions.contains(key)) {
+        world.getEventManager().emit(CollisionEvent{&entityA, &entityB, CollisionState::Enter});
+    }
+
+    world.getEventManager().emit(CollisionEvent{&entityA, &entityB, CollisionState::Stay});
+}
+
+std::pair<std::vector<Entity*>, std::vector<Entity*>> CollisionSystem::queryCollidables(const std::vector<std::unique_ptr<Entity>> &entities) {
+    std::vector<Entity*> rectCollidables;
+    std::vector<Entity*> circleCollidables;
 
     for (auto& e : entities) {
-        if (e->hasComponent<Transform>() && (e->hasComponent<RectCollider>() || e->hasComponent<CircleCollider>())) {
-            collidables.push_back(e.get());
+        if (e->hasComponent<Transform>()) {
+            if (e->hasComponent<RectCollider>()) {
+                rectCollidables.push_back(e.get());
+            }
+            if (e->hasComponent<CircleCollider>()) {
+                circleCollidables.push_back(e.get());
+            }
         }
     }
 
-    return collidables;
+    return {rectCollidables, circleCollidables};
 }

@@ -17,7 +17,9 @@ public:
     std::set<CollisionKey> activeCollisions;
 
 private:
-    std::vector<Entity *> queryCollidables(const std::vector<std::unique_ptr<Entity> > &entities);
+    std::pair<std::vector<Entity*>, std::vector<Entity*>> queryCollidables(const std::vector<std::unique_ptr<Entity> > &entities);
+
+    void emitOnCollisionEvent(Entity& entityA, Entity& entityB, std::set<CollisionKey>& collisions, World& world);
 
     CollisionKey makeKey(Entity* entityA, Entity* entityB) {
         return std::minmax(entityA, entityB); // minmax automatically orders our pair, smaller number (memory address) is ordered first
