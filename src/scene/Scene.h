@@ -7,10 +7,7 @@
 
 class Scene {
 public:
-    bool isPaused = false;
-    bool isDebugging = false;
-
-    Scene(SceneType sceneType, const char* sceneName, const char* mapPath, int windowWidth, int windowHeight);
+    Scene(SceneType sceneType, const char* sceneName, const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight);
 
     void update(const float dt, const SDL_Event &e) {
         world.update(dt, e, type, isPaused, isDebugging);
@@ -28,16 +25,18 @@ public:
 private:
     std::string name;
     SceneType type;
+    bool isPaused = false;
+    bool isDebugging = false;
     //void createProjectile(Vector2D pos, Vector2D dir, int speed); TODO: commented out during tutorial, not needed?
 
     void initMainMenu(int windowWidth, int windowHeight);
-    void initGameplay(const char* mapPath, int windowWidth, int windowHeight);
+    void initGameplay(const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight);
 
     // Functions for creating the specific UI in the game.
     void createSidebarUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);
-    Entity& createPauseMenuOverlay(int windowWidth, int windowHeight);
     void createPauseMenuUComponents(Entity& overlay, int windowWidth, int windowHeight);
+    void createContinueGameUIComponents(Entity& overlay, int windowWidth, int windowHeight);
+    void createWinGameMenuUComponents(Entity& overlay, int windowWidth, int windowHeight);
 
-    // UI related helpers.
-    void toggleOverlayVisibility(Entity& overlay);
+    void resetGameState();
 };

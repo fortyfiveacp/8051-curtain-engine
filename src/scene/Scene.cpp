@@ -5,15 +5,15 @@
 #include "StageUtils.h"
 #include "../manager/AudioManager.h"
 
-Scene::Scene(SceneType sceneType, const char* sceneName, const char* mapPath, const int windowWidth,
-             const int windowHeight) : name(sceneName), type(sceneType) {
+Scene::Scene(SceneType sceneType, const char* sceneName, const char* stageBackgroundPath, const char* foregroundPath,
+			 const int windowWidth, const int windowHeight) : name(sceneName), type(sceneType) {
 
 	if (sceneType == SceneType::MainMenu) {
 		initMainMenu(windowWidth, windowHeight);
 		return;
 	}
 
-	initGameplay(mapPath, windowWidth, windowHeight);
+	initGameplay(stageBackgroundPath, foregroundPath, windowWidth, windowHeight);
 }
 
 void Scene::initMainMenu(int windowWidth, int windowHeight) {
@@ -21,14 +21,24 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	auto& cam = world.createEntity();
 	cam.addComponent<Camera>();
 
-	// Menu.
-	auto& menu(world.createEntity());
-	auto menuTransform = menu.addComponent<Transform>(Vector2D(0, 0), 0.0f, 1.0f);
+	// Create the main menu.
+	auto width = static_cast<float>(windowWidth);
+	auto height = static_cast<float>(windowHeight);
 
-	SDL_Texture* texture = TextureManager::load("../asset/main-menu-scaled.png");
-	SDL_FRect menuSrc {0, 0, (float)windowWidth, (float)windowHeight};
-	SDL_FRect menuDst {menuTransform.position.x, menuTransform.position.y, menuSrc.w, menuSrc.h};
-	menu.addComponent<Sprite>(texture, menuSrc, menuDst, RenderLayer::Background);
+	// Menu background.
+	auto& background(world.createEntity());
+	background.addComponent<Transform>(Vector2D(0, 0), 0.0f, 1.0f);
+	SDL_Texture* backTex = TextureManager::load("../asset/menu/main-menu-background.png");
+	SDL_FRect backSrc {0, 0, static_cast<float>(backTex->w), static_cast<float>(backTex->h)};
+	SDL_FRect menuDst {0, 0, width, height };
+	background.addComponent<Sprite>(backTex, backSrc, menuDst, RenderLayer::Background);
+
+	// Menu characters.
+	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-characters.png", 1.25f, 0.3f);
+
+	// Menu text.
+	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-title.png", 1.5f, 1.7f);
+	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-start.png", 1.5f, 1.7f);
 
 	// FPS counter.
 	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40,
@@ -36,14 +46,14 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	fpsCounter.addComponent<FPSCounter>();
 }
 
-void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight) {
+void Scene::initGameplay(const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight) {
 	// Subscribe to event for pausing the game.
 	world.getEventManager().subscribe([this](const BaseEvent& e) {
 		if (e.type != EventType::Pause) {
 			return;
 		}
 
-		const auto& pauseEvent = static_cast<const PauseEvent&>(e);
+		const auto& pauseEvent = dynamic_cast<const PauseEvent&>(e);
 		isPaused = pauseEvent.isPaused;
 	});
 
@@ -53,7 +63,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 			return;
 		}
 
-		const auto& debugEvent = static_cast<const DebugEvent&>(e);
+		const auto& debugEvent = dynamic_cast<const DebugEvent&>(e);
 		isDebugging = debugEvent.isDebugging;
 	});
 
@@ -85,50 +95,12 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// Create backgrounds.
 	// The backgrounds are 1 pixel taller to make an overlap that hides the seam between backgrounds.
-	StageUtils::createStageBackground(world, stageWidth, stageHeight + 1, 0, backgroundSpeed, "../asset/stage1.png");
-	StageUtils::createStageBackground(world, stageWidth, stageHeight + 1, -stageHeight, backgroundSpeed, "../asset/stage1.png");
+	StageUtils::createStageBackground(world, stageWidth, stageHeight + 1, 0, backgroundSpeed, stageBackgroundPath);
+	StageUtils::createStageBackground(world, stageWidth, stageHeight + 1, -stageHeight, backgroundSpeed, stageBackgroundPath);
 
 	// Create foregrounds.
-	StageUtils::createStageBackground(world, stageWidth, stageHeight, 0, foregroundSpeed, "../asset/foreground1.png");
-	StageUtils::createStageBackground(world, stageWidth, stageHeight, -stageHeight, foregroundSpeed, "../asset/foreground1.png");
-
-	// TODO: purge unused systems.
-	// Load our map.
-	// world.getMap().load(mapPath, TextureManager::load("../asset/tileset.png"));
-	// for (auto& collider : world.getMap().colliders) {
-	// 	auto& e = world.createEntity();
-	// 	e.addComponent<Transform>(Vector2D(collider.rect.x, collider.rect.y), 0.0f, 1.0f);
-	// 	auto& c = e.addComponent<Collider>("no-wall");
-	// 	c.rect.x = collider.rect.x;
-	// 	c.rect.y = collider.rect.y;
-	// 	c.rect.w = collider.rect.w;
-	// 	c.rect.h = collider.rect.h;
-	//
-	// 	// Have a visual of the colliders
-	// 	SDL_Texture* tex = TextureManager::load("../asset/tileset.png");
-	// 	SDL_FRect colSrc {0, 32, 32, 32};
-	// 	SDL_FRect colDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
-	// 	e.addComponent<Sprite>(tex, colSrc, colDst);
-	// }
-
-	// Player.
-	// player = new GameObject("../asset/ball.png", 0, 0);
-
-	// Add entities.
-	// for (auto& itemCollider : world.getMap().itemColliders) {
-	// 	auto& e = world.createEntity();
-	// 	e.addComponent<Transform>(Vector2D(itemCollider.rect.x, itemCollider.rect.y), 0.0f, 1.0f);
-	// 	auto& c = e.addComponent<Collider>("item");
-	// 	c.rect.x = itemCollider.rect.x;
-	// 	c.rect.y = itemCollider.rect.y;
-	// 	c.rect.w = itemCollider.rect.w;
-	// 	c.rect.h = itemCollider.rect.h;
-	//
-	// 	SDL_Texture* itemTex = TextureManager::load("../asset/coin.png");
-	// 	SDL_FRect itemSrc {0, 0, 32, 32};
-	// 	SDL_FRect itemDst {c.rect.x, c.rect.y, 32, 32};
-	// 	e.addComponent<Sprite>(itemTex, itemSrc, itemDst);
-	// }
+	StageUtils::createStageBackground(world, stageWidth, stageHeight, 0, foregroundSpeed, foregroundPath);
+	StageUtils::createStageBackground(world, stageWidth, stageHeight, -stageHeight, foregroundSpeed, foregroundPath);
 
 	auto& cam = world.createEntity();
 	SDL_FRect camView {0, 0, stageWidth, stageHeight};
@@ -162,8 +134,16 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	player.addComponent<PlayerTag>();
 	player.addComponent<KeyboardInput>();
 	player.addComponent<InvincibilityFrames>();
-	player.addComponent<PlayerStats>(Game::gameState.playerHealth, Game::gameState.playerBombs,
-		Vector2D(playerStartingX, playerStartingY)); // TODO: remove test values.
+	player.addComponent<PlayerRespawn>(Vector2D(playerStartingX, playerStartingY));
+	player.addComponent<PlayerStats>(
+		Game::gameState.hiScore,
+		Game::gameState.score,
+		Game::gameState.playerHealth,
+		Game::gameState.playerBombs,
+		Game::gameState.power,
+		Game::gameState.graze,
+		Game::gameState.point
+		);
 
 	// Test spawners for items. TODO: remove when no longer needed.
 	auto& pointSpawner(world.createEntity());
@@ -220,9 +200,12 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 			e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
 
-			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
-			SDL_FRect src { 0, 0, 32, 32 };
-			SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 32 };
+			Animation anim = AssetManager::getAnimation("redFairy");
+			e.addComponent<Animation>(anim);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
+			SDL_FRect src = {0, 31, 32, 31};
+			SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 31 };
 			e.addComponent<Sprite>(tex, src, dest);
 
 			auto& c = e.addComponent<CircleCollider>("projectile");
@@ -259,9 +242,12 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, speed, false);
 
-			SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
-			SDL_FRect src { 0, 0, 32, 32 };
-			SDL_FRect dest { position.x, position.y, 32, 32 };
+			Animation anim = AssetManager::getAnimation("blueFairy");
+			e.addComponent<Animation>(anim);
+
+			SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
+			SDL_FRect src = {0, 31, 32, 31};
+			SDL_FRect dest { position.x, position.y, 32, 31 };
 			e.addComponent<Sprite>(tex, src, dest);
 
 			auto& c = e.addComponent<CircleCollider>("projectile");
@@ -294,13 +280,77 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 		std::cout << "Linear end!" << std::endl;
 		linearSpawner.isActive = false;
 	});
+	// TODO: debug for win screen, remove later.
+	debugTimeline.timeline.emplace_back(12.0, [this] {
+		for (auto& entity : world.getEntities()) {
+			if (entity->hasComponent<WinGameMenuTag>()) {
+				entity->getComponent<Toggleable>().toggle();
+			}
+		}
+	});
 
 	// Add scene state.
 	auto& state(world.createEntity());
 	state.addComponent<SceneState>();
 
 	// Create pause menu overlay.
-	createPauseMenuOverlay(windowWidth, windowHeight);
+	auto& pauseMenuOverlay = UIUtils::createStageOverlay(world, windowWidth, windowHeight, "../asset/ui/darken.png",
+		[this](Entity& overlay, int w, int h) {
+			createPauseMenuUComponents(overlay, w, h);
+		},
+		[this](Entity& overlay) {
+			bool isOpen = UIUtils::toggleOverlayVisibility(overlay);
+			world.getEventManager().emit(PauseEvent{isOpen});
+
+			// Play sound effect when opening pause menu.
+			if (isOpen) {
+				AudioManager::playSfx("pause");
+			}
+		}
+	);
+	pauseMenuOverlay.addComponent<PauseMenuTag>();
+
+	// Create continue game overlay.
+	auto& continueGameOverlay = UIUtils::createStageOverlay(world, windowWidth, windowHeight, "../asset/ui/darken.png",
+		[this](Entity& overlay, int w, int h) {
+			createContinueGameUIComponents(overlay, w, h);
+		},
+		[this](Entity& overlay) {
+			bool isOpen = UIUtils::toggleOverlayVisibility(overlay);
+
+			// Disable the ability to toggle pause menu while continue game menu is open.
+			for (auto& entity : world.getEntities()) {
+				if (entity->hasComponent<PauseMenuTag>() && entity->hasComponent<Toggleable>()) {
+					entity->getComponent<Toggleable>().enabled = !isOpen;
+					world.getEventManager().emit(PauseEvent{isOpen});
+
+					break;
+				}
+			}
+		}
+	);
+	continueGameOverlay.addComponent<ContinueGameMenuTag>();
+
+	// Create win game overlay.
+	auto& winGameOverlay = UIUtils::createStageOverlay(world, windowWidth, windowHeight, "../asset/ui/win.png",
+		[this](Entity& overlay, int w, int h) {
+			createWinGameMenuUComponents(overlay, w, h);
+		},
+		[this](Entity& overlay) {
+			bool isOpen = UIUtils::toggleOverlayVisibility(overlay);
+
+			// Disable the ability to toggle pause menu while win game menu is open.
+			for (auto& entity : world.getEntities()) {
+				if (entity->hasComponent<PauseMenuTag>() && entity->hasComponent<Toggleable>()) {
+					entity->getComponent<Toggleable>().enabled = !isOpen;
+					world.getEventManager().emit(PauseEvent{isOpen});
+
+					break;
+				}
+			}
+		}
+	);
+	winGameOverlay.addComponent<WinGameMenuTag>();
 
 	// Create FPS counter label.
 	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40, {240, 240, 240, 255},
@@ -316,16 +366,16 @@ void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stage
 	const char* dynamicLabelFont = "pop1";
 
 	// The base distance the UI labels should be from the left and top of the screen.
-	int paddingX = windowWidth * 0.05;
-	int paddingY = (windowHeight - stageHeight) / 2 * 3;
+	int paddingX = static_cast<int>(windowWidth * 0.05);
+	int paddingY = static_cast<int>((static_cast<float>(windowHeight) - stageHeight) / 2 * 3);
 
 	// Font height and leading for calculating how distance is needed between each row of labels.
-	int fontHeight = TTF_GetFontSize(AssetManager::getFont(staticLabelFont));
-	int leading = 5;
+	float fontHeight = TTF_GetFontSize(AssetManager::getFont(staticLabelFont));
+	float leading = 5.0f;
 
 	// The distance for each column from the left side of the screen.
 	// The static labels are the unchanging text labels (i.e. HiScore:) while the dynamic labels are the actual number value.
-	int staticLeftPadding = stageWidth + paddingX + 35;
+	int staticLeftPadding = static_cast<int>(stageWidth + static_cast<float>(paddingX) + 35);
 	int dynamicLeftPadding = staticLeftPadding + 142;
 
 	// Colours for the labels.
@@ -364,80 +414,34 @@ void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stage
 	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, offWhite, dynamicLabelFont,
 		"0", "Power", LabelType::Power);
 
-	// Graze static and dynamic labels.
-	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
-		"Graze", "GrazeLabel", LabelType::Static);
-	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
-		"0", "Graze", LabelType::Graze);
+	// Graze static and dynamic labels. Currently hidden since not implemented.
+	// UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
+	// 	"Graze", "GrazeLabel", LabelType::Static);
+	// UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
+	// 	"0", "Graze", LabelType::Graze);
 
 	// Point static and dynamic labels.
 	std::string initialPointString = "0/" + std::to_string(PlayerStats::MAX_POINTS);
 	const char* initialPoint = initialPointString.c_str();
 
-	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, hotPink, staticLabelFont,
+	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
 		"Point", "PointLabel", LabelType::Static);
-	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 6 + paddingY * 2, offWhite, dynamicLabelFont,
+	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
 		initialPoint, "Point", LabelType::Point);
 }
 
-Entity& Scene::createPauseMenuOverlay(int windowWidth, int windowHeight) {
-	auto &overlay(world.createEntity());
-	SDL_Texture *overlayTex = TextureManager::load("../asset/ui/darken.png");
-	SDL_FRect overlaySrc {0, 0, static_cast<float>(overlayTex->w), static_cast<float>(overlayTex->h)};
-	SDL_FRect overlayDest = StageUtils::CalculateStageRect(windowWidth, windowHeight);
-	overlay.addComponent<Transform>(Vector2D(overlayDest.x, overlayDest.y), 0.0f, 1.0f);
-	overlay.addComponent<Sprite>(overlayTex, overlaySrc, overlayDest, RenderLayer::UI, false);
-
-	createPauseMenuUComponents(overlay, windowWidth, windowHeight);
-
-	// Add a toggleable component so the escape key can toggle the pause menu.
-	overlay.addComponent<Toggleable>([this, &overlay]() {
-		toggleOverlayVisibility(overlay);
-	});
-
-	overlay.addComponent<PauseMenuTag>();
-
-	return overlay;
-}
-
 void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int windowHeight) {
-	if (!overlay.hasComponent<Children>()) {
-		overlay.addComponent<Children>();
+	if (!overlay.hasComponent<Toggleable>()) {
+		std::cerr << "Overlay must have Toggleable component!" << std::endl;
 	}
-
-	auto& parentChildren = overlay.getComponent<Children>();
 
 	// Label colours and font.
 	SDL_Color selectedColour {202, 101, 101, 255};
 	SDL_Color unselectedColour {48, 55, 69, 255};
-	SDL_Color pausedColour {240, 240, 240, 255};
 	const char* font = "pop1";
-	float fontHeight = TTF_GetFontSize(AssetManager::getFont(font));
-
-	auto& overlaySprite = overlay.getComponent<Sprite>();
-
-	float overlayMiddleX = overlaySprite.dst.w / 2;
-	float overlayMiddleY = overlaySprite.dst.h / 2;
-	float stagePaddingX = StageUtils::CalculateStagePaddingX(windowWidth);
-	float stagePaddingY = StageUtils::CalculateStagePaddingY(windowHeight);
-
-	// Create paused title label.
-	auto& pauseTitle =  UIUtils::createLabel(world, 0, 0, pausedColour, font,
-		"Pause", "PauseLabel", LabelType::Static);
-	auto& pauseTransform = pauseTitle.getComponent<Transform>();
-	auto& pauseLabel = pauseTitle.getComponent<Label>();
-	pauseLabel.visible = false;
-
-	// Have to position the label after it's texture has been created.
-	pauseTransform.position.x = stagePaddingX + overlayMiddleX - pauseLabel.texture->w / 2;
-	pauseTransform.position.y = stagePaddingY + overlayMiddleY - pauseLabel.texture->h / 2 - fontHeight * 3;
-
-	// Add overlay as parent to the label.
-	pauseTitle.addComponent<Parent>(&overlay);
-	parentChildren.children.push_back(&pauseTitle);
 
 	// Create resume button.
-	auto& resumeButton =  UIUtils::createSelectableButton(world, overlay, font, selectedColour, unselectedColour,
+	auto& resumeButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
 		"Resume Game", "ResumeButton", [] {
 			// Resume game by pushing an escape key down event to toggle the pause menu.
 			SDL_Event event;
@@ -445,71 +449,168 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 			event.key.key = SDLK_ESCAPE;
 			SDL_PushEvent(&event);
 		});
-	auto& resumeTransform = resumeButton.getComponent<Transform>();
-	auto& resumeLabel = resumeButton.getComponent<Label>();
 
-	resumeTransform.position.x = stagePaddingX + overlayMiddleX - resumeLabel.texture->w / 2;
-	resumeTransform.position.y = stagePaddingY + overlayMiddleY - resumeLabel.texture->h / 2;
-	auto& resumeSelectable = resumeButton.getComponent<SelectableUI>();
+	// Create quit to title button.
+	auto& quitTitleButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
+		"Quit To Title", "PauseQuitTitleButton", [this] {
+			// Reset game state.
+			resetGameState();
 
-	// Create quit button.
-	auto& quitButton =  UIUtils::createSelectableButton(world, overlay, font, selectedColour, unselectedColour,
+			// Request scene change to main menu.
+			Game::onSceneChangeRequest("mainmenu");
+		});
+
+	// Create quit game button.
+	auto& quitButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
 		"Quit Game", "QuitButton", [] {
 			// Quit game by pushing a quit event.
 			SDL_Event event;
 			event.type = SDL_EVENT_QUIT;
 			SDL_PushEvent(&event);
 		});
-	auto& quitTransform = quitButton.getComponent<Transform>();
-	auto& quitLabel = quitButton.getComponent<Label>();
 
-	quitTransform.position.x = stagePaddingX + overlayMiddleX - quitLabel.texture->w / 2;
-	quitTransform.position.y = stagePaddingY + overlayMiddleY - quitLabel.texture->h / 2 + fontHeight + 15;
-	auto& quitSelectable = quitButton.getComponent<SelectableUI>();
+	std::vector<Entity*> buttons;
+	buttons.push_back(&resumeButton);
+	buttons.push_back(&quitTitleButton);
+	buttons.push_back(&quitButton);
 
-	// Set up selection doubly linked list.
-	resumeSelectable.next = &quitButton;
-	resumeSelectable.previous = &quitButton;
+	// Create the overlay with title and buttons.
+	UIUtils::addOverlayUIComponents(world, overlay, windowWidth, windowHeight, "Pause", "PauseLabel", buttons);
 
-	quitSelectable.next = &resumeButton;
-	quitSelectable.previous = &resumeButton;
-}
-
-void Scene::toggleOverlayVisibility(Entity& overlay) {
-	auto& sprite = overlay.getComponent<Sprite>();
-	bool newVisibility = !sprite.visible;
-	sprite.visible = newVisibility;
-
-	if (newVisibility) {
-		AudioManager::playSfx("pause");
+	// Add a short fade in to all the children of the overlay.
+	for (auto& entity : overlay.getComponent<Children>().children) {
+		entity->addComponent<Fade>(0.15f);
 	}
 
-	if (overlay.hasComponent<Children>()) {
-		auto& c = overlay.getComponent<Children>();
+	// Add a short fade in to the overlay.
+	overlay.addComponent<Fade>(0.15f);
+}
 
-		for (auto& child : c.children) {
-			if (child && child->hasComponent<Label>()) {
-				child->getComponent<Label>().visible = newVisibility;
-			}
+void Scene::createContinueGameUIComponents(Entity& overlay, int windowWidth, int windowHeight) {
+	if (!overlay.hasComponent<Toggleable>()) {
+		std::cerr << "Overlay must have Toggleable component!" << std::endl;
+	}
 
-			if (child && child->hasComponent<SelectableUI>()) {
-				// Make sure all entities aren't selected.
-				auto& selectable = child->getComponent<SelectableUI>();
-				selectable.selected = false;
-				selectable.onReleased();
-			}
-		}
+	// Label colours and font.
+	SDL_Color selectedColour {202, 101, 101, 255};
+	SDL_Color unselectedColour {48, 55, 69, 255};
+	const char* font = "pop1";
 
-		if (newVisibility) {
-			// Set the first selectable entity as the default selected, if visible.
-			for (auto& child : c.children) {
-				if (child && child->hasComponent<SelectableUI>()) {
-					auto& selected = child->getComponent<SelectableUI>();
-					selected.selected = true;
-					selected.onSelect();
+	// Create continue game button.
+	auto& toggleComponent = overlay.getComponent<Toggleable>();
+	auto& continueButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
+		"Continue Game", "ContinueButton", [this, toggleComponent] {
+			for (auto& entity : world.getEntities()) {
+				if (entity->hasComponent<PlayerStats>()) {
+					auto& playerStats = entity->getComponent<PlayerStats>();
+
+					// Set player health back to 3 and reset score to 0.
+					playerStats.currentHealth = 3;
+					playerStats.currentScore = 0;
+
 					break;
 				}
 			}
+
+			// Toggle overlay.
+			toggleComponent.toggle();
+		});
+
+	// Create quit to title button.
+	auto& quitButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
+		"Quit To Title", "ContinueQuitTitleButton", [this] {
+			// Reset game state.
+			resetGameState();
+
+			// Request scene change to main menu.
+			Game::onSceneChangeRequest("mainmenu");
+		});
+
+	std::vector<Entity*> buttons;
+	buttons.push_back(&continueButton);
+	buttons.push_back(&quitButton);
+
+	// Create the overlay with title and buttons.
+	UIUtils::addOverlayUIComponents(world, overlay, windowWidth, windowHeight, "Continue? Score will be reset", "ContinueLabel", buttons);
+
+	// Add a short fade in to all the children of the overlay.
+	for (auto& entity : overlay.getComponent<Children>().children) {
+		entity->addComponent<Fade>(0.15f);
+	}
+
+	// Add a short fade in to the overlay.
+	overlay.addComponent<Fade>(0.15f);
+}
+
+void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int windowHeight) {
+	if (!overlay.hasComponent<Toggleable>()) {
+		std::cerr << "Overlay must have Toggleable component!" << std::endl;
+	}
+
+	// Label colours and font.
+	SDL_Color selectedColour {202, 101, 101, 255};
+	SDL_Color unselectedColour {48, 55, 69, 255};
+	const char* font = "pop1";
+
+	auto& darken = world.createEntity();
+	SDL_Texture *darkenTex = TextureManager::load("../asset/ui/darken.png");
+	SDL_FRect src {0, 0, static_cast<float>(darkenTex->w), static_cast<float>(darkenTex->h)};
+	SDL_FRect dst = StageUtils::CalculateStageRect(windowWidth, windowHeight);
+	darken.addComponent<Transform>(Vector2D(dst.x, dst.y), 0.0f, 1.0f);
+	darken.addComponent<Sprite>(darkenTex, src, dst, RenderLayer::UI, false);
+
+	darken.addComponent<Parent>(&overlay);
+	overlay.getComponent<Children>().children.push_back(&darken);
+
+	// Create quit to title button.
+	auto& quitTitleButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
+		"Quit To Title", "WinQuitTitleButton", [this] {
+			// Reset game state.
+			resetGameState();
+
+			// Request scene change to main menu.
+			Game::onSceneChangeRequest("mainmenu");
+		});
+
+	// Create quit game button.
+	auto& quitButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
+		"Quit Game", "WinQuitButton", [] {
+			// Quit game by pushing a quit event.
+			SDL_Event event;
+			event.type = SDL_EVENT_QUIT;
+			SDL_PushEvent(&event);
+		});
+
+	std::vector<Entity*> buttons;
+	buttons.push_back(&quitTitleButton);
+	buttons.push_back(&quitButton);
+
+	// Create the overlay with title and buttons.
+	UIUtils::addOverlayUIComponents(world, overlay, windowWidth, windowHeight, "Congratulations, You Win!", "WinLabel", buttons);
+
+	// Add a delayed fade in to all the children of the overlay for the win game menu.
+	for (auto& entity : overlay.getComponent<Children>().children) {
+		auto& fade = entity->addComponent<Fade>();
+		fade.fadeDelayDuration = 3.5f;
+
+		// Make the title duration a bit shorter.
+		if (entity->hasComponent<Label>()) {
+			if (entity->getComponent<Label>().text == "Congratulations, You Win!") {
+				fade.fadeDelayDuration = 1.0f;
+			}
 		}
 	}
+
+	// Add a short fade in to the overlay.
+	overlay.addComponent<Fade>(0.5f);
+}
+
+void Scene::resetGameState() {
+	Game::gameState.hiScore = 0;
+	Game::gameState.score = 0;
+	Game::gameState.playerHealth = 3;
+	Game::gameState.playerBombs = 3;
+	Game::gameState.power = 0;
+	Game::gameState.graze = 0;
+	Game::gameState.point = 0;
 }
