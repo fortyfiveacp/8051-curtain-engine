@@ -126,15 +126,10 @@ void Scene::initGameplay(const char* stageBackgroundPath, const char* foreground
 
 	player.addComponent<Sprite>(texture, playerSrc, playerDst);
 
-	auto& playerCollider = player.addComponent<Collider>("player");
-
-	// Make the collider a square with side lengths of 1/8th the width of the player destination rect.
-	playerCollider.rect.w = playerDst.w / 8;
-	playerCollider.rect.h = playerDst.w / 8;
-
-	// Add offset to the collider to it's centered on the player destination rect.
-	playerCollider.offset.x = (playerDst.w  - playerCollider.rect.w) / 2.0f;
-	playerCollider.offset.y = (playerDst.h - playerCollider.rect.h) / 2.0f;
+	auto& playerCircleCollider = player.addComponent<CircleCollider>("player");
+	playerCircleCollider.radius = 4;
+	playerCircleCollider.offset.x = playerDst.w / 2.0f;
+	playerCircleCollider.offset.y = playerDst.h / 2.0f;
 
 	player.addComponent<PlayerTag>();
 	player.addComponent<KeyboardInput>();
@@ -149,33 +144,6 @@ void Scene::initGameplay(const char* stageBackgroundPath, const char* foreground
 		Game::gameState.graze,
 		Game::gameState.point
 		);
-
-	// TODO: purge.
-	auto& spawner(world.createEntity());
-	Transform t = spawner.addComponent<Transform>(Vector2D(stageWidth - 150, stageHeight - 5), 0.0f, 1.0f);
-	spawner.addComponent<TimedSpawner>(2.0f, [this, t] {
-		// Create the projectile (birds).
-		auto& e(world.createDeferredEntity());
-		e.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
-		e.addComponent<Velocity>(Vector2D(0, -1), 100.0f);
-
-		Animation anim = AssetManager::getAnimation("redFairy");
-		e.addComponent<Animation>(anim);
-
-		SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
-		SDL_FRect src = {0, 31, 32, 31};
-		SDL_FRect dest { t.position.x, t.position.y, 32, 31 };
-		e.addComponent<Sprite>(tex, src, dest);
-
-		auto& c = e.addComponent<Collider>("projectile");
-		c.rect.w = dest.w / 1.5;
-		c.rect.h = dest.h / 1.5;
-
-		c.offset.x = (dest.w  - c.rect.w) / 2.0f;
-		c.offset.y = (dest.h - c.rect.h) / 2.0f;
-
-		e.addComponent<ProjectileTag>();
-	});
 
 	// Test spawners for items. TODO: remove when no longer needed.
 	auto& pointSpawner(world.createEntity());
@@ -217,8 +185,6 @@ void Scene::initGameplay(const char* stageBackgroundPath, const char* foreground
 	float bulletEmissionSpeed = 150.0f;
 	float bulletEmissionAngularVelocity = 20.0f;
 	float radius = 30.0f;
-	float duration = 10.0f;
-	float delay = 2.0f;
 	int bulletsPerBurst = 6;
 
 	// RadialSpawner component takes a callback which spawns individual bullets.
@@ -242,12 +208,11 @@ void Scene::initGameplay(const char* stageBackgroundPath, const char* foreground
 			SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 31 };
 			e.addComponent<Sprite>(tex, src, dest);
 
-			auto& c = e.addComponent<Collider>("projectile");
-			c.rect.w = dest.w / 1.5;
-			c.rect.h = dest.h / 1.5;
-
-			c.offset.x = (dest.w  - c.rect.w) / 2.0f;
-			c.offset.y = (dest.h - c.rect.h) / 2.0f;
+			auto& c = e.addComponent<CircleCollider>("projectile");
+			c.centerPosition = radialDanmakuTransform.position + bulletSpawnPositionOffset;
+			c.offset.x = dest.w / 2;
+			c.offset.y = dest.h / 2;
+			c.radius = 10;
 
 			e.addComponent<ProjectileTag>();
 		});
@@ -285,12 +250,11 @@ void Scene::initGameplay(const char* stageBackgroundPath, const char* foreground
 			SDL_FRect dest { position.x, position.y, 32, 31 };
 			e.addComponent<Sprite>(tex, src, dest);
 
-			auto& c = e.addComponent<Collider>("projectile");
-			c.rect.w = dest.w / 1.5;
-			c.rect.h = dest.h / 1.5;
-
-			c.offset.x = (dest.w  - c.rect.w) / 2.0f;
-			c.offset.y = (dest.h - c.rect.h) / 2.0f;
+			auto& c = e.addComponent<CircleCollider>("projectile");
+			c.centerPosition = position;
+			c.offset.x = dest.w / 2;
+			c.offset.y = dest.h / 2;
+			c.radius = 10;
 
 			e.addComponent<ProjectileTag>();
 		});
