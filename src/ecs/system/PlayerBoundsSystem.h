@@ -37,8 +37,8 @@ inline void PlayerBoundsSystem::update(const std::vector<std::unique_ptr<Entity>
 
             // Additional padding on the screen boundary that prevents the player from moving their collider to
             // the very edge of the screen.
-            float boundsPaddingX = sprite.dst.w / 4.25f;
-            float boundsPaddingY = sprite.dst.h / 4.25f;
+            float boundsPaddingX = 12;
+            float boundsPaddingY = 24;
 
             // If the player comes reaches an edge, disable their movement in the appropriate direction.
             // Right edge of view.
