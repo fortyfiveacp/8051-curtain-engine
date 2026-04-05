@@ -19,7 +19,7 @@ bool Collision::AABB(const SDL_FRect& rectA, const SDL_FRect& rectB) {
 }
 
 // Passing in the colliders itself
-bool Collision::AABB(const Collider& colA, const Collider& colB) {
+bool Collision::AABB(const RectCollider& colA, const RectCollider& colB) {
     if (AABB(colA.rect, colB.rect)) {
         return true;
     }
@@ -27,20 +27,25 @@ bool Collision::AABB(const Collider& colA, const Collider& colB) {
     return false;
 }
 
-bool Collision::CircleCircle(Vector2D posA, float radA, Vector2D posB, float radB) {
-    float dx = posA.x - posB.x;
-    float dy = posA.y - posB.y;
-    float distanceSq = (dx * dx) + (dy * dy);
-    float radiusSum = radA + radB;
-    return distanceSq <= (radiusSum * radiusSum);
+// Circle collision.
+bool Collision::Circle(const CircleCollider& colA, const CircleCollider& colB) {
+    auto& colAPosition = colA.centerPosition;
+    auto& colBPosition = colB.centerPosition;
+    float distanceBetweenColliders = (colBPosition - colAPosition).length();
+
+    return distanceBetweenColliders <= colA.radius + colB.radius;
 }
 
-bool Collision::CircleRect(Vector2D circleCenter, float radius, const SDL_FRect& rect) {
-    float closestX = std::max(rect.x, std::min(circleCenter.x, rect.x + rect.w));
-    float closestY = std::max(rect.y, std::min(circleCenter.y, rect.y + rect.h));
+// AABB x Circle collision.
+bool Collision::AABBCircle(const SDL_FRect& colA, const Vector2D& colBCenterPosition, const float& colBRadius) {
+    // Convert colB position and radius into an FRect square approximation.
+    const SDL_FRect& colB = SDL_FRect(
+        colBCenterPosition.x - colBRadius, colBCenterPosition.y - colBRadius, colBRadius * 2, colBRadius * 2);
 
-    float dx = circleCenter.x - closestX;
-    float dy = circleCenter.y - closestY;
+    return AABB(colA, colB);
+}
 
-    return (dx * dx + dy * dy) <= (radius * radius);
+// AABB x Circle collision.
+bool Collision::AABBCircle(const RectCollider& colA, const CircleCollider& colB) {
+    return AABBCircle(colA.rect, colB.centerPosition, colB.radius);
 }

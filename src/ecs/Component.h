@@ -54,19 +54,22 @@ struct Sprite {
     SDL_FRect src{};
     SDL_FRect dst{};
     RenderLayer renderLayer = RenderLayer::World;
+    Vector2D pivotOffset = Vector2D(0, 0);
     bool visible = true;
 };
 
-enum class ColliderShape { Box, Circle };
-
-struct Collider {
+struct RectCollider {
     std::string tag;
-    ColliderShape shape = ColliderShape::Box;
-
     SDL_FRect rect{};
-    float radius = 0.0f;
-
     Vector2D offset{}; // Offset for collider positioning relative to the entity's transform.
+    bool enabled = true;
+};
+
+struct CircleCollider {
+    std::string tag;
+    float radius{}; // Radius of the circle used for detecting collisions.
+    Vector2D centerPosition{}; // Position of the collider (this is the actual position, updated by collision system).
+    Vector2D offset{}; // Offset for collider center relative to the entity's transform.
     bool enabled = true;
 };
 
@@ -166,17 +169,6 @@ struct PlayerStats {
     static constexpr int MAX_POINTS = 50; // TODO: how many points are there?
 };
 
-struct PlayerShot {
-    float focusedDamageMultiplier = 1.2f;
-    float baseDamage = 1.0f;
-};
-
-struct PlayerBomb {
-    float duration = 3.0f;
-    float timer = 0.0f;
-    float damage = 10.0f;
-};
-
 struct SelectableUI {
     std::function<void()> onPressed{};
     std::function<void()> onReleased{};
@@ -208,6 +200,76 @@ struct Timeline {
 
     // Timeline elements have a float (time to trigger the action) and function (the action to trigger).
     std::vector<std::pair<float, std::function<void()>>> timeline{};
+};
+
+
+struct PathPoint {
+    Vector2D position;
+    float hoverTime = 0.0f;
+};
+
+struct Path {
+    std::vector<PathPoint> points{};
+};
+
+struct PathFollower {
+    int pathId{};
+    float distance{};
+    float speed{};
+    bool active = true;
+    float currentHoverTimer = 0.0f;
+    int lastPointReached = -1;
+};
+
+enum class EnemyType {
+    SmallBlueFairy,
+    SmallRedFairy,
+    LargeFairy,
+    Boss
+};
+
+enum class BulletType {
+    Circle,
+    LargeOrb
+};
+
+enum class DanmakuType {
+    Radial,
+    Linear
+};
+
+struct DanmakuPattern {
+    bool hasPattern = false;
+    DanmakuType danmakuType = DanmakuType::Radial;
+    BulletType bulletType = BulletType::Circle;
+
+    float startTime{};
+    float endTime{};
+    float frequency{};
+    float bulletSpeed{};
+
+    // Radial Specific.
+    int bulletsPerBurst{};
+    float rotationSpeed{};
+    float bulletAngularVel{};
+    float radius{};
+
+    // Linear Specific.
+    bool isFanPattern = false;
+    bool shouldTargetPlayer = true;
+    float speedMultiplier = 1.0f;
+    std::vector<Vector2D> bulletPositions{};
+};
+
+struct Convoy {
+    EnemyType enemyType{};
+    int pathId{};
+    int numEnemies{};
+    float speed{};
+    float spawnInterval{};
+    float timer = 0.0f;
+
+    DanmakuPattern danmakuPattern{};
 };
 
 enum class LabelType {
@@ -318,3 +380,4 @@ struct PauseMenuTag{};
 struct ContinueGameMenuTag{};
 struct WinGameMenuTag{};
 struct ProjectileTag{};
+struct EnemyTag{};

@@ -38,8 +38,8 @@ public:
                 }
 
                 // We are converting from world space to screen space.
-                sprite.dst.x = t.position.x - cam.view.x;
-                sprite.dst.y = t.position.y - cam.view.y;
+                sprite.dst.x = t.position.x - sprite.pivotOffset.x - cam.view.x;
+                sprite.dst.y = t.position.y - sprite.pivotOffset.y - cam.view.y;
 
                 // If the entity has animation, update the source rect.
                 if (entity->hasComponent<Animation>()) {

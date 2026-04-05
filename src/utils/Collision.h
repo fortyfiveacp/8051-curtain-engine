@@ -6,8 +6,12 @@ class Collision {
 public:
     // Axis-aligned bounding box.
     static bool AABB(const SDL_FRect& rectA, const SDL_FRect& rectB);
-    static bool AABB(const Collider& colA, const Collider& colB);
+    static bool AABB(const RectCollider& colA, const RectCollider& colB);
 
-    static bool CircleCircle(Vector2D posA, float radA, Vector2D posB, float radB);
-    static bool CircleRect(Vector2D circleCenter, float radius, const SDL_FRect& rect);
+    // Circle collision.
+    static bool Circle(const CircleCollider& colA, const CircleCollider& colB);
+
+    // Circle x AABB collision.
+    static bool AABBCircle(const SDL_FRect& colA, const Vector2D& colBCenterPosition, const float& colBRadius);
+    static bool AABBCircle(const RectCollider& colA, const CircleCollider& colB);
 };

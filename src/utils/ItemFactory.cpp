@@ -29,21 +29,22 @@ void ItemFactory::createBaseItem(Entity& entity, Vector2D position, float textur
     float texHeight = 16;
     SDL_FRect src {textureX, textureY, texWidth, texHeight};
     SDL_FRect dst {transform.position.x, transform.position.y, 32, 32};
-    entity.addComponent<Sprite>(tex, src, dst);
+    Vector2D pivotOffset = Vector2D(dst.w / 2.0f, dst.h / 2.0f);
+    entity.addComponent<Sprite>(tex, src, dst, RenderLayer::World, pivotOffset);
 
     // Items start with a "bounce" upwards when created.
     entity.addComponent<Velocity>(Vector2D(0, -1), 220.0f);
     entity.addComponent<ItemBounce>();
 
-    auto& collider = entity.addComponent<Collider>("item");
+    auto& collider = entity.addComponent<RectCollider>("item");
 
     // Make the collider bigger so it's a bit easier to pick up.
     collider.rect.w = dst.w * 1.8f;
     collider.rect.h = dst.h * 1.8f;
 
     // Add offset to the collider to it's centered on the destination rect.
-    collider.offset.x = (dst.w  - collider.rect.w) / 2.0f;
-    collider.offset.y = (dst.h - collider.rect.h) / 2.0f;
+    collider.offset.x = -collider.rect.w / 2.0f;
+    collider.offset.y = -collider.rect.h / 2.0f;
 
     // Add projectile tag so items are destroyed when they go off-screen.
     entity.addComponent<ProjectileTag>();

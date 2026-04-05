@@ -25,10 +25,10 @@ public:
 
     Vector2D operator-() const;
 
-    // Return a reference, so it returns itself
-    // Vector that we want to return is on the left
-    // Another vector is on the right
-    // Member operator function
+    // Return a reference, so it returns itself.
+    // Vector that we want to return is on the left.
+    // Another vector is on the right.
+    // Member operator function.
     Vector2D& operator+=(const Vector2D& vector);
 
     Vector2D& operator-=(const Vector2D& vector);
@@ -45,12 +45,12 @@ public:
 
     Vector2D operator-(const Vector2D& vector) const;
 
-    // Member operator function
-    // Vector2D on the left, float on the right
+    // Member operator function.
+    // Vector2D on the left, float on the right.
     Vector2D operator*(float scalar) const;
 
-    // Vector2D on the right, float on the left
-    // friend makes it a non-member function
+    // Vector2D on the right, float on the left.
+    // friend makes it a non-member function.
     friend Vector2D operator*(float scalar, Vector2D& vector);
 
     Vector2D operator/(float scalar) const;

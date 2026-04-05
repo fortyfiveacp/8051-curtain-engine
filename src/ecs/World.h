@@ -6,6 +6,7 @@
 #include "BackgroundRenderSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
+#include "ConvoySystem.h"
 #include "DebugRenderSystem.h"
 #include "DestructionSystem.h"
 #include "Entity.h"
@@ -20,6 +21,7 @@
 #include "MainMenuSystem.h"
 #include "Map.h"
 #include "MovementSystem.h"
+#include "PathSystem.h"
 #include "RadialSpawnerSystem.h"
 #include "PauseMenuSystem.h"
 #include "PlayerAbilitySystem.h"
@@ -43,6 +45,8 @@ class World {
     Map map; // TODO purge.
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
+    std::unordered_map<int, Path> pathLibrary;
+    PathSystem pathSystem;
     MovementSystem movementSystem;
     RenderSystem renderSystem;
     KeyboardInputSystem keyboardInputSystem;
@@ -75,18 +79,21 @@ class World {
     PlayerBombSystem playerBombSystem;
     FadeSystem fadeSystem;
 
-    // Reactive systems
+    // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
+
+    ConvoySystem convoySystem;
 
 public:
     World() = default;
 
     void update(float dt, const SDL_Event& event, SceneType sceneType, bool isPaused, bool isDebugging) {
         if (sceneType == SceneType::MainMenu) {
-            // Main menu system update
+            // Main menu system update.
             mainMenuSystem.update(event);
         } else {
             keyboardInputSystem.update(entities, event);
+            cameraSystem.update(entities);
             playerBoundsSystem.update(entities);
             pauseMenuSystem.update(entities, event);
             selectableUISystem.update(entities, *this, event);
@@ -99,6 +106,8 @@ public:
                 invincibilityFramesSystem.update(entities, dt);
                 playerAbilitySystem.update(*this, dt);
                 playerBombSystem.update(entities, dt);
+                convoySystem.update(*this, dt);
+                pathSystem.update(*this, entities, dt);
                 animationSystem.update(entities, dt);
                 // cameraSystem.update(entities); // TODO: decide what to do with the camera system.
                 spawnTimerSystem.update(entities, dt);
@@ -171,6 +180,10 @@ public:
         return entities;
     }
 
+    std::unordered_map<int, Path>& getPathLibrary() {
+        return pathLibrary;
+    }
+
     void cleanup() {
         // Use a lambda predicate to remove all inactive entities.
         std::erase_if(
@@ -183,8 +196,8 @@ public:
 
     void synchronizeEntities() {
         if (!deferredEntities.empty()) {
-            // Push back all deferred entities to the entities vector
-            // Using move so we don't create a copy
+            // Push back all deferred entities to the entities vector.
+            // Using move so we don't create a copy.
             std::move(
                 deferredEntities.begin(),
                 deferredEntities.end(),
@@ -207,4 +220,6 @@ public:
     Map& getMap() {
         return map;
     }
+
+    std::function<void(Vector2D pos, Vector2D dir, float speed)> requestBulletSpawn;
 };

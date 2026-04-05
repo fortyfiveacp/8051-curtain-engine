@@ -61,6 +61,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	audioManager.loadAudio("ok", "../asset/audio/sfx/se_ok00.flac");
 	audioManager.loadAudio("bomb", "../asset/audio/sfx/se_slash.flac");
 	audioManager.loadAudio("item", "../asset/audio/sfx/se_item00.flac");
+	audioManager.loadAudio("circle-bullet-shot", "../asset/audio/sfx/se_tan01.flac");
 
 	// Load fonts.
 	AssetManager::loadFont("pop1", "../asset/fonts/pop1-w9.ttf", 32);
@@ -69,12 +70,31 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	// Load animations.
 	AssetManager::loadAnimation("player", "../asset/animations/reimu_animations.xml");
 	AssetManager::loadAnimation("enemy", "../asset/animations/bird_animations.xml");
+	AssetManager::loadAnimation("sanae", "../asset/animations/sanae_animations.xml");
 	AssetManager::loadAnimation("redFairy", "../asset/animations/red_fairy_animations.xml");
 	AssetManager::loadAnimation("blueFairy", "../asset/animations/blue_fairy_animations.xml");
+	AssetManager::loadAnimation("largeFairy", "../asset/animations/large_fairy_animations.xml");
 
 	// Load scenes.
-	sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, nullptr, width, height);
-	sceneManager.loadScene(SceneType::Gameplay, "level1", "../asset/stage/stage1.png", "../asset/stage/foreground1.png", width, height);
+	sceneManager.loadScene(
+		SceneType::MainMenu,
+		"mainmenu",
+		nullptr,
+		nullptr,
+		nullptr,
+		width,
+		height
+	);
+
+	sceneManager.loadScene(
+		SceneType::Gameplay,
+		"level1",
+		"../asset/stage/stage1.xml",
+		"../asset/stage/stage1.png",
+		"../asset/stage/foreground1.png",
+		width,
+		height
+	);
 
 	// Init game data / state.
 	gameState.hiScore = 0;

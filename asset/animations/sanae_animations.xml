@@ -1,0 +1,20 @@
+<animations>
+    <walk_left>
+        <frame x="0" y="130" w="63" h="65" />
+        <frame x="63" y="130" w="63" h="65" />
+        <frame x="126" y="130" w="63" h="65" />
+        <frame x="189" y="130" w="63" h="65" />
+    </walk_left>
+    <walk_right>
+        <frame x="0" y="65" w="63" h="65" />
+        <frame x="63" y="65" w="63" h="65" />
+        <frame x="126" y="65" w="63" h="65" />
+        <frame x="189" y="65" w="63" h="65" />
+    </walk_right>
+    <idle_right>
+        <frame x="0" y="0" w="63" h="65" />
+        <frame x="63" y="0" w="63" h="65" />
+        <frame x="126" y="0" w="63" h="65" />
+        <frame x="189" y="0" w="63" h="65" />
+    </idle_right>
+</animations>

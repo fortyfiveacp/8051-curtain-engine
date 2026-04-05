@@ -12,8 +12,8 @@ void DebugRenderSystem::update(World& world, const SDL_Event& event, bool isDebu
 
 void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>>& entities) {
     for (auto& entity : entities) {
-        if (entity->hasComponent<Collider>()) {
-            auto& c = entity->getComponent<Collider>();
+        if (entity->hasComponent<RectCollider>()) {
+            auto& c = entity->getComponent<RectCollider>();
 
             SDL_Texture* tex = TextureManager::load("../asset/tileset.png");
             SDL_Texture* circleTex = TextureManager::load("../asset/ball.png");
@@ -67,6 +67,19 @@ void DrawCircle(SDL_Renderer* renderer, float centerX, float centerY, float radi
             x--;
             tx += 2;
             error += (tx - diameter);
+        }
+        if (entity->hasComponent<CircleCollider>()) {
+            auto& c = entity->getComponent<CircleCollider>();
+
+            SDL_Texture* tex = TextureManager::load("../asset/coin.png");
+            SDL_FRect colSrc {0, 0, 32, 32};
+
+            float colliderTopLeftX = c.centerPosition.x - c.radius;
+            float colliderTopLeftY = c.centerPosition.y - c.radius;
+
+            SDL_FRect colDst {colliderTopLeftX, colliderTopLeftY, c.radius * 2, c.radius * 2};
+
+            TextureManager::draw(tex, &colSrc, &colDst);
         }
     }
 }
