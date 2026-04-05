@@ -129,7 +129,6 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, scaledPlayerWidth, scaledPlayerHeight};
 
 	Vector2D playerPivotOffset = Vector2D(playerDst.w / 2.0f, playerDst.h / 2.0f);
-
 	player.addComponent<Sprite>(texture, playerSrc, playerDst, RenderLayer::World, playerPivotOffset);
 
 	auto& playerCircleCollider = player.addComponent<CircleCollider>("player");
