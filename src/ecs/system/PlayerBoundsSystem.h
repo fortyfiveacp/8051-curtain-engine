@@ -35,29 +35,29 @@ inline void PlayerBoundsSystem::update(const std::vector<std::unique_ptr<Entity>
             auto& sprite = entity->getComponent<Sprite>();
             auto& keyboardInput = entity->getComponent<KeyboardInput>();
 
-            // The additional distance the player is allowed to move out of bounds.
-            float boundsAllowanceX = sprite.dst.w / 4.25f;
-            float boundsAllowanceY = sprite.dst.h / 4.25f;
+            // Additional padding on the screen boundary that prevents the player from moving their collider to
+            // the very edge of the screen.
+            float boundsPaddingX = 12;
+            float boundsPaddingY = 24;
 
             // If the player comes reaches an edge, disable their movement in the appropriate direction.
-            // Bound allowance is included for the right, left and top to allow the player to move off the screen slightly.
             // Right edge of view.
-            if (playerTransform.position.x >= (cam.view.x + cam.view.w - sprite.dst.w) + boundsAllowanceX) {
+            if (playerTransform.position.x >= cam.view.x + cam.view.w - boundsPaddingX) {
                 keyboardInput.right = false;
             }
 
             // Left edge of view.
-            if (playerTransform.position.x <= cam.view.x - boundsAllowanceX) {
+            if (playerTransform.position.x <= cam.view.x + boundsPaddingX) {
                 keyboardInput.left = false;
             }
 
             // Bottom edge of view.
-            if (playerTransform.position.y >= cam.view.y + cam.view.h - sprite.dst.h) {
+            if (playerTransform.position.y >= cam.view.y + cam.view.h - boundsPaddingY) {
                 keyboardInput.down = false;
             }
 
             // Top edge of view.
-            if (playerTransform.position.y <= cam.view.y - boundsAllowanceY) {
+            if (playerTransform.position.y <= cam.view.y + boundsPaddingY) {
                 keyboardInput.up = false;
             }
         }

@@ -128,12 +128,11 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	auto& playerTransform = player.addComponent<Transform>(Vector2D(playerStartingX, playerStartingY), 0.0f, 1.0f);
 	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, scaledPlayerWidth, scaledPlayerHeight};
 
-	player.addComponent<Sprite>(texture, playerSrc, playerDst);
+	Vector2D playerPivotOffset = Vector2D(playerDst.w / 2.0f, playerDst.h / 2.0f);
+	player.addComponent<Sprite>(texture, playerSrc, playerDst, RenderLayer::World, playerPivotOffset);
 
 	auto& playerCircleCollider = player.addComponent<CircleCollider>("player");
 	playerCircleCollider.radius = 4;
-	playerCircleCollider.offset.x = playerDst.w / 2.0f;
-	playerCircleCollider.offset.y = playerDst.h / 2.0f;
 
 	player.addComponent<PlayerTag>();
 	player.addComponent<KeyboardInput>();
@@ -561,7 +560,7 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 	SDL_FRect src {0, 0, static_cast<float>(darkenTex->w), static_cast<float>(darkenTex->h)};
 	SDL_FRect dst = StageUtils::CalculateStageRect(windowWidth, windowHeight);
 	darken.addComponent<Transform>(Vector2D(dst.x, dst.y), 0.0f, 1.0f);
-	darken.addComponent<Sprite>(darkenTex, src, dst, RenderLayer::UI, false);
+	darken.addComponent<Sprite>(darkenTex, src, dst, RenderLayer::UI, Vector2D(0, 0), false);
 
 	darken.addComponent<Parent>(&overlay);
 	overlay.getComponent<Children>().children.push_back(&darken);

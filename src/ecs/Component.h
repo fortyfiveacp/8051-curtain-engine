@@ -54,6 +54,7 @@ struct Sprite {
     SDL_FRect src{};
     SDL_FRect dst{};
     RenderLayer renderLayer = RenderLayer::World;
+    Vector2D pivotOffset = Vector2D(0, 0);
     bool visible = true;
 };
 
