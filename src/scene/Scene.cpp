@@ -165,33 +165,6 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	player.addComponent<PlayerStats>(Game::gameState.playerHealth, Game::gameState.playerBombs,
 		Vector2D(playerStartingX, playerStartingY)); // TODO: remove test values.
 
-	// TODO: purge.
-	auto& spawner(world.createEntity());
-	Transform t = spawner.addComponent<Transform>(Vector2D(stageWidth - 150, stageHeight - 5), 0.0f, 1.0f);
-	spawner.addComponent<TimedSpawner>(2.0f, [this, t] {
-		// Create the projectile (birds).
-		auto& e(world.createDeferredEntity());
-		e.addComponent<Transform>(Vector2D(t.position.x, t.position.y), 0.0f, 1.0f);
-		e.addComponent<Velocity>(Vector2D(0, -1), 100.0f);
-
-		Animation anim = AssetManager::getAnimation("enemy");
-		e.addComponent<Animation>(anim);
-
-		SDL_Texture* tex = TextureManager::load("../asset/animations/bird_anim.png");
-		SDL_FRect src { 0, 0, 32, 32 };
-		SDL_FRect dest { t.position.x, t.position.y, 32, 32 };
-		e.addComponent<Sprite>(tex, src, dest);
-
-		auto& c = e.addComponent<RectCollider>("projectile");
-		c.rect.w = dest.w / 1.5;
-		c.rect.h = dest.h / 1.5;
-
-		c.offset.x = (dest.w  - c.rect.w) / 2.0f;
-		c.offset.y = (dest.h - c.rect.h) / 2.0f;
-
-		e.addComponent<ProjectileTag>();
-	});
-
 	// Test spawners for items. TODO: remove when no longer needed.
 	auto& pointSpawner(world.createEntity());
 	Transform pointSpawnerTransform = pointSpawner.addComponent<Transform>(Vector2D(50, 250), 0.0f, 1.0f);
@@ -232,8 +205,6 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 	float bulletEmissionSpeed = 150.0f;
 	float bulletEmissionAngularVelocity = 20.0f;
 	float radius = 30.0f;
-	float duration = 10.0f;
-	float delay = 2.0f;
 	int bulletsPerBurst = 6;
 
 	// RadialSpawner component takes a callback which spawns individual bullets.
