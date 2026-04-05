@@ -60,6 +60,8 @@ set(SRC_FILES
         src/utils/StageUtils.cpp
         src/ecs/system/PlayerRespawnSystem.h
         src/ecs/system/PlayerAbilitySystem.cpp
+        src/utils/PlayerBombFactory.h
+        src/ecs/system/PlayerBombSystem.h
         #add all new source files here
 )
 

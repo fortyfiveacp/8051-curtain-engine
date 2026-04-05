@@ -41,7 +41,20 @@ void CollisionSystem::update(World& world) {
             auto entityB = collidables[j];
             auto& colliderB = entityB->getComponent<Collider>();
 
-            if (Collision::AABB(colliderA, colliderB)) {
+            bool collided = false;
+
+            if (colliderA.shape == ColliderShape::Box && colliderB.shape == ColliderShape::Box) {
+                collided = Collision::AABB(colliderA.rect, colliderB.rect);
+            } else if (colliderA.shape == ColliderShape::Circle && colliderB.shape == ColliderShape::Circle) {
+                collided = Collision::CircleCircle({colliderA.rect.x, colliderA.rect.y}, colliderA.radius,
+                                                    {colliderB.rect.x, colliderB.rect.y}, colliderB.radius);
+            } else {
+                const Collider& circle = (colliderA.shape == ColliderShape::Circle) ? colliderA : colliderB;
+                const Collider& box = (colliderA.shape == ColliderShape::Box) ? colliderA : colliderB;
+                collided = Collision::CircleRect({circle.rect.x, circle.rect.y}, circle.radius, box.rect);
+            }
+
+            if (collided) {
                 // std::cout << colliderA.tag << " hit " << colliderB.tag << std::endl;
                 CollisionKey key = makeKey(entityA, entityB);
                 currentCollisions.insert(key);

@@ -15,6 +15,8 @@ EventResponseSystem::EventResponseSystem(World &world) {
         onCollision(collision, "item", world);
         onCollision(collision, "wall", world);
         onCollision(collision, "projectile", world);
+
+        onBombCollision(collision);
     });
 
     world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
@@ -177,6 +179,35 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
                 }
             }
         }
+    }
+}
+
+// TODO: Decide whether to make onCollision accept any two entities and merge this function's logic into it.
+void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
+    Entity* bomb = nullptr;
+    Entity* other = nullptr;
+
+    auto& colA = e.entityA->getComponent<Collider>();
+    auto& colB = e.entityB->getComponent<Collider>();
+
+    if (colA.tag == "bomb") {
+        bomb = e.entityA;
+        other = e.entityB;
+    } else if (colB.tag == "bomb") {
+        bomb = e.entityB;
+        other = e.entityA;
+    }
+
+    if (!bomb || !other) return;
+
+    auto& otherCol = other->getComponent<Collider>();
+
+    if (otherCol.tag == "projectile") {
+        other->destroy();
+    }
+
+    if (otherCol.tag == "enemy" || otherCol.tag == "boss") {
+        // TODO: Have enemy/boss entities take damage while they are inside the collider.
     }
 }
 

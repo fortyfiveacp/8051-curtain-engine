@@ -26,3 +26,21 @@ bool Collision::AABB(const Collider& colA, const Collider& colB) {
 
     return false;
 }
+
+bool Collision::CircleCircle(Vector2D posA, float radA, Vector2D posB, float radB) {
+    float dx = posA.x - posB.x;
+    float dy = posA.y - posB.y;
+    float distanceSq = (dx * dx) + (dy * dy);
+    float radiusSum = radA + radB;
+    return distanceSq <= (radiusSum * radiusSum);
+}
+
+bool Collision::CircleRect(Vector2D circleCenter, float radius, const SDL_FRect& rect) {
+    float closestX = std::max(rect.x, std::min(circleCenter.x, rect.x + rect.w));
+    float closestY = std::max(rect.y, std::min(circleCenter.y, rect.y + rect.h));
+
+    float dx = circleCenter.x - closestX;
+    float dy = circleCenter.y - closestY;
+
+    return (dx * dx + dy * dy) <= (radius * radius);
+}

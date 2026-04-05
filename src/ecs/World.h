@@ -25,6 +25,7 @@
 #include "PlayerAbilitySystem.h"
 #include "InvincibilityFramesSystem.h"
 #include "ItemBounceSystem.h"
+#include "PlayerBombSystem.h"
 #include "PlayerBoundsSystem.h"
 #include "PlayerRespawnSystem.h"
 #include "RenderSystem.h"
@@ -71,6 +72,7 @@ class World {
     PlayerBoundsSystem playerBoundsSystem;
     ItemBounceSystem itemBounceSystem;
     PlayerRespawnSystem playerRespawnSystem;
+    PlayerBombSystem playerBombSystem;
     FadeSystem fadeSystem;
 
     // Reactive systems
@@ -95,7 +97,8 @@ public:
                 collisionSystem.update(*this);
                 playerRespawnSystem.update(entities, dt);
                 invincibilityFramesSystem.update(entities, dt);
-                playerAbilitySystem.update(entities);
+                playerAbilitySystem.update(*this, dt);
+                playerBombSystem.update(entities, dt);
                 animationSystem.update(entities, dt);
                 // cameraSystem.update(entities); // TODO: decide what to do with the camera system.
                 spawnTimerSystem.update(entities, dt);

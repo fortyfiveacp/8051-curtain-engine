@@ -57,9 +57,15 @@ struct Sprite {
     bool visible = true;
 };
 
+enum class ColliderShape { Box, Circle };
+
 struct Collider {
     std::string tag;
+    ColliderShape shape = ColliderShape::Box;
+
     SDL_FRect rect{};
+    float radius = 0.0f;
+
     Vector2D offset{}; // Offset for collider positioning relative to the entity's transform.
     bool enabled = true;
 };
@@ -158,6 +164,20 @@ struct PlayerStats {
     static constexpr int MAX_BOMBS = 8;
     static constexpr int MAX_POWER = 400;
     static constexpr int MAX_POINTS = 50; // TODO: how many points are there?
+};
+
+struct PlayerShot {
+    float focusedDamageMultiplier = 1.2f;
+    float baseDamage = 1.0f;
+};
+
+// Simple circle bomb
+struct PlayerBomb {
+    float duration = 3.0f;
+    float timer = 0.0f;
+    float radius = 75.0f;
+    float damage = 10.0f;
+    float speed = 150.0f;
 };
 
 struct SelectableUI {

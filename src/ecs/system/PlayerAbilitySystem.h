@@ -4,7 +4,9 @@
 
 #include "Entity.h"
 
+class World;
+
 class PlayerAbilitySystem {
 public:
-    void update(const std::vector<std::unique_ptr<Entity>>& entities);
+    void update(World& world, float deltaTime);
 };

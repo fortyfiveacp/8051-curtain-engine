@@ -317,13 +317,13 @@ void Scene::initGameplay(const char* stageBackgroundPath, const char* foreground
 		linearSpawner.isActive = false;
 	});
 	// TODO: debug for win screen, remove later.
-	debugTimeline.timeline.emplace_back(12.0, [this] {
-		for (auto& entity : world.getEntities()) {
-			if (entity->hasComponent<WinGameMenuTag>()) {
-				entity->getComponent<Toggleable>().toggle();
-			}
-		}
-	});
+	// debugTimeline.timeline.emplace_back(12.0, [this] {
+	// 	for (auto& entity : world.getEntities()) {
+	// 		if (entity->hasComponent<WinGameMenuTag>()) {
+	// 			entity->getComponent<Toggleable>().toggle();
+	// 		}
+	// 	}
+	// });
 
 	// Add scene state.
 	auto& state(world.createEntity());
