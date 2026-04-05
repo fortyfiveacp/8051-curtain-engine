@@ -169,18 +169,37 @@ Entity *&other) {
         return false;
     }
 
-    if (!(e.entityA->hasComponent<RectCollider>() && e.entityB->hasComponent<RectCollider>())) {
+    bool entityAHasRect = e.entityA->hasComponent<RectCollider>();
+    bool entityBHasRect = e.entityB->hasComponent<RectCollider>();
+    bool entityAHasCircle = e.entityA->hasComponent<CircleCollider>();
+    bool entityBHasCircle = e.entityB->hasComponent<CircleCollider>();
+
+    if (!((entityAHasRect || entityAHasCircle) && (entityBHasRect || entityBHasCircle))) {
         return false;
     }
 
-    auto& colliderA = e.entityA->getComponent<RectCollider>();
-    auto& colliderB = e.entityB->getComponent<RectCollider>();
+    const std::string* tagA = nullptr;
+    const std::string* tagB = nullptr;
 
-    if (colliderA.tag == "player" && colliderB.tag == otherTag) {
+    if (entityAHasRect) {
+        tagA = &e.entityA->getComponent<RectCollider>().tag;
+    }
+    else {
+        tagA = &e.entityA->getComponent<CircleCollider>().tag;
+    }
+
+    if (entityBHasRect) {
+        tagB = &e.entityB->getComponent<RectCollider>().tag;
+    }
+    else {
+        tagB = &e.entityB->getComponent<CircleCollider>().tag;
+    }
+
+    if (*tagA == "player" && *tagB == otherTag) {
         player = e.entityA;
         other = e.entityB;
     }
-    else if (colliderA.tag == otherTag && colliderB.tag == "player") {
+    else if (*tagA == otherTag && *tagB == "player") {
         player = e.entityB;
         other = e.entityA;
     }

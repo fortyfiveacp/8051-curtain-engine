@@ -154,15 +154,15 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	player.addComponent<Sprite>(texture, playerSrc, playerDst);
 
-	auto& playerCollider = player.addComponent<RectCollider>("player");
-
-	// Make the collider a square with side lengths of 1/8th the width of the player destination rect.
-	playerCollider.rect.w = playerDst.w / 8;
-	playerCollider.rect.h = playerDst.w / 8;
-
-	// Add offset to the collider to it's centered on the player destination rect.
-	playerCollider.offset.x = (playerDst.w - playerCollider.rect.w) / 2.0f;
-	playerCollider.offset.y = (playerDst.h - playerCollider.rect.h) / 2.0f;
+	// auto& playerCollider = player.addComponent<RectCollider>("player");
+	//
+	// // Make the collider a square with side lengths of 1/8th the width of the player destination rect.
+	// playerCollider.rect.w = playerDst.w / 8;
+	// playerCollider.rect.h = playerDst.w / 8;
+	//
+	// // Add offset to the collider to it's centered on the player destination rect.
+	// playerCollider.offset.x = (playerDst.w - playerCollider.rect.w) / 2.0f;
+	// playerCollider.offset.y = (playerDst.h - playerCollider.rect.h) / 2.0f;
 
 	// TODO: replace above RectCollider with this code
 	auto& playerCircleCollider = player.addComponent<CircleCollider>("player");

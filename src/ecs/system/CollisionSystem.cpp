@@ -56,8 +56,7 @@ void CollisionSystem::update(World& world) {
         }
 
         // Check for rect x circle collision.
-        for (size_t j = 0; j < circleCollidables.size(); j++) {
-            auto entityB = circleCollidables[j];
+        for (auto entityB : circleCollidables) {
             auto& colliderB = entityB->getComponent<CircleCollider>();
 
             if (Collision::AABBCircle(colliderA, colliderB)) {
@@ -91,7 +90,6 @@ void CollisionSystem::update(World& world) {
 }
 
 void CollisionSystem::emitOnCollisionEvent(Entity& entityA, Entity& entityB, std::set<CollisionKey>& currentCollisions, World& world) {
-    // std::cout << colliderA.tag << " hit " << colliderB.tag << std::endl;
     CollisionKey key = makeKey(&entityA, &entityB);
     currentCollisions.insert(key);
 
