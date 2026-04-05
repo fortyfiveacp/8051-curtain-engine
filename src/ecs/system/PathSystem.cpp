@@ -74,12 +74,9 @@ void PathSystem::update(World& world, std::vector<std::unique_ptr<Entity>>& enti
         if (!isHovering) {
             pf.distance = nextDistance;
             Vector2D nextPosition = evaluatePath(path, nextDistance);
-
             Vector2D direction = nextPosition - tf.position;
             vel.direction = direction.normalize();
-
             tf.position = nextPosition;
-
         }
     }
 }

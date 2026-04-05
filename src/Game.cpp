@@ -75,8 +75,25 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	AssetManager::loadAnimation("blueFairy", "../asset/animations/blue_fairy_animations.xml");
 
 	// Load scenes.
-	sceneManager.loadScene(SceneType::MainMenu, "mainmenu", nullptr, nullptr, width, height);
-	sceneManager.loadScene(SceneType::Gameplay, "level1", "../asset/stage/stage1.png", "../asset/stage/foreground1.png", width, height);
+	sceneManager.loadScene(
+		SceneType::MainMenu,
+		"mainmenu",
+		nullptr,
+		nullptr,
+		nullptr,
+		width,
+		height
+	);
+
+	sceneManager.loadScene(
+		SceneType::Gameplay,
+		"level1",
+		"../asset/stage/stage1.xml",
+		"../asset/stage/stage1.png",
+		"../asset/stage/foreground1.png",
+		width,
+		height
+	);
 
 	// Init game data / state.
 	gameState.hiScore = 0;

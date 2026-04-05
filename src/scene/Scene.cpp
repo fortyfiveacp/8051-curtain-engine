@@ -7,15 +7,15 @@
 #include "EnemyFactory.h"
 #include "StageLoader.h"
 
-Scene::Scene(SceneType sceneType, const char* sceneName, const char* stageBackgroundPath, const char* foregroundPath,
-			 const int windowWidth, const int windowHeight) : name(sceneName), type(sceneType) {
+Scene::Scene(SceneType sceneType, const char* sceneName, const char* stageDataPath, const char* stageBackgroundPath,
+	const char* foregroundPath, const int windowWidth, const int windowHeight) : name(sceneName), type(sceneType) {
 
 	if (sceneType == SceneType::MainMenu) {
 		initMainMenu(windowWidth, windowHeight);
 		return;
 	}
 
-	initGameplay(stageBackgroundPath, foregroundPath, windowWidth, windowHeight);
+	initGameplay(stageDataPath, stageBackgroundPath, foregroundPath, windowWidth, windowHeight);
 }
 
 void Scene::initMainMenu(int windowWidth, int windowHeight) {
@@ -48,7 +48,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	fpsCounter.addComponent<FPSCounter>();
 }
 
-void Scene::initGameplay(const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight) {
+void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight) {
 	// Subscribe to event for pausing the game.
 	world.getEventManager().subscribe([this](const BaseEvent& e) {
 		if (e.type != EventType::Pause) {
@@ -104,7 +104,7 @@ void Scene::initGameplay(const char* stageBackgroundPath, const char* foreground
 	StageUtils::createStageBackground(world, stageWidth, stageHeight, 0, foregroundSpeed, foregroundPath);
 	StageUtils::createStageBackground(world, stageWidth, stageHeight, -stageHeight, foregroundSpeed, foregroundPath);
 
-	StageLoader::loadStage("../asset/stage/stage1.xml", world);
+	StageLoader::loadStage(stageDataPath, world);
 
 	auto& cam = world.createEntity();
 	SDL_FRect camView {0, 0, stageWidth, stageHeight};
