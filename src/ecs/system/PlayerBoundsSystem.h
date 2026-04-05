@@ -42,7 +42,7 @@ inline void PlayerBoundsSystem::update(const std::vector<std::unique_ptr<Entity>
 
             // If the player comes reaches an edge, disable their movement in the appropriate direction.
             // Right edge of view.
-            if (playerTransform.position.x >= (cam.view.x + cam.view.w) - boundsPaddingX) {
+            if (playerTransform.position.x >= cam.view.x + cam.view.w - boundsPaddingX) {
                 keyboardInput.right = false;
             }
 
