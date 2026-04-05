@@ -29,13 +29,12 @@ void DanmakuFactory::initRadialPattern(Entity& entity, World& world, const Danma
             SDL_Texture* tex = TextureManager::load("../asset/bullet4.png");
             SDL_FRect src {192, 0, 64, 64};
             SDL_FRect dst {spawnPos.x, spawnPos.y, 64, 64};
-            bullet.addComponent<Sprite>(tex, src, dst);
+            Vector2D pivotOffset = Vector2D(dst.w / 2.0f, dst.h / 2.0f);
+            bullet.addComponent<Sprite>(tex, src, dst, RenderLayer::World, pivotOffset);
 
             Vector2D bulletSpawnPositionOffset = direction * danmakuPattern.radius;
             auto& bulletCol = bullet.addComponent<CircleCollider>("projectile");
             bulletCol.centerPosition = bulletTransform.position + bulletSpawnPositionOffset;
-            bulletCol.offset.x = dst.w / 2;
-            bulletCol.offset.y = dst.h / 2;
             bulletCol.radius = danmakuPattern.radius;
         }
     );
@@ -62,12 +61,11 @@ void DanmakuFactory::initLinearPattern(Entity &entity, World &world, const Danma
             SDL_Texture* tex = TextureManager::load("../asset/bullet4.png");
             SDL_FRect src {192, 0, 64, 64};
             SDL_FRect dst {position.x, position.y, 32, 32};
-            bullet.addComponent<Sprite>(tex, src, dst);
+            Vector2D pivotOffset = Vector2D(dst.w / 2.0f, dst.h / 2.0f);
+            bullet.addComponent<Sprite>(tex, src, dst, RenderLayer::World, pivotOffset);
 
             auto& bulletCol = bullet.addComponent<CircleCollider>("projectile");
             bulletCol.centerPosition = position;
-            bulletCol.offset.x = dst.w / 2;
-            bulletCol.offset.y = dst.h / 2;
             bulletCol.radius = 10;
         }
     );
