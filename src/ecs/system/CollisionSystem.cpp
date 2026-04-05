@@ -17,13 +17,25 @@ void CollisionSystem::update(World& world) {
     // Update all collider positions first
     for (auto entity : collidables) {
         auto& t = entity->getComponent<Transform>();
-        auto& c = entity->getComponent<RectCollider>();
 
-        c.rect.x = t.position.x + c.offset.x;
-        c.rect.y = t.position.y + c.offset.y;
+        if (entity->hasComponent<RectCollider>()) {
+            auto& c = entity->getComponent<RectCollider>();
+
+            c.rect.x = t.position.x + c.offset.x;
+            c.rect.y = t.position.y + c.offset.y;
+        }
+
+        if (entity->hasComponent<CircleCollider>()) {
+            auto& c = entity->getComponent<CircleCollider>();
+
+            c.centerPosition.x = t.position.x + c.offset.x;
+            c.centerPosition.y = t.position.y + c.offset.y;
+        }
     }
 
     std::set<CollisionKey> currentCollisions;
+
+    // TODO: handle circle colliders
 
     // Outer loop:
     for (size_t i = 0; i < collidables.size(); i++) {
@@ -68,7 +80,7 @@ std::vector<Entity*> CollisionSystem::queryCollidables(const std::vector<std::un
     std::vector<Entity*> collidables;
 
     for (auto& e : entities) {
-        if (e->hasComponent<Transform>() && e->hasComponent<RectCollider>()) {
+        if (e->hasComponent<Transform>() && (e->hasComponent<RectCollider>() || e->hasComponent<CircleCollider>())) {
             collidables.push_back(e.get());
         }
     }

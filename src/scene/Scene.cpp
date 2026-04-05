@@ -166,7 +166,7 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	// TODO: replace above RectCollider with this code
 	auto& playerCircleCollider = player.addComponent<CircleCollider>("player");
-	playerCircleCollider.radius = 50;
+	playerCircleCollider.radius = 4;
 	playerCircleCollider.offset.x = playerDst.w / 2.0f;
 	playerCircleCollider.offset.y = playerDst.h / 2.0f;
 

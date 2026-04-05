@@ -21,17 +21,16 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>>& entit
 
             TextureManager::draw(tex, &colSrc, &c.rect);
         }
-
         if (entity->hasComponent<CircleCollider>()) {
             auto& c = entity->getComponent<CircleCollider>();
 
             SDL_Texture* tex = TextureManager::load("../asset/ball.png");
             SDL_FRect colSrc {0, 0, 32, 32};
 
-            float colliderTopLeftX = c.centerPosition.x + c.offset.x - c.radius;
-            float colliderTopLeftY = c.centerPosition.y + c.offset.y - c.radius;
+            float colliderTopLeftX = c.centerPosition.x - c.radius;
+            float colliderTopLeftY = c.centerPosition.y - c.radius;
 
-            SDL_FRect colDst {colliderTopLeftX, colliderTopLeftY, c.radius, c.radius};
+            SDL_FRect colDst {colliderTopLeftX, colliderTopLeftY, c.radius * 2, c.radius * 2};
 
             TextureManager::draw(tex, &colSrc, &colDst);
         }
