@@ -154,17 +154,6 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 
 	player.addComponent<Sprite>(texture, playerSrc, playerDst);
 
-	// auto& playerCollider = player.addComponent<RectCollider>("player");
-	//
-	// // Make the collider a square with side lengths of 1/8th the width of the player destination rect.
-	// playerCollider.rect.w = playerDst.w / 8;
-	// playerCollider.rect.h = playerDst.w / 8;
-	//
-	// // Add offset to the collider to it's centered on the player destination rect.
-	// playerCollider.offset.x = (playerDst.w - playerCollider.rect.w) / 2.0f;
-	// playerCollider.offset.y = (playerDst.h - playerCollider.rect.h) / 2.0f;
-
-	// TODO: replace above RectCollider with this code
 	auto& playerCircleCollider = player.addComponent<CircleCollider>("player");
 	playerCircleCollider.radius = 4;
 	playerCircleCollider.offset.x = playerDst.w / 2.0f;
@@ -265,12 +254,11 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 			SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 32 };
 			e.addComponent<Sprite>(tex, src, dest);
 
-			auto& c = e.addComponent<RectCollider>("projectile");
-			c.rect.w = dest.w / 1.5;
-			c.rect.h = dest.h / 1.5;
-
-			c.offset.x = (dest.w  - c.rect.w) / 2.0f;
-			c.offset.y = (dest.h - c.rect.h) / 2.0f;
+			auto& c = e.addComponent<CircleCollider>("projectile");
+			c.centerPosition = radialDanmakuTransform.position + bulletSpawnPositionOffset;
+			c.offset.x = dest.w / 2;
+			c.offset.y = dest.h / 2;
+			c.radius = 10;
 
 			e.addComponent<ProjectileTag>();
 		});
@@ -305,12 +293,11 @@ void Scene::initGameplay(const char* mapPath, int windowWidth, int windowHeight)
 			SDL_FRect dest { position.x, position.y, 32, 32 };
 			e.addComponent<Sprite>(tex, src, dest);
 
-			auto& c = e.addComponent<RectCollider>("projectile");
-			c.rect.w = dest.w / 1.5;
-			c.rect.h = dest.h / 1.5;
-
-			c.offset.x = (dest.w  - c.rect.w) / 2.0f;
-			c.offset.y = (dest.h - c.rect.h) / 2.0f;
+			auto& c = e.addComponent<CircleCollider>("projectile");
+			c.centerPosition = position;
+			c.offset.x = dest.w / 2;
+			c.offset.y = dest.h / 2;
+			c.radius = 10;
 
 			e.addComponent<ProjectileTag>();
 		});
