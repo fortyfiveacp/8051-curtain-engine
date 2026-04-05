@@ -1,0 +1,137 @@
+<Stage>
+    <Paths>
+        <Path id="0" name="ZigZagLeft">
+            <Point x="30" y="-46" />
+            <Point x="30" y="298" />
+            <Point x="350" y="446" />
+            <Point x="0" y="595" />
+            <Point x="350" y="744" />
+            <Point x="0" y="1000" />
+        </Path>
+        <Path id="1" name="ZigZagRight">
+            <Point x="706" y="-46" />
+            <Point x="706" y="298" />
+            <Point x="386" y="446" />
+            <Point x="736" y="595" />
+            <Point x="386" y="744" />
+            <Point x="736" y="1000" />
+        </Path>
+        <Path id="2" name="StraightDownLeft">
+            <Point x="40" y="-50" />
+            <Point x="40" y="250" />
+            <Point x="40" y="1000" />
+        </Path>
+        <Path id="3" name="StraightDownRight">
+            <Point x="700" y="-50" />
+            <Point x="700" y="1000" />
+        </Path>
+        <Path id="6" name="LargeStraightOneThird">
+            <Point x="224" y="-80" />
+            <Point x="224" y="250" waitTime="5.0" />
+            <Point x="224" y="1000" />
+        </Path>
+        <Path id="7" name="LargeStraightTwoThirds">
+            <Point x="480" y="-80" />
+            <Point x="480" y="250" waitTime="5.0" />
+            <Point x="480" y="1000" />
+        </Path>
+        <Path id="8" name="CenterHover">
+            <Point x="352" y="-80" />
+            <Point x="352" y="298" waitTime="5.0" />
+            <Point x="352" y="446"/>
+            <Point x="352" y="1000" />
+        </Path>
+
+        <Path id="9" name="Diag_TL_BR_Center">
+            <Point x="0" y="0" />
+            <Point x="650" y="1000" />
+        </Path>
+        <Path id="10" name="Diag_TR_BL_Center">
+            <Point x="586" y="100" />
+            <Point x="86" y="1000" />
+        </Path>
+
+        <Path id="11" name="Side_Left_Center">
+            <Point x="-50" y="200" />
+            <Point x="600" y="1000" />
+        </Path>
+        <Path id="12" name="Side_Left_Upper">
+            <Point x="-50" y="140" />
+            <Point x="600" y="1000" />
+        </Path>
+        <Path id="13" name="Side_Left_Lower">
+            <Point x="-50" y="260" />
+            <Point x="600" y="1000" />
+        </Path>
+
+        <Path id="14" name="Side_Right_Entry">
+            <Point x="818" y="200" />
+            <Point x="168" y="1000" />
+        </Path>
+    </Paths>
+    <Waves>
+        <Convoy start="2.0" enemyType="SmallBlueFairy" pathId="0" numEnemies="10" interval="0.5" speed="200">
+            <Pattern type="Linear" bullet="Circle" startTime="0.2" endTime="2.0"
+                     frequency="0.2" bulletSpeed="400.0" isFan="true" targeted="true" speedMultiplier="1.0">
+                <BulletPositions>
+                    <Pos x="0" y="0" />
+                </BulletPositions>
+            </Pattern>
+        </Convoy>
+        <Convoy start="2.0" enemyType="SmallRedFairy" pathId="1" numEnemies="10" interval="0.5" speed="200">
+            <Pattern type="Linear" bullet="Circle" startTime="0.2" endTime="2.0"
+                     frequency="0.2" bulletSpeed="400.0" isFan="true" targeted="true" speedMultiplier="1.0">
+                <BulletPositions>
+                    <Pos x="0" y="0" />
+                </BulletPositions>
+            </Pattern>
+        </Convoy>
+
+        <Convoy start="5.0" enemyType="LargeFairy" pathId="8" numEnemies="1" speed="300">
+            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
+                    bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="12.0"/>
+        </Convoy>
+
+        <Convoy start="15.0" enemyType="SmallBlueFairy" pathId="2" numEnemies="5" interval="1.0" speed="200" />
+        <Convoy start="15.0" enemyType="SmallRedFairy" pathId="3" numEnemies="5" interval="1.0" speed="200" />
+
+        <Convoy start="20.0" enemyType="LargeFairy" pathId="6" numEnemies="3" interval="2.0" speed="200">
+            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
+                     bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="12.0"/>
+        </Convoy>
+        <Convoy start="20.0" enemyType="LargeFairy" pathId="7" numEnemies="3" interval="2.0" speed="200">
+            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
+                     bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="12.0"/>
+        </Convoy>
+
+        <Convoy start="40.0" enemyType="SmallBlueFairy" pathId="9" numEnemies="5" interval="0.5" speed="300" />
+        <Convoy start="40.0" enemyType="SmallBlueFairy" pathId="10" numEnemies="5" interval="0.5" speed="300" />
+        <Convoy start="40.0" enemyType="SmallBlueFairy" pathId="11" numEnemies="5" interval="0.5" speed="300" />
+
+        <Convoy start="45.0" enemyType="SmallRedFairy" pathId="12" numEnemies="3" interval="0.4" speed="300" />
+        <Convoy start="45.0" enemyType="SmallRedFairy" pathId="13" numEnemies="3" interval="0.4" speed="300" />
+        <Convoy start="45.0" enemyType="SmallRedFairy" pathId="14" numEnemies="3" interval="0.4" speed="300" />
+
+        <Convoy start="50.0" enemyType="SmallBlueFairy" pathId="9" numEnemies="5" interval="0.5" speed="300" />
+        <Convoy start="50.0" enemyType="SmallBlueFairy" pathId="10" numEnemies="5" interval="0.5" speed="300" />
+        <Convoy start="50.0" enemyType="SmallBlueFairy" pathId="11" numEnemies="5" interval="0.5" speed="300" />
+
+        <Convoy start="55.0" enemyType="SmallRedFairy" pathId="12" numEnemies="3" interval="0.4" speed="300" />
+        <Convoy start="55.0" enemyType="SmallRedFairy" pathId="13" numEnemies="3" interval="0.4" speed="300" />
+        <Convoy start="55.0" enemyType="SmallRedFairy" pathId="14" numEnemies="3" interval="0.4" speed="300" />
+
+        <Convoy start="65.0" enemyType="LargeFairy" pathId="8" numEnemies="2" interval="3.0" speed="300">
+            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
+                     bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="12.0"/>
+        </Convoy>
+
+        <Convoy start="80.0" enemyType="LargeFairy" pathId="6" numEnemies="3" interval="5.0" speed="200">
+            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
+                     bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="12.0"/>
+        </Convoy>
+        <Convoy start="80.0" enemyType="LargeFairy" pathId="7" numEnemies="3" interval="5.0" speed="200">
+            <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="1.0" bulletSpeed="150.0"
+                     bulletsPerBurst="16" rotationSpeed="0.0" bulletAngularVel="0.0" radius="12.0"/>
+        </Convoy>
+    </Waves>
+</Stage>

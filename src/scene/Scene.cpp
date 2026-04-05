@@ -4,16 +4,18 @@
 #include "ItemFactory.h"
 #include "StageUtils.h"
 #include "../manager/AudioManager.h"
+#include "EnemyFactory.h"
+#include "StageLoader.h"
 
-Scene::Scene(SceneType sceneType, const char* sceneName, const char* stageBackgroundPath, const char* foregroundPath,
-			 const int windowWidth, const int windowHeight) : name(sceneName), type(sceneType) {
+Scene::Scene(SceneType sceneType, const char* sceneName, const char* stageDataPath, const char* stageBackgroundPath,
+	const char* foregroundPath, const int windowWidth, const int windowHeight) : name(sceneName), type(sceneType) {
 
 	if (sceneType == SceneType::MainMenu) {
 		initMainMenu(windowWidth, windowHeight);
 		return;
 	}
 
-	initGameplay(stageBackgroundPath, foregroundPath, windowWidth, windowHeight);
+	initGameplay(stageDataPath, stageBackgroundPath, foregroundPath, windowWidth, windowHeight);
 }
 
 void Scene::initMainMenu(int windowWidth, int windowHeight) {
@@ -46,7 +48,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	fpsCounter.addComponent<FPSCounter>();
 }
 
-void Scene::initGameplay(const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight) {
+void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight) {
 	// Subscribe to event for pausing the game.
 	world.getEventManager().subscribe([this](const BaseEvent& e) {
 		if (e.type != EventType::Pause) {
@@ -102,6 +104,8 @@ void Scene::initGameplay(const char* stageBackgroundPath, const char* foreground
 	StageUtils::createStageBackground(world, stageWidth, stageHeight, 0, foregroundSpeed, foregroundPath);
 	StageUtils::createStageBackground(world, stageWidth, stageHeight, -stageHeight, foregroundSpeed, foregroundPath);
 
+	StageLoader::loadStage(stageDataPath, world);
+
 	auto& cam = world.createEntity();
 	SDL_FRect camView {0, 0, stageWidth, stageHeight};
 	float outOfViewPadding = 100.0f;
@@ -109,7 +113,7 @@ void Scene::initGameplay(const char* stageBackgroundPath, const char* foreground
 
 	// Create the player.
 	auto& player (world.createEntity());
-	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 400.0f);
+	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 380.0f);
 
 	Animation anim = AssetManager::getAnimation("player");
 	player.addComponent<Animation>(anim);
@@ -263,25 +267,25 @@ void Scene::initGameplay(const char* stageBackgroundPath, const char* foreground
 	// Add timeline object (for testing danmaku scripting).
 	auto& timelineManager(world.createEntity());
 	auto& debugTimeline = timelineManager.addComponent<Timeline>();
-
-	debugTimeline.timeline.emplace_back(1.0, [&radialSpawner] {
-		std::cout << "Radial start!" << std::endl;
-		radialSpawner.isActive = true;
-	});
-	debugTimeline.timeline.emplace_back(2.0, [&linearSpawner] {
-		std::cout << "Linear start!" << std::endl;
-		linearSpawner.isActive = true;
-	});
-	debugTimeline.timeline.emplace_back(10.0, [&radialSpawner] {
-		std::cout << "Radial end!" << std::endl;
-		radialSpawner.isActive = false;
-	});
-	debugTimeline.timeline.emplace_back(11.0, [&linearSpawner] {
-		std::cout << "Linear end!" << std::endl;
-		linearSpawner.isActive = false;
-	});
-	// TODO: debug for win screen, remove later.
-	debugTimeline.timeline.emplace_back(12.0, [this] {
+	//
+	// debugTimeline.timeline.emplace_back(1.0, [&radialSpawner] {
+	// 	std::cout << "Radial start!" << std::endl;
+	// 	radialSpawner.isActive = true;
+	// });
+	// debugTimeline.timeline.emplace_back(2.0, [&linearSpawner] {
+	// 	std::cout << "Linear start!" << std::endl;
+	// 	linearSpawner.isActive = true;
+	// });
+	// debugTimeline.timeline.emplace_back(10.0, [&radialSpawner] {
+	// 	std::cout << "Radial end!" << std::endl;
+	// 	radialSpawner.isActive = false;
+	// });
+	// debugTimeline.timeline.emplace_back(11.0, [&linearSpawner] {
+	// 	std::cout << "Linear end!" << std::endl;
+	// 	linearSpawner.isActive = false;
+	// });
+	// // TODO: debug for win screen, remove later.
+	debugTimeline.timeline.emplace_back(90.0, [this] {
 		for (auto& entity : world.getEntities()) {
 			if (entity->hasComponent<WinGameMenuTag>()) {
 				entity->getComponent<Toggleable>().toggle();

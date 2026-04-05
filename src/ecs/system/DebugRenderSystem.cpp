@@ -24,7 +24,7 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>>& entit
         if (entity->hasComponent<CircleCollider>()) {
             auto& c = entity->getComponent<CircleCollider>();
 
-            SDL_Texture* tex = TextureManager::load("../asset/ball.png");
+            SDL_Texture* tex = TextureManager::load("../asset/coin.png");
             SDL_FRect colSrc {0, 0, 32, 32};
 
             float colliderTopLeftX = c.centerPosition.x - c.radius;

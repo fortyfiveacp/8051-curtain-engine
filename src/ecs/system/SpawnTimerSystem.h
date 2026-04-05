@@ -14,8 +14,8 @@ public:
                 spawner.timer -= dt;
 
                 if (spawner.timer <= 0) {
-                    spawner.timer = spawner.spawnInterval; // e.g. 2 seconds
-                    spawner.spawnCallback(); // Create entity inside here
+                    spawner.timer = spawner.spawnInterval; // e.g. 2 seconds.
+                    spawner.spawnCallback(); // Create entity inside here.
                 }
             }
         }

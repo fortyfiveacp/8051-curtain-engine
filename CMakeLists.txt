@@ -49,6 +49,13 @@ set(SRC_FILES
         src/ecs/system/RadialSpawnerSystem.h
         src/ecs/system/LinearSpawnerSystem.h
         src/ecs/system/UIRenderSystem.cpp
+        src/ecs/system/PathSystem.h
+        src/scene/StageLoader.h
+        src/ecs/system/ConvoySystem.h
+        src/utils/EnemyFactory.h
+        src/ecs/system/ConvoySystem.cpp
+        src/scene/StageLoader.cpp
+        src/utils/EnemyFactory.cpp
         src/manager/AudioManager.h
         src/manager/AudioManager.cpp
         src/ecs/event/AudioEventQueue.h
@@ -58,6 +65,9 @@ set(SRC_FILES
         src/ecs/system/DebugRenderSystem.cpp
         src/utils/UIUtils.cpp
         src/utils/StageUtils.cpp
+        src/ecs/system/PathSystem.cpp
+        src/utils/DanmakuFactory.h
+        src/utils/DanmakuFactory.cpp
         src/ecs/system/PlayerRespawnSystem.h
         src/ecs/system/PlayerAbilitySystem.cpp
         #add all new source files here

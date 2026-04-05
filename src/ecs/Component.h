@@ -201,6 +201,76 @@ struct Timeline {
     std::vector<std::pair<float, std::function<void()>>> timeline{};
 };
 
+
+struct PathPoint {
+    Vector2D position;
+    float hoverTime = 0.0f;
+};
+
+struct Path {
+    std::vector<PathPoint> points{};
+};
+
+struct PathFollower {
+    int pathId{};
+    float distance{};
+    float speed{};
+    bool active = true;
+    float currentHoverTimer = 0.0f;
+    int lastPointReached = -1;
+};
+
+enum class EnemyType {
+    SmallBlueFairy,
+    SmallRedFairy,
+    LargeFairy,
+    Boss
+};
+
+enum class BulletType {
+    Circle,
+    LargeOrb
+};
+
+enum class DanmakuType {
+    Radial,
+    Linear
+};
+
+struct DanmakuPattern {
+    bool hasPattern = false;
+    DanmakuType danmakuType = DanmakuType::Radial;
+    BulletType bulletType = BulletType::Circle;
+
+    float startTime{};
+    float endTime{};
+    float frequency{};
+    float bulletSpeed{};
+
+    // Radial Specific.
+    int bulletsPerBurst{};
+    float rotationSpeed{};
+    float bulletAngularVel{};
+    float radius{};
+
+    // Linear Specific.
+    bool isFanPattern = false;
+    bool shouldTargetPlayer = true;
+    float speedMultiplier = 1.0f;
+    std::vector<Vector2D> bulletPositions{};
+};
+
+struct Convoy {
+    EnemyType enemyType{};
+    int pathId{};
+    int numEnemies{};
+    float speed{};
+    float spawnInterval{};
+    float timer = 0.0f;
+
+    DanmakuPattern danmakuPattern{};
+};
+
 enum class LabelType {
     FPSCounter,
     Static,
@@ -309,3 +379,4 @@ struct PauseMenuTag{};
 struct ContinueGameMenuTag{};
 struct WinGameMenuTag{};
 struct ProjectileTag{};
+struct EnemyTag{};
