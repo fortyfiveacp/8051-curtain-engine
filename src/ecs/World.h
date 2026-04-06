@@ -7,6 +7,7 @@
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
 #include "ConvoySystem.h"
+#include "DeathBombSystem.h"
 #include "DebugRenderSystem.h"
 #include "DestructionSystem.h"
 #include "Entity.h"
@@ -70,6 +71,7 @@ class World {
     StageBackgroundSystem stageBackgroundSystem;
     AudioEventQueue audioEventQueue;
     PlayerAbilitySystem playerAbilitySystem;
+    DeathBombSystem deathBombSystem;
     InvincibilityFramesSystem invincibilityFramesSystem;
     SelectableUISystem selectableUISystem;
     DebugRenderSystem debugRenderSystem;
@@ -102,6 +104,7 @@ public:
             if (!isPaused) {
                 movementSystem.update(entities, dt);
                 collisionSystem.update(*this);
+                deathBombSystem.update(*this, dt);
                 playerRespawnSystem.update(entities, dt);
                 invincibilityFramesSystem.update(entities, dt);
                 playerAbilitySystem.update(*this, dt);

@@ -150,33 +150,15 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
             invincibilityFrames.active = true;
         }
 
-        // Enable respawn when hit.
-        if (player->hasComponent<PlayerRespawn>()) {
-            auto& playerRespawn = player->getComponent<PlayerRespawn>();
-            playerRespawn.isRespawning = true;
-        }
+        if (player->hasComponent<DeathBombState>()) {
+            auto& deathBombState = player->getComponent<DeathBombState>();
+            if (!deathBombState.isHit) {
+                deathBombState.isHit = true;
+                deathBombState.timer = 0.0f;
 
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit"));
+                world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit"));
 
-        // This logic is simple and direct.
-        // Ideally, we would only operate on data in an update function (transient entities).
-        auto& playerStats = player->getComponent<PlayerStats>();
-
-        // Lose 70% of player power on hit.
-        playerStats.currentPower *= 0.3;
-
-        // Decrement player health.
-        playerStats.currentHealth--;
-        Game::gameState.playerHealth = playerStats.currentHealth;
-
-        // If the player has no health left, bring up the continue game menu.
-        if (playerStats.currentHealth == 0) {
-            for (auto& entity : world.getEntities()) {
-                if (entity->hasComponent<ContinueGameMenuTag>() && entity->hasComponent<Toggleable>()) {
-                    entity->getComponent<Toggleable>().toggle();
-
-                    break;
-                }
+                other->destroy();
             }
         }
     }

@@ -175,6 +175,12 @@ struct PlayerBomb {
 
 };
 
+struct DeathBombState {
+    bool isHit = false;
+    float windowDuration = 0.1f;
+    float timer = 0.0f;
+};
+
 struct SelectableUI {
     std::function<void()> onPressed{};
     std::function<void()> onReleased{};

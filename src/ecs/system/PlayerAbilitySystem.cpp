@@ -22,6 +22,13 @@ void PlayerAbilitySystem::update(World& world, float deltaTime) {
                 AudioManager::playSfx("bomb");
                 keyboardInput.bomb = false;
 
+                if (entity->hasComponent<DeathBombState>()) {
+                    auto& deathBomb = entity->getComponent<DeathBombState>();
+                    if (deathBomb.isHit) {
+                        deathBomb.isHit = false;
+                    }
+                }
+
                 playerStats.currentBombs--;
                 Game::gameState.playerBombs = playerStats.currentBombs;
 

@@ -133,6 +133,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 
 	auto& playerCircleCollider = player.addComponent<CircleCollider>("player");
 	playerCircleCollider.radius = 4;
+	player.addComponent<DeathBombState>();
 
 	player.addComponent<PlayerTag>();
 	player.addComponent<KeyboardInput>();
