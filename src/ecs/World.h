@@ -115,7 +115,7 @@ public:
                 linearSpawnerSystem.update(entities, dt);
                 timelineSystem.update(entities, dt);
                 stageBackgroundSystem.update(entities, dt);
-                bossHealthBarSystem.update(entities);
+                bossHealthBarSystem.update(entities, dt);
             }
 
             debugRenderSystem.update(*this, event, isDebugging);

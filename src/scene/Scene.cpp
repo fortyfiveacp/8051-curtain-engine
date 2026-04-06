@@ -283,6 +283,16 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	// 	std::cout << "Linear end!" << std::endl;
 	// 	linearSpawner.isActive = false;
 	// });
+	// TODO: debug for simulating boss spawn, remove later.
+	debugTimeline.timeline.emplace_back(2.0, [this, &player] {
+		player.addComponent<Boss>("Reimu Hakurei");
+
+		for (auto& entity : world.getEntities()) {
+			if (entity->hasComponent<BossHealthBar>()) {
+				entity->getComponent<Toggleable>().toggle();
+			}
+		}
+	});
 	// // TODO: debug for win screen, remove later.
 	debugTimeline.timeline.emplace_back(90.0, [this] {
 		for (auto& entity : world.getEntities()) {
@@ -297,7 +307,6 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	state.addComponent<SceneState>();
 
 	createBossHealthBar(windowWidth, windowHeight);
-	player.addComponent<Boss>("Reimu Hakurei");
 
 	// Create pause menu overlay.
 	auto& pauseMenuOverlay = UIUtils::createStageOverlay(world, windowWidth, windowHeight, "../asset/ui/darken.png",
@@ -616,35 +625,46 @@ void Scene::createBossHealthBar(int windowWidth, int windowHeight) {
 	float barX = StageUtils::CalculateStagePaddingX(windowWidth) + barPadding;
 	float barY = StageUtils::CalculateStagePaddingY(windowHeight) + barPadding;
 
-	auto& bossHealthBar = world.createEntity();
-	auto& children = bossHealthBar.addComponent<Children>();
-	bossHealthBar.addComponent<Transform>(Vector2D(barX,  barY), 0.0f, 1.0f);
+	auto& bossHealthBarEntity = world.createEntity();
+	auto& children = bossHealthBarEntity.addComponent<Children>();
+	bossHealthBarEntity.addComponent<Transform>(Vector2D(barX,  barY), 0.0f, 1.0f);
 
 	// Health bar sprite.
 	SDL_Texture* tex = TextureManager::load("../asset/ui/health-bar.png");
 	SDL_FRect src {0, 0, static_cast<float>(tex->w), static_cast<float>(tex->h)};
 	SDL_FRect dst = {barX, barY, barWidth, 8};
-	auto& sprite = bossHealthBar.addComponent<Sprite>(tex, src, dst, RenderLayer::UI);
-	//sprite.visible = false;
+	auto& sprite = bossHealthBarEntity.addComponent<Sprite>(tex, src, dst, RenderLayer::UI);
+	sprite.visible = false;
 
-	bossHealthBar.addComponent<BossHealthBar>(sprite.dst.w);
+	auto& bossHealthBar = bossHealthBarEntity.addComponent<BossHealthBar>(sprite.dst.w);
+	bossHealthBarEntity.addComponent<Fade>(0.5f);
 
 	// Boss name label.
 	SDL_Color colour {206, 197, 237, 255};
 	const char* font = "tiranti";
 	float labelY = barY + barPadding;
 	auto& bossNameLabel = UIUtils::createLabel(world, barX, labelY, colour, font, "No Boss!", "BossLabel", LabelType::Static);
-	bossNameLabel.getComponent<Label>().outlineColor = {29, 25, 55, 200};
+	auto& label = bossNameLabel.getComponent<Label>();
+	label.outlineColor = {29, 25, 55, 200};
+	label.visible = false;
 
-	// Add child.
-	bossNameLabel.addComponent<Parent>(&bossHealthBar);
+	bossNameLabel.addComponent<Parent>(&bossHealthBarEntity);
 	children.children.push_back(&bossNameLabel);
+	bossNameLabel.addComponent<Fade>(0.5f, bossHealthBar.initializationDuration);
 
 	// Phase icon counter.
 	float counterY = labelY + TTF_GetFontSize(AssetManager::getFont(font)) - 3;
 	auto& phaseCounter = UIUtils::createIconCounter(world, barX, counterY, 3, 24, 24, IconCounterType::BossPhase, "../asset/ui/white-star.png");
-	phaseCounter.addComponent<Parent>(&bossHealthBar);
+	phaseCounter.addComponent<Parent>(&bossHealthBarEntity);
 	children.children.push_back(&phaseCounter);
+
+	phaseCounter.getComponent<IconCounter>().visible = false;
+	phaseCounter.addComponent<Fade>(0.5f, bossHealthBar.initializationDuration);
+
+	// Make the health bar toggleable.
+	bossHealthBarEntity.addComponent<Toggleable>([&bossHealthBarEntity] {
+		UIUtils::toggleOverlayVisibility(bossHealthBarEntity);
+	});
 }
 
 void Scene::resetGameState() {

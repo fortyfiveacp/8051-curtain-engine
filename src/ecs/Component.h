@@ -385,6 +385,8 @@ struct Boss {
 
 struct BossHealthBar {
     float fullDstWidth{};
+    float initializationDuration = 1.0f;
+    float timer = 0.0f;
     bool isInitialized = false;
 };
 
