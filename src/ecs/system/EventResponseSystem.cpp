@@ -15,6 +15,7 @@ EventResponseSystem::EventResponseSystem(World &world) {
         onCollision(collision, "item", world);
         onCollision(collision, "wall", world);
         onCollision(collision, "projectile", world);
+        onCollision(collision, "enemy", world);
 
         onBombCollision(collision);
     });
@@ -133,7 +134,7 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
         auto& t = player->getComponent<Transform>();
         t.position = t.oldPosition;
     }
-    else if (std::string(otherTag) == "projectile") {
+    else if (std::string(otherTag) == "projectile" || std::string(otherTag) == "enemy") {
         if (e.state != CollisionState::Enter) {
             return;
         }
@@ -157,50 +158,44 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
                 deathBombState.timer = 0.0f;
 
                 world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit"));
-
-                other->destroy();
             }
         }
     }
 }
 
-// TODO: Decide whether to make onCollision accept any two entities and merge this function's logic into it.
 void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
-    if (e.entityA == nullptr || e.entityB == nullptr) return;
-
-    // Guard: Ensure both entities actually have CircleColliders before accessing them
-    if (!e.entityA->hasComponent<CircleCollider>() || !e.entityB->hasComponent<CircleCollider>()) {
+    if (e.entityA == nullptr || e.entityB == nullptr) {
         return;
     }
 
     Entity* bomb = nullptr;
     Entity* other = nullptr;
 
-    auto& colA = e.entityA->getComponent<CircleCollider>();
-    auto& colB = e.entityB->getComponent<CircleCollider>();
-
-    if (colA.tag == "bomb") {
+    if (e.entityA->hasComponent<CircleCollider>() && e.entityA->getComponent<CircleCollider>().tag == "bomb") {
         bomb = e.entityA;
         other = e.entityB;
-    } else if (colB.tag == "bomb") {
+    } else if (e.entityB->hasComponent<CircleCollider>() && e.entityB->getComponent<CircleCollider>().tag == "bomb") {
         bomb = e.entityB;
         other = e.entityA;
     }
 
-    if (!bomb || !other) return;
+    if (bomb && other) {
+        std::string otherTag{};
+        if (other->hasComponent<RectCollider>()) {
+            otherTag = other->getComponent<RectCollider>().tag;
+        } else if (other->hasComponent<CircleCollider>()) {
+            otherTag = other->getComponent<CircleCollider>().tag;
+        }
 
-    // Now it is safe to check the tag of the "other" entity
-    auto& otherCol = other->getComponent<CircleCollider>();
-
-    if (otherCol.tag == "projectile") {
-        other->destroy();
-    }
-
-    if (otherCol.tag == "enemy" || otherCol.tag == "boss") {
-        // TODO: Have enemy/boss entities take damage while they are inside the collider.
+        if (otherTag == "projectile") {
+            other->destroy();
+        } else if (otherTag == "enemy") {
+            // TODO: Have enemy/boss entities take damage while they are inside the collider.
+        }
     }
 }
 
+// TODO: Generalize implementation so onBombCollision implementation can be simplified.
 bool EventResponseSystem::getCollisionEntities(const CollisionEvent &e, const char *otherTag, Entity *&player,
 Entity *&other) {
     if (e.entityA == nullptr || e.entityB == nullptr) {
