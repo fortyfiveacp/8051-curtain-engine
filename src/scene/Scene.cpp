@@ -123,7 +123,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 
 	float scaledPlayerWidth = playerSrc.w * 1.75f;
 	float scaledPlayerHeight = playerSrc.h * 1.75f;
-	float playerStartingX = stageWidth / 2 - scaledPlayerWidth / 2;
+	float playerStartingX = stageWidth / 2;
 	float playerStartingY = stageHeight - scaledPlayerHeight;
 	auto& playerTransform = player.addComponent<Transform>(Vector2D(playerStartingX, playerStartingY), 0.0f, 1.0f);
 	SDL_FRect playerDst {playerTransform.position.x, playerTransform.position.y, scaledPlayerWidth, scaledPlayerHeight};

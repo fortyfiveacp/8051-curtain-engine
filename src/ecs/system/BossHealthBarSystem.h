@@ -9,17 +9,12 @@ public:
     void update(const std::vector<std::unique_ptr<Entity> > &entities, float dt) {
         Entity *bossEntity = nullptr;
 
+        // Find the boss.
         for (auto &entity: entities) {
             if (entity->hasComponent<Boss>()) {
                 bossEntity = entity.get();
             }
         }
-
-        if (!bossEntity) {
-            return;
-        }
-
-        auto &boss = bossEntity->getComponent<Boss>();
 
         // TODO: temporarily get player stats for testing.
         Entity *playerEntity = nullptr;
@@ -31,12 +26,25 @@ public:
 
         for (auto &entity: entities) {
             if (entity->hasComponent<BossHealthBar>() && entity->hasComponent<Sprite>() &&
-                entity->hasComponent<Children>() && entity->hasComponent<Fade>()) {
+                entity->hasComponent<Children>() && entity->hasComponent<Fade>() && entity->hasComponent<Toggleable>()) {
                 auto &bossHealthBar = entity->getComponent<BossHealthBar>();
                 auto &sprite = entity->getComponent<Sprite>();
                 auto &children = entity->getComponent<Children>();
                 auto &fade = entity->getComponent<Fade>();
 
+                if (bossEntity == nullptr) {
+                    // If the boss health bar is initialized but no boss was found, it must have spawned and died,
+                    // so toggle the health bar off.
+                    if (bossHealthBar.isInitialized) {
+                        entity->getComponent<Toggleable>().toggle();
+                        bossHealthBar.isInitialized = false;
+                        bossHealthBar.timer = 0.0f;
+                    }
+
+                    return;
+                }
+
+                auto &boss = bossEntity->getComponent<Boss>();
                 auto &playerStats = playerEntity->getComponent<PlayerStats>(); // TODO: temp.
 
                 // If the health bar is not initialized (the boss has just spawned), initialize it first.
