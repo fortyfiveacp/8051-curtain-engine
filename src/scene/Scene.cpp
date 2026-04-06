@@ -145,7 +145,8 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		Game::gameState.playerBombs,
 		Game::gameState.power,
 		Game::gameState.graze,
-		Game::gameState.point
+		Game::gameState.point,
+		Game::gameState.continues
 		);
 
 	// Test spawners for items. TODO: remove when no longer needed.
@@ -527,10 +528,13 @@ void Scene::createContinueGameUIComponents(Entity& overlay, int windowWidth, int
 			for (auto& entity : world.getEntities()) {
 				if (entity->hasComponent<PlayerStats>()) {
 					auto& playerStats = entity->getComponent<PlayerStats>();
+					// Update continues so far.
+					playerStats.currentContinues++;
+					Game::gameState.continues = playerStats.currentContinues;
 
-					// Set player health back to 3 and reset score to 0.
+					// Set player health back to 3 and reset score to 0 + current continues.
 					playerStats.currentHealth = 3;
-					playerStats.currentScore = 0;
+					playerStats.currentScore = playerStats.currentContinues;
 
 					break;
 				}
@@ -687,4 +691,5 @@ void Scene::resetGameState() {
 	Game::gameState.power = 0;
 	Game::gameState.graze = 0;
 	Game::gameState.point = 0;
+	Game::gameState.continues = 0;
 }
