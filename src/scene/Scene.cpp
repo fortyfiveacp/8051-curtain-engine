@@ -296,6 +296,9 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	auto& state(world.createEntity());
 	state.addComponent<SceneState>();
 
+	createBossHealthBar(windowWidth, windowHeight);
+	player.addComponent<Boss>("Reimu Hakurei");
+
 	// Create pause menu overlay.
 	auto& pauseMenuOverlay = UIUtils::createStageOverlay(world, windowWidth, windowHeight, "../asset/ui/darken.png",
 		[this](Entity& overlay, int w, int h) {
@@ -402,13 +405,13 @@ void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stage
 	// Player health static and dynamic labels.
 	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, lightPink, staticLabelFont,
 		"Player", "HealthLabel", LabelType::Static);
-	UIUtils::createIconLabel(world, dynamicLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, PlayerStats::MAX_HEALTH,
+	UIUtils::createIconCounter(world, dynamicLeftPadding, (fontHeight + leading) * 2 + paddingY * 1.5, PlayerStats::MAX_HEALTH,
 		fontHeight, fontHeight, IconCounterType::Health, "../asset/ui/red-star.png");
 
 	// Bomb static and dynamic labels.
 	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, lightPink, staticLabelFont,
 		"Bomb", "BombLabel", LabelType::Static);
-	UIUtils::createIconLabel(world, dynamicLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, PlayerStats::MAX_BOMBS,
+	UIUtils::createIconCounter(world, dynamicLeftPadding, (fontHeight + leading) * 3 + paddingY * 1.5, PlayerStats::MAX_BOMBS,
 		fontHeight, fontHeight, IconCounterType::Bomb, "../asset/ui/blue-star.png");
 
 	// Power static and dynamic labels.
@@ -424,13 +427,10 @@ void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stage
 	// 	"0", "Graze", LabelType::Graze);
 
 	// Point static and dynamic labels.
-	std::string initialPointString = "0/" + std::to_string(PlayerStats::MAX_POINTS);
-	const char* initialPoint = initialPointString.c_str();
-
 	UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
 		"Point", "PointLabel", LabelType::Static);
 	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
-		initialPoint, "Point", LabelType::Point);
+		"0", "Point", LabelType::Point);
 }
 
 void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int windowHeight) {
@@ -606,6 +606,45 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 
 	// Add a short fade in to the overlay.
 	overlay.addComponent<Fade>(0.5f);
+}
+
+void Scene::createBossHealthBar(int windowWidth, int windowHeight) {
+	float stageWidth = StageUtils::CalculateStageWidth(windowWidth);
+
+	float barWidth = stageWidth * 0.97f;
+	float barPadding = (stageWidth - barWidth) / 2.0f;
+	float barX = StageUtils::CalculateStagePaddingX(windowWidth) + barPadding;
+	float barY = StageUtils::CalculateStagePaddingY(windowHeight) + barPadding;
+
+	auto& bossHealthBar = world.createEntity();
+	auto& children = bossHealthBar.addComponent<Children>();
+	bossHealthBar.addComponent<Transform>(Vector2D(barX,  barY), 0.0f, 1.0f);
+
+	// Health bar sprite.
+	SDL_Texture* tex = TextureManager::load("../asset/ui/health-bar.png");
+	SDL_FRect src {0, 0, static_cast<float>(tex->w), static_cast<float>(tex->h)};
+	SDL_FRect dst = {barX, barY, barWidth, 8};
+	auto& sprite = bossHealthBar.addComponent<Sprite>(tex, src, dst, RenderLayer::UI);
+	//sprite.visible = false;
+
+	bossHealthBar.addComponent<BossHealthBar>(sprite.dst.w);
+
+	// Boss name label.
+	SDL_Color colour {206, 197, 237, 255};
+	const char* font = "tiranti";
+	float labelY = barY + barPadding;
+	auto& bossNameLabel = UIUtils::createLabel(world, barX, labelY, colour, font, "No Boss!", "BossLabel", LabelType::Static);
+	bossNameLabel.getComponent<Label>().outlineColor = {29, 25, 55, 200};
+
+	// Add child.
+	bossNameLabel.addComponent<Parent>(&bossHealthBar);
+	children.children.push_back(&bossNameLabel);
+
+	// Phase icon counter.
+	float counterY = labelY + TTF_GetFontSize(AssetManager::getFont(font)) - 3;
+	auto& phaseCounter = UIUtils::createIconCounter(world, barX, counterY, 3, 24, 24, IconCounterType::BossPhase, "../asset/ui/white-star.png");
+	phaseCounter.addComponent<Parent>(&bossHealthBar);
+	children.children.push_back(&phaseCounter);
 }
 
 void Scene::resetGameState() {

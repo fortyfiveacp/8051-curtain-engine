@@ -86,7 +86,7 @@ void TextureManager::updateLabel(Label& label) {
         fontOutline,
         label.text.c_str(),
         label.text.size(),
-        {0, 0, 0, 255}
+        label.outlineColor
     );
 
     if (!tempFillSurface || !tempOutlineSurface) {

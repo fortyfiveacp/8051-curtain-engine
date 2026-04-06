@@ -101,7 +101,7 @@ Entity& UIUtils::createLabel(World& world, int x, int y, SDL_Color colour, const
 	return newLabel;
 }
 
-Entity& UIUtils::createIconLabel(World& world, int x, int y, int maxNumber, float iconWidth, float iconHeight,
+Entity& UIUtils::createIconCounter(World& world, int x, int y, int maxNumber, float iconWidth, float iconHeight,
 	IconCounterType iconCounterType, const char* texturePath) {
 
 	SDL_Texture* tex = TextureManager::load(texturePath);

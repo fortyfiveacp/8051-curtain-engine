@@ -4,6 +4,7 @@
 
 #include "AnimationSystem.h"
 #include "BackgroundRenderSystem.h"
+#include "BossHealthBarSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
 #include "ConvoySystem.h"
@@ -76,6 +77,7 @@ class World {
     ItemBounceSystem itemBounceSystem;
     PlayerRespawnSystem playerRespawnSystem;
     FadeSystem fadeSystem;
+    BossHealthBarSystem bossHealthBarSystem;
 
     // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
@@ -113,6 +115,7 @@ public:
                 linearSpawnerSystem.update(entities, dt);
                 timelineSystem.update(entities, dt);
                 stageBackgroundSystem.update(entities, dt);
+                bossHealthBarSystem.update(entities);
             }
 
             debugRenderSystem.update(*this, event, isDebugging);
