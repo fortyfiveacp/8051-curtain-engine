@@ -16,8 +16,6 @@ void DeathBombSystem::update(std::vector<std::unique_ptr<Entity>>& entities, flo
             if (deathBomb.timer >= deathBomb.windowDuration) {
                 deathBomb.isHit = false;
 
-                // This logic is simple and direct.
-                // Ideally, we would only operate on data in an update function (transient entities).
                 auto& playerStats = entity->getComponent<PlayerStats>();
 
                 if (entity->hasComponent<InvincibilityFrames>()) {
