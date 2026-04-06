@@ -54,7 +54,12 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	}
 
 	// Load audio.
+	audioManager.loadAudio("menu-theme", "../asset/audio/music/Menu Theme.flac");
 	audioManager.loadAudio("stage-theme", "../asset/audio/music/Stage Theme.mp3");
+	audioManager.loadAudio("boss-theme", "../asset/audio/music/Boss Theme.flac");
+	audioManager.loadAudio("credits-theme", "../asset/audio/music/Credits Theme.flac");
+
+	// Load sfx.
 	audioManager.loadAudio("player-hit", "../asset/audio/sfx/se_pldead00.flac");
 	audioManager.loadAudio("pause", "../asset/audio/sfx/se_pause.flac");
 	audioManager.loadAudio("select", "../asset/audio/sfx/se_select00.flac");
@@ -107,7 +112,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	gameState.point = 0;
 
 	// Start music.
-	audioManager.playMusic("stage-theme");
+	// audioManager.playMusic("menu-theme");
 
 	// Start level 1.
 	sceneManager.changeSceneDeferred("mainmenu");
