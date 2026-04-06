@@ -54,7 +54,7 @@ void PlayerAbilitySystem::update(World& world, float deltaTime) {
 }
 
 void PlayerAbilitySystem::castBomb(Entity& entity, const Transform& transform, World& world) {
-    float bombSize = 500.0f;
+    float bombSize = 600.0f;
     float bombX = transform.position.x - (bombSize / 2.0f);
     float bombY = transform.position.y - (bombSize / 2.0f);
 

@@ -182,7 +182,7 @@ struct PlayerBombAbility {
 
 struct DeathBombState {
     bool isHit = false;
-    float windowDuration = 0.1f;
+    float windowDuration = 0.025f;
     float timer = 0.0f;
 };
 
