@@ -23,6 +23,7 @@ void SelectableUISystem::update(const std::vector<std::unique_ptr<Entity>> &enti
     // UI interaction with keyboard via events.
     if (currentlySelectedUI && event.type == SDL_EVENT_KEY_DOWN) {
         switch (event.key.key) {
+            case SDLK_Z:
             case SDLK_RETURN:
                 world.getEventManager().emit(UIInteractionEvent{currentlySelectedEntity, UIInteractionState::Pressed});
                 break;

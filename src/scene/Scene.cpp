@@ -39,8 +39,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-characters.png", 1.25f, 0.3f);
 
 	// Menu text.
-	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-title.png", 1.5f, 1.7f);
-	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-start.png", 1.5f, 1.7f);
+	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-text.png", 1.5f, 1.7f);
 
 	// FPS counter.
 	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40,
@@ -659,7 +658,7 @@ void Scene::createBossHealthBar(int windowWidth, int windowHeight) {
 	SDL_Color colour {206, 197, 237, 255};
 	const char* font = "tiranti";
 	float labelY = barY + barPadding;
-	auto& bossNameLabel = UIUtils::createLabel(world, barX, labelY, colour, font, "No Boss!", "BossLabel", LabelType::Static);
+	auto& bossNameLabel = UIUtils::createLabel(world, barX, labelY, colour, font, " ", "BossLabel", LabelType::Static);
 	auto& label = bossNameLabel.getComponent<Label>();
 	label.outlineColor = {29, 25, 55, 200};
 	label.visible = false;
