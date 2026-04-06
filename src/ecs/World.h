@@ -108,7 +108,7 @@ public:
             if (!isPaused) {
                 movementSystem.update(entities, dt);
                 collisionSystem.update(*this);
-                deathBombSystem.update(*this, dt);
+                deathBombSystem.update(entities, dt);
                 playerRespawnSystem.update(entities, dt);
                 invincibilityFramesSystem.update(entities, dt);
                 playerAbilitySystem.update(*this, dt);
