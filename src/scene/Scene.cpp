@@ -284,7 +284,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	// 	linearSpawner.isActive = false;
 	// });
 	// TODO: debug for simulating boss spawn, remove later.
-	debugTimeline.timeline.emplace_back(1.0, [this, &player] {
+	debugTimeline.timeline.emplace_back(1.25, [this, &player] {
 		player.addComponent<Boss>("Reimu Hakurei");
 
 		for (auto& entity : world.getEntities()) {
@@ -306,10 +306,10 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	auto& state(world.createEntity());
 	state.addComponent<SceneState>();
 
-	// Boss health bar.
+	// Create boss health bar.
 	createBossHealthBar(windowWidth, windowHeight);
 
-	// Boss tracker.
+	// Create boss tracker.
 	float stagePaddingX = StageUtils::CalculateStagePaddingX(windowWidth);
 	float stagePaddingY = StageUtils::CalculateStagePaddingY(windowHeight);
 
@@ -322,6 +322,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	sprite.visible = false;
 
 	bossTrackerEntity.addComponent<BossTracker>(stagePaddingX, stageWidth + stagePaddingX);
+	bossTrackerEntity.addComponent<Fade>(0.5f);
 
 	// Create pause menu overlay.
 	auto& pauseMenuOverlay = UIUtils::createStageOverlay(world, windowWidth, windowHeight, "../asset/ui/darken.png",

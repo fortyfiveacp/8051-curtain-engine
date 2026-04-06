@@ -22,19 +22,28 @@ public:
                 auto& tracker = entity->getComponent<BossTracker>();
                 auto& trackerSprite = entity->getComponent<Sprite>();
 
-                // If no boss, disable the tracker.
+                // If no boss, hide the tracker.
                 if (bossEntity == nullptr) {
+                    tracker.isInitialized = false;
                     trackerSprite.visible = false;
                     return;
                 }
 
-                // Enable sprite visibility when boss is active.
-                trackerSprite.visible = true;
+                // If a boss is active and the tracker hasn't initialized yet, perform initialization.
+                if (!tracker.isInitialized) {
+                    tracker.isInitialized = true;
+                    trackerSprite.visible = true;
+
+                    // Fade tracker in, if it has a fade component.
+                    if (entity->hasComponent<Fade>()) {
+                        entity->getComponent<Fade>().isFading = true;
+                    }
+                }
 
                 auto& trackerTransform = entity->getComponent<Transform>();
                 auto& bossTransform = bossEntity->getComponent<Transform>();
 
-                // Sync tracker with boss, clamping in bounds.
+                // Sync tracker with boss on the x-axis, clamping in bounds.
                 trackerTransform.position.x = std::clamp(bossTransform.position.x, tracker.minX, tracker.maxX);
             }
         }

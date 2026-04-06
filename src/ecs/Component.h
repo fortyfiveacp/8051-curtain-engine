@@ -393,6 +393,7 @@ struct BossHealthBar {
 struct BossTracker {
     float minX{};
     float maxX{};
+    bool isInitialized = false;
 };
 
 struct PlayerTag{};
