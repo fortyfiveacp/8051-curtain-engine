@@ -635,10 +635,10 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 void Scene::createBossHealthBar(int windowWidth, int windowHeight) {
 	float stageWidth = StageUtils::CalculateStageWidth(windowWidth);
 
-	float barWidth = stageWidth * 0.97f;
+	float barWidth = stageWidth * 0.965f;
 	float barPadding = (stageWidth - barWidth) / 2.0f;
 	float barX = StageUtils::CalculateStagePaddingX(windowWidth) + barPadding;
-	float barY = StageUtils::CalculateStagePaddingY(windowHeight) + barPadding;
+	float barY = StageUtils::CalculateStagePaddingY(windowHeight) + barPadding * 0.75f;
 
 	auto& bossHealthBarEntity = world.createEntity();
 	auto& children = bossHealthBarEntity.addComponent<Children>();
@@ -657,8 +657,9 @@ void Scene::createBossHealthBar(int windowWidth, int windowHeight) {
 	// Boss name label.
 	SDL_Color colour {206, 197, 237, 255};
 	const char* font = "tiranti";
-	float labelY = barY + barPadding;
-	auto& bossNameLabel = UIUtils::createLabel(world, barX, labelY, colour, font, " ", "BossLabel", LabelType::Static);
+	float labelY = barY + 13.0f;
+	auto& bossNameLabel = UIUtils::createLabel(world, barX, labelY, colour, font, " ",
+		"BossLabel", LabelType::Static);
 	auto& label = bossNameLabel.getComponent<Label>();
 	label.outlineColor = {29, 25, 55, 200};
 	label.visible = false;
@@ -668,8 +669,10 @@ void Scene::createBossHealthBar(int windowWidth, int windowHeight) {
 	bossNameLabel.addComponent<Fade>(0.5f, bossHealthBar.initializationDuration);
 
 	// Phase icon counter.
-	float counterY = labelY + TTF_GetFontSize(AssetManager::getFont(font)) - 3;
-	auto& phaseCounter = UIUtils::createIconCounter(world, barX, counterY, 3, 24, 24, IconCounterType::BossPhase, "../asset/ui/white-star.png");
+	float iconSize = 24.0f;
+	float counterY = labelY + iconSize + 3.0f;
+	auto& phaseCounter = UIUtils::createIconCounter(world, barX, counterY, 3, iconSize, iconSize,
+		IconCounterType::BossPhase, "../asset/ui/white-star.png");
 	phaseCounter.addComponent<Parent>(&bossHealthBarEntity);
 	children.children.push_back(&phaseCounter);
 
