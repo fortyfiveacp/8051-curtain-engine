@@ -18,7 +18,7 @@ public:
         SDL_Color unselectedColour, const char* text, const char* cacheKey, const std::function<void()>& onPressed);
     static Entity& createLabel(World& world, int x, int y, SDL_Color colour, const char* fontName, const char* text,
         const char* cacheKey, LabelType labelType);
-    static Entity& createIconLabel(World& world, int x, int y, int maxNumber, float iconWidth, float iconHeight,
+    static Entity& createIconCounter(World& world, int x, int y, int maxNumber, float iconWidth, float iconHeight,
         IconCounterType iconCounterType, const char* texturePath);
     static Entity& createStageOverlay(World& world, int windowWidth, int windowHeight, const char* backgroundPath,
         const std::function<void(Entity& overlay, int windowWidth, int windowHeight)>& createUIComponents,

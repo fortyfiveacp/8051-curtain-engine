@@ -151,7 +151,7 @@ struct LinearSpawner {
 
 // Our game state, might have multiple scenes.
 struct SceneState {
-    int coinsCollected = 0;
+    int coinsCollected = 0; // TODO: do we actually even need this?
 };
 
 struct PlayerStats {
@@ -166,7 +166,6 @@ struct PlayerStats {
     static constexpr int MAX_HEALTH = 8;
     static constexpr int MAX_BOMBS = 8;
     static constexpr int MAX_POWER = 400;
-    static constexpr int MAX_POINTS = 50; // TODO: how many points are there?
 };
 
 struct PlayerBomb {
@@ -312,6 +311,7 @@ struct Label {
     SDL_FRect dst{};
     bool visible = true;
     bool dirty = true;
+    SDL_Color outlineColor {0, 0, 0, 255};
 };
 
 struct FPSCounter {
@@ -327,7 +327,8 @@ struct StageBackground {
 
 enum class IconCounterType {
     Health,
-    Bomb
+    Bomb,
+    BossPhase
 };
 
 struct IconCounter {
@@ -391,6 +392,26 @@ struct Fade {
     float delayTimer = 0.0f;
     float durationTimer = 0.0f;
     bool isFading = false;
+};
+
+struct Boss {
+    std::string bossName{};
+    int maxHealth{};
+    int currentHealth{};
+    int phasesLeft{};
+};
+
+struct BossHealthBar {
+    float fullDstWidth{};
+    float initializationDuration = 1.0f;
+    float timer = 0.0f;
+    bool isInitialized = false;
+};
+
+struct BossTracker {
+    float minX{};
+    float maxX{};
+    bool isInitialized = false;
 };
 
 struct PlayerTag{};

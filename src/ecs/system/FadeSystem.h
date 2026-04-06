@@ -35,7 +35,7 @@ public:
                         }
                     }
 
-                    // Update the alpha of entities. Sprite and label are supported.
+                    // Update the alpha of entities. Sprite, icon counter and label are supported.
                     // If the delay timer isn't up yet this will set the alpha to the starting value.
                     if (entity->hasComponent<Sprite>()) {
                         auto& sprite = entity->getComponent<Sprite>();
@@ -43,6 +43,13 @@ public:
                     } else if (entity->hasComponent<Label>()) {
                         auto& label = entity->getComponent<Label>();
                         SDL_SetTextureAlphaMod(label.texture, currentAlpha);
+                    } else if (entity->hasComponent<IconCounter>() && entity->hasComponent<Children>()) {
+                        for (auto& child : entity->getComponent<Children>().children) {
+                            if (child->hasComponent<Sprite>()) {
+                                auto& sprite = child->getComponent<Sprite>();
+                                SDL_SetTextureAlphaMod(sprite.texture, currentAlpha);
+                            }
+                        }
                     } else {
                         std::cerr << "Entity trying to fade doesn't have a supported texture component!" << std::endl;
                     }

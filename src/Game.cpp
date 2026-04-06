@@ -66,6 +66,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	// Load fonts.
 	AssetManager::loadFont("pop1", "../asset/fonts/pop1-w9.ttf", 32);
 	AssetManager::loadFont("DFPPOPCorn", "../asset/fonts/DFPPOPCORN-W12.ttf", 32);
+	AssetManager::loadFont("tiranti", "../asset/fonts/Tiranti Solid LET Plain.ttf", 30);
 
 	// Load animations.
 	AssetManager::loadAnimation("player", "../asset/animations/reimu_animations.xml");
