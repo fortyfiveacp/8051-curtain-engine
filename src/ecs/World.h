@@ -194,6 +194,15 @@ public:
     }
 
     void cleanup() {
+        // Clean out active collisions of all inactive entities. This must be flushed before destroying the entities themselves.
+        // This might be the solution to the stale memory access crashes.
+        std::erase_if(
+            collisionSystem.activeCollisions,
+            [](CollisionKey c) {
+                return !c.first->isActive() || !c.second->isActive();
+            }
+        );
+
         // Use a lambda predicate to remove all inactive entities.
         std::erase_if(
             entities,
