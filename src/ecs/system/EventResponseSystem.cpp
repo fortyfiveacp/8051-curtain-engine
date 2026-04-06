@@ -15,6 +15,9 @@ EventResponseSystem::EventResponseSystem(World &world) {
         onCollision(collision, "item", world);
         onCollision(collision, "wall", world);
         onCollision(collision, "projectile", world);
+        onCollision(collision, "enemy", world);
+
+        onBombCollision(collision);
     });
 
     world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
@@ -131,7 +134,7 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
         auto& t = player->getComponent<Transform>();
         t.position = t.oldPosition;
     }
-    else if (std::string(otherTag) == "projectile") {
+    else if (std::string(otherTag) == "projectile" || std::string(otherTag) == "enemy") {
         if (e.state != CollisionState::Enter) {
             return;
         }
@@ -148,38 +151,51 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
             invincibilityFrames.active = true;
         }
 
-        // Enable respawn when hit.
-        if (player->hasComponent<PlayerRespawn>()) {
-            auto& playerRespawn = player->getComponent<PlayerRespawn>();
-            playerRespawn.isRespawning = true;
-        }
+        if (player->hasComponent<DeathBombState>()) {
+            auto& deathBombState = player->getComponent<DeathBombState>();
+            if (!deathBombState.isHit) {
+                deathBombState.isHit = true;
+                deathBombState.timer = 0.0f;
 
-        world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit"));
-
-        // This logic is simple and direct.
-        // Ideally, we would only operate on data in an update function (transient entities).
-        auto& playerStats = player->getComponent<PlayerStats>();
-
-        // Lose 70% of player power on hit.
-        playerStats.currentPower *= 0.3;
-
-        // Decrement player health.
-        playerStats.currentHealth--;
-        Game::gameState.playerHealth = playerStats.currentHealth;
-
-        // If the player has no health left, bring up the continue game menu.
-        if (playerStats.currentHealth == 0) {
-            for (auto& entity : world.getEntities()) {
-                if (entity->hasComponent<ContinueGameMenuTag>() && entity->hasComponent<Toggleable>()) {
-                    entity->getComponent<Toggleable>().toggle();
-
-                    break;
-                }
+                world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit"));
             }
         }
     }
 }
 
+void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
+    if (e.entityA == nullptr || e.entityB == nullptr) {
+        return;
+    }
+
+    Entity* bomb = nullptr;
+    Entity* other = nullptr;
+
+    if (e.entityA->hasComponent<CircleCollider>() && e.entityA->getComponent<CircleCollider>().tag == "bomb") {
+        bomb = e.entityA;
+        other = e.entityB;
+    } else if (e.entityB->hasComponent<CircleCollider>() && e.entityB->getComponent<CircleCollider>().tag == "bomb") {
+        bomb = e.entityB;
+        other = e.entityA;
+    }
+
+    if (bomb && other) {
+        std::string otherTag{};
+        if (other->hasComponent<RectCollider>()) {
+            otherTag = other->getComponent<RectCollider>().tag;
+        } else if (other->hasComponent<CircleCollider>()) {
+            otherTag = other->getComponent<CircleCollider>().tag;
+        }
+
+        if (otherTag == "projectile") {
+            other->destroy();
+        } else if (otherTag == "enemy") {
+            // TODO: Have enemy/boss entities take damage while they are inside the collider.
+        }
+    }
+}
+
+// TODO: Generalize implementation so onBombCollision implementation can be simplified.
 bool EventResponseSystem::getCollisionEntities(const CollisionEvent &e, const char *otherTag, Entity *&player,
 Entity *&other) {
     if (e.entityA == nullptr || e.entityB == nullptr) {

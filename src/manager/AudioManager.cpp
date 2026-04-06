@@ -9,6 +9,8 @@ std::vector<MIX_Track*> AudioManager::sfxTracks;
 std::unordered_map<std::string, MIX_Audio*> AudioManager::audio;
 std::unordered_map<std::string, double> AudioManager::sfxLastPlayedTimes;
 constexpr int MAX_SFX_TRACKS = 32;
+constexpr float BGM_VOLUME = 0.7f;
+constexpr float SFX_VOLUME = 0.3f;
 
 AudioManager::AudioManager() {
     if (MIX_Init() == 0) {
@@ -28,7 +30,7 @@ AudioManager::AudioManager() {
         sfxTracks.push_back(MIX_CreateTrack(mixer));
     }
 
-    MIX_SetTrackGain(musicTrack, 1.0f);
+    MIX_SetTrackGain(musicTrack, BGM_VOLUME);
 }
 
 void AudioManager::loadAudio(const std::string &name, const char *path) const {
@@ -65,7 +67,7 @@ void AudioManager::stopMusic(const std::string &name) const {
 void AudioManager::playSfx(const std::string &name) {
     auto now = std::chrono::system_clock::now().time_since_epoch();
     double currentTimeMS = std::chrono::duration<double, std::milli>(now).count();
-    double cooldown = 25.0;
+    double cooldownMS = 25.0;
 
     /*
      * Check if a specific sound effect is being played at the same frame.
@@ -73,7 +75,7 @@ void AudioManager::playSfx(const std::string &name) {
      * bleeding ears.
      */
     if (sfxLastPlayedTimes.contains(name)) {
-        if (currentTimeMS - sfxLastPlayedTimes[name] < cooldown) {
+        if (currentTimeMS - sfxLastPlayedTimes[name] < cooldownMS) {
             return;
         }
     }
@@ -83,6 +85,7 @@ void AudioManager::playSfx(const std::string &name) {
             if (MIX_SetTrackAudio(track, audio[name]) == 0) {
                 return;
             }
+            MIX_SetTrackGain(track, SFX_VOLUME);
             MIX_PlayTrack(track, 0);
             sfxLastPlayedTimes[name] = currentTimeMS;
             return;

@@ -9,6 +9,7 @@
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
 #include "ConvoySystem.h"
+#include "DeathBombSystem.h"
 #include "DebugRenderSystem.h"
 #include "DestructionSystem.h"
 #include "Entity.h"
@@ -29,6 +30,7 @@
 #include "PlayerAbilitySystem.h"
 #include "InvincibilityFramesSystem.h"
 #include "ItemBounceSystem.h"
+#include "PlayerBombSystem.h"
 #include "PlayerBoundsSystem.h"
 #include "PlayerRespawnSystem.h"
 #include "RenderSystem.h"
@@ -71,12 +73,14 @@ class World {
     StageBackgroundSystem stageBackgroundSystem;
     AudioEventQueue audioEventQueue;
     PlayerAbilitySystem playerAbilitySystem;
+    DeathBombSystem deathBombSystem;
     InvincibilityFramesSystem invincibilityFramesSystem;
     SelectableUISystem selectableUISystem;
     DebugRenderSystem debugRenderSystem;
     PlayerBoundsSystem playerBoundsSystem;
     ItemBounceSystem itemBounceSystem;
     PlayerRespawnSystem playerRespawnSystem;
+    PlayerBombSystem playerBombSystem;
     FadeSystem fadeSystem;
     BossHealthBarSystem bossHealthBarSystem;
     BossTrackerSystem bossTrackerSystem;
@@ -104,9 +108,11 @@ public:
             if (!isPaused) {
                 movementSystem.update(entities, dt);
                 collisionSystem.update(*this);
+                deathBombSystem.update(entities, dt);
                 playerRespawnSystem.update(entities, dt);
                 invincibilityFramesSystem.update(entities, dt);
-                playerAbilitySystem.update(entities);
+                playerAbilitySystem.update(*this, dt);
+                playerBombSystem.update(entities, dt);
                 convoySystem.update(*this, dt);
                 pathSystem.update(*this, entities, dt);
                 bossTrackerSystem.update(entities);

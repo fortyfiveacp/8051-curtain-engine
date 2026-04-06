@@ -168,6 +168,24 @@ struct PlayerStats {
     static constexpr int MAX_POWER = 400;
 };
 
+struct PlayerBomb {
+    float timer = 0.0f;
+    float duration = 3.0f;
+    float damage = 1.0f; // TODO: Test damage values once boss and health are implemented.
+};
+
+struct PlayerBombAbility {
+    float cooldown = 3.0f;
+    float cooldownTimer = 0.0f;
+    bool active = false;
+};
+
+struct DeathBombState {
+    bool isHit = false;
+    float windowDuration = 0.025f;
+    float timer = 0.0f;
+};
+
 struct SelectableUI {
     std::function<void()> onPressed{};
     std::function<void()> onReleased{};

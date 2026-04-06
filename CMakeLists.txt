@@ -70,6 +70,10 @@ set(SRC_FILES
         src/utils/DanmakuFactory.cpp
         src/ecs/system/PlayerRespawnSystem.h
         src/ecs/system/PlayerAbilitySystem.cpp
+        src/utils/PlayerBombFactory.h
+        src/ecs/system/PlayerBombSystem.h
+        src/ecs/system/DeathBombSystem.h
+        src/ecs/system/DeathBombSystem.cpp
         #add all new source files here
 )
 
