@@ -151,7 +151,7 @@ struct LinearSpawner {
 
 // Our game state, might have multiple scenes.
 struct SceneState {
-    int coinsCollected = 0;
+    int coinsCollected = 0; // TODO: do we actually even need this?
 };
 
 struct PlayerStats {
