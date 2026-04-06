@@ -213,8 +213,6 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 
 			auto& c = e.addComponent<CircleCollider>("projectile");
 			c.centerPosition = radialDanmakuTransform.position + bulletSpawnPositionOffset;
-			c.offset.x = dest.w / 2;
-			c.offset.y = dest.h / 2;
 			c.radius = 10;
 
 			e.addComponent<ProjectileTag>();
@@ -255,8 +253,6 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 
 			auto& c = e.addComponent<CircleCollider>("projectile");
 			c.centerPosition = position;
-			c.offset.x = dest.w / 2;
-			c.offset.y = dest.h / 2;
 			c.radius = 10;
 
 			e.addComponent<ProjectileTag>();
