@@ -390,6 +390,11 @@ struct BossHealthBar {
     bool isInitialized = false;
 };
 
+struct BossTracker {
+    float minX{};
+    float maxX{};
+};
+
 struct PlayerTag{};
 struct PauseMenuTag{};
 struct ContinueGameMenuTag{};

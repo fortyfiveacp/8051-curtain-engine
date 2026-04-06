@@ -5,6 +5,7 @@
 #include "AnimationSystem.h"
 #include "BackgroundRenderSystem.h"
 #include "BossHealthBarSystem.h"
+#include "BossTrackerSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
 #include "ConvoySystem.h"
@@ -78,6 +79,7 @@ class World {
     PlayerRespawnSystem playerRespawnSystem;
     FadeSystem fadeSystem;
     BossHealthBarSystem bossHealthBarSystem;
+    BossTrackerSystem bossTrackerSystem;
 
     // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
@@ -107,6 +109,7 @@ public:
                 playerAbilitySystem.update(entities);
                 convoySystem.update(*this, dt);
                 pathSystem.update(*this, entities, dt);
+                bossTrackerSystem.update(entities);
                 animationSystem.update(entities, dt);
                 // cameraSystem.update(entities); // TODO: decide what to do with the camera system.
                 spawnTimerSystem.update(entities, dt);
