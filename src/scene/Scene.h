@@ -45,6 +45,7 @@ private:
     void createPauseMenuUComponents(Entity& overlay, int windowWidth, int windowHeight);
     void createContinueGameUIComponents(Entity& overlay, int windowWidth, int windowHeight);
     void createWinGameMenuUComponents(Entity& overlay, int windowWidth, int windowHeight);
+    void createBossHealthBar(int windowWidth, int windowHeight);
 
     void resetGameState();
 };
