@@ -313,7 +313,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	bossTrackerEntity.addComponent<Transform>(Vector2D(0, windowHeight - stagePaddingY), 0.0f, 1.0f);
 	SDL_Texture* tex = TextureManager::load("../asset/ui/enemy-tag.png");
 	SDL_FRect src {0, 0, static_cast<float>(tex->w), static_cast<float>(tex->h)};
-	SDL_FRect dst = {0, 0, static_cast<float>(tex->w) * 0.75f, stagePaddingY};
+	SDL_FRect dst = {0, 0, static_cast<float>(tex->w) * 0.8f, stagePaddingY};
 	auto& sprite = bossTrackerEntity.addComponent<Sprite>(tex, src, dst, RenderLayer::UI);
 	sprite.visible = false;
 

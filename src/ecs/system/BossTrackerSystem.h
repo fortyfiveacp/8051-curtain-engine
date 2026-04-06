@@ -44,7 +44,7 @@ public:
                 auto& bossTransform = bossEntity->getComponent<Transform>();
 
 
-                // Sync tracker with boss on the x-axis, clamping in bounds.
+                // Sync tracker with boss on the X-axis, clamping in bounds.
                 trackerTransform.position.x = std::clamp(bossTransform.position.x + trackerSprite.dst.w / 2,
                     tracker.minX, tracker.maxX - trackerSprite.dst.w);
             }
