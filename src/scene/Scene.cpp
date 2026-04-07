@@ -157,7 +157,6 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		auto& itemEntity(world.createDeferredEntity());
 		ItemFactory::createItem(itemEntity, SmallPower, playerPortableSpawnerTransform.position);
 	});
-	playerPortableSpawner.addComponent<RectCollider>("projectile", SDL_FRect(0, 0, 5, 5));
 
 	player.addComponent<Children>().children.emplace_back(&playerPortableSpawner);
 
