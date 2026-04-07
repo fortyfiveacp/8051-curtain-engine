@@ -66,8 +66,8 @@ private:
         auto& t = entity->getComponent<Transform>();
         auto& v = entity->getComponent<Velocity>();
 
-                // Track previous frame's position (for collisions).
-                t.oldPosition = t.position;
+        // Track previous frame's position (for collisions).
+        t.oldPosition = t.position;
 
         Vector2D directionVector = v.direction;
 
@@ -89,6 +89,18 @@ private:
 
         // Update position.
         t.position += velocityVector * dt;
+
+        // Update position of children Transforms.
+        if (entity->hasComponent<Children>()) {
+            auto&[children] = entity->getComponent<Children>();
+
+            for (const auto& child : children) {
+                if (child->hasComponent<Transform>()) {
+                    auto& transform = child->getComponent<Transform>();
+                    transform.position += velocityVector * dt;
+                }
+            }
+        }
     }
 
     static void updateRotationBasedOnAngularVelocity(float dt, std::unique_ptr<Entity> &entity) {
