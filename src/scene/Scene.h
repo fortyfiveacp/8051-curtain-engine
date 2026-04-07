@@ -39,6 +39,9 @@ private:
 
     void initMainMenu(int windowWidth, int windowHeight);
     void initGameplay(const char* stageDataPath, const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight);
+    void initCredits(int windowWidth, int windowHeight);
+
+    void createCreditsTimeline(Timeline& timeline, std::vector<std::string> creditsPaths, int windowWidth, int windowHeight);
 
     // Functions for creating the specific UI in the game.
     void createSidebarUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight);

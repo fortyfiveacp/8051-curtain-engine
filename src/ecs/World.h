@@ -96,45 +96,56 @@ public:
     World() = default;
 
     void update(float dt, const SDL_Event& event, SceneType sceneType, bool isPaused, bool isDebugging) {
-        if (sceneType == SceneType::MainMenu) {
-            // Main menu system update.
-            mainMenuSystem.update(event);
-        } else {
-            keyboardInputSystem.update(entities, event);
-            cameraSystem.update(entities);
-            playerBoundsSystem.update(entities);
-            pauseMenuSystem.update(entities, event);
-            selectableUISystem.update(entities, *this, event);
+        switch (sceneType) {
+            case SceneType::MainMenu:
+                // Main menu system update.
+                mainMenuSystem.update(event);
+                break;
+            case SceneType::Gameplay:
+                // Gameplay systems.
+                keyboardInputSystem.update(entities, event);
+                playerBoundsSystem.update(entities);
+                pauseMenuSystem.update(entities, event);
+                selectableUISystem.update(entities, *this, event);
 
-            // Only update gameplay systems if the game isn't paused.
-            if (!isPaused) {
+                // Only update gameplay systems if the game isn't paused.
+                if (!isPaused) {
+                    movementSystem.update(entities, dt);
+                    collisionSystem.update(*this);
+                    deathBombSystem.update(entities, dt);
+                    playerRespawnSystem.update(entities, dt);
+                    invincibilityFramesSystem.update(entities, dt);
+                    playerAbilitySystem.update(*this, dt);
+                    playerBombSystem.update(entities, dt);
+                    convoySystem.update(*this, dt);
+                    pathSystem.update(*this, entities, dt);
+                    bossTrackerSystem.update(entities);
+                    animationSystem.update(entities, dt);
+                    // cameraSystem.update(entities); // TODO: decide what to do with the camera system.
+                    spawnTimerSystem.update(entities, dt);
+                    itemBounceSystem.update(entities, dt);
+                    radialSpawnerSystem.update(entities, dt);
+                    linearSpawnerSystem.update(entities, dt);
+                    timelineSystem.update(entities, dt);
+                    stageBackgroundSystem.update(entities, dt);
+                    bossHealthBarSystem.update(entities, dt);
+                }
+
+                debugRenderSystem.update(*this, event, isDebugging);
+                destructionSystem.update(entities);
+                hudSystem.update(entities);
+                iconLabelSystem.update(entities);
+                break;
+            case SceneType::Credits:
+                // Credits systems.
                 movementSystem.update(entities, dt);
-                collisionSystem.update(*this);
-                deathBombSystem.update(entities, dt);
-                playerRespawnSystem.update(entities, dt);
-                invincibilityFramesSystem.update(entities, dt);
-                playerAbilitySystem.update(*this, dt);
-                playerBombSystem.update(entities, dt);
-                convoySystem.update(*this, dt);
-                pathSystem.update(*this, entities, dt);
-                bossTrackerSystem.update(entities);
-                animationSystem.update(entities, dt);
-                // cameraSystem.update(entities); // TODO: decide what to do with the camera system.
-                spawnTimerSystem.update(entities, dt);
-                itemBounceSystem.update(entities, dt);
-                radialSpawnerSystem.update(entities, dt);
-                linearSpawnerSystem.update(entities, dt);
                 timelineSystem.update(entities, dt);
-                stageBackgroundSystem.update(entities, dt);
-                bossHealthBarSystem.update(entities, dt);
-            }
-
-            debugRenderSystem.update(*this, event, isDebugging);
-            destructionSystem.update(entities);
-            hudSystem.update(entities);
-            iconLabelSystem.update(entities);
+                break;
+            default:
+                break;
         }
 
+        // Systems available to all scenes.
         fpsCounterSystem.update(entities, dt);
         audioEventQueue.process(); // Process all the audio events.
         preRenderSystem.update(entities);
