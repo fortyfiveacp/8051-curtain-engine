@@ -35,7 +35,7 @@ void DanmakuFactory::initRadialPattern(Entity& entity, World& world, const Danma
             Vector2D bulletSpawnPositionOffset = direction * danmakuPattern.radius;
             auto& bulletCol = bullet.addComponent<CircleCollider>("projectile");
             bulletCol.centerPosition = bulletTransform.position + bulletSpawnPositionOffset;
-            bulletCol.radius = danmakuPattern.radius;
+            bulletCol.radius = danmakuPattern.radius / 1.2;
         }
     );
 }
@@ -66,7 +66,7 @@ void DanmakuFactory::initLinearPattern(Entity &entity, World &world, const Danma
 
             auto& bulletCol = bullet.addComponent<CircleCollider>("projectile");
             bulletCol.centerPosition = position;
-            bulletCol.radius = 10;
+            bulletCol.radius = 4;
         }
     );
 }
