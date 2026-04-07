@@ -10,7 +10,7 @@
 #include "CollisionSystem.h"
 #include "ConvoySystem.h"
 #include "DeathBombSystem.h"
-#include "ColliderRenderSystem.h"
+#include "DebugRenderSystem.h"
 #include "DestructionSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
@@ -32,6 +32,7 @@
 #include "ItemBounceSystem.h"
 #include "PlayerBombSystem.h"
 #include "PlayerBoundsSystem.h"
+#include "PlayerFocusRenderSystem.h"
 #include "PlayerRespawnSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
@@ -77,7 +78,7 @@ class World {
     DeathBombSystem deathBombSystem;
     InvincibilityFramesSystem invincibilityFramesSystem;
     SelectableUISystem selectableUISystem;
-    ColliderRenderSystem colliderRenderSystem;
+    DebugRenderSystem debugRenderSystem;
     PlayerBoundsSystem playerBoundsSystem;
     ItemBounceSystem itemBounceSystem;
     PlayerRespawnSystem playerRespawnSystem;
@@ -86,6 +87,7 @@ class World {
     BossHealthBarSystem bossHealthBarSystem;
     BossTrackerSystem bossTrackerSystem;
     WorldBackgroundRenderSystem worldBackgroundRenderSystem;
+    PlayerFocusRenderSystem playerFocusRenderSystem;
 
     // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
@@ -129,7 +131,7 @@ public:
                 bossHealthBarSystem.update(entities, dt);
             }
 
-            colliderRenderSystem.update(*this, event, isDebugging);
+            debugRenderSystem.update(*this, event, isDebugging);
             destructionSystem.update(entities);
             hudSystem.update(entities);
             iconLabelSystem.update(entities);
@@ -159,7 +161,13 @@ public:
         worldBackgroundRenderSystem.render(entities);
         renderSystem.render(entities);
 
-        colliderRenderSystem.render(entities, isDebugging);
+        // Render debug visuals if debugging.
+        // Only render player focus if not debugging.
+        if (isDebugging) {
+            debugRenderSystem.render(entities);
+        } else {
+            playerFocusRenderSystem.render(entities);
+        }
 
         // Reset viewport for rendering UI.
         SDL_SetRenderViewport(renderer, nullptr);
