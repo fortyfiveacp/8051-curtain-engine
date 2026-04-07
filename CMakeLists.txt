@@ -62,7 +62,7 @@ set(SRC_FILES
         src/utils/ItemFactory.cpp
         src/ecs/system/SelectableUISystem.cpp
         src/ecs/system/PauseMenuSystem.cpp
-        src/ecs/system/DebugRenderSystem.cpp
+        src/ecs/system/ColliderRenderSystem.cpp
         src/utils/UIUtils.cpp
         src/utils/StageUtils.cpp
         src/ecs/system/PathSystem.cpp

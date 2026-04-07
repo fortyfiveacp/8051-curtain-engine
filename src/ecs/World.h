@@ -10,7 +10,7 @@
 #include "CollisionSystem.h"
 #include "ConvoySystem.h"
 #include "DeathBombSystem.h"
-#include "DebugRenderSystem.h"
+#include "ColliderRenderSystem.h"
 #include "DestructionSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
@@ -77,7 +77,7 @@ class World {
     DeathBombSystem deathBombSystem;
     InvincibilityFramesSystem invincibilityFramesSystem;
     SelectableUISystem selectableUISystem;
-    DebugRenderSystem debugRenderSystem;
+    ColliderRenderSystem colliderRenderSystem;
     PlayerBoundsSystem playerBoundsSystem;
     ItemBounceSystem itemBounceSystem;
     PlayerRespawnSystem playerRespawnSystem;
@@ -129,7 +129,7 @@ public:
                 bossHealthBarSystem.update(entities, dt);
             }
 
-            debugRenderSystem.update(*this, event, isDebugging);
+            colliderRenderSystem.update(*this, event, isDebugging);
             destructionSystem.update(entities);
             hudSystem.update(entities);
             iconLabelSystem.update(entities);
@@ -156,19 +156,10 @@ public:
         SDL_Rect stageRect = { paddingX, paddingY, stageWidth, stageHeight };
         SDL_SetRenderViewport(renderer, &stageRect);
 
-        // TODO: purge.
-        // for (auto& entity : entities) {
-        //     if (entity->hasComponent<Camera>()) {
-        //         map.draw(entity->getComponent<Camera>());
-        //         break;
-        //     }
-        // }
         worldBackgroundRenderSystem.render(entities);
         renderSystem.render(entities);
 
-        if (isDebugging) {
-            debugRenderSystem.render(entities);
-        }
+        colliderRenderSystem.render(entities, isDebugging);
 
         // Reset viewport for rendering UI.
         SDL_SetRenderViewport(renderer, nullptr);
