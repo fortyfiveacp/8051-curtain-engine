@@ -96,8 +96,8 @@ private:
 
             for (const auto& child : children) {
                 if (child->hasComponent<Transform>()) {
-                    auto& transform = child->getComponent<Transform>();
-                    transform.position += velocityVector * dt;
+                    auto& childTransform = child->getComponent<Transform>();
+                    childTransform.position += velocityVector * dt;
                 }
             }
         }
@@ -107,7 +107,21 @@ private:
         auto& t = entity->getComponent<Transform>();
         auto& v = entity->getComponent<AngularVelocity>();
 
-        t.rotation = std::fmod(t.rotation + (v.rotationOverTime * dt), 360.0f);
+        float rotationAmountDegrees = v.rotationOverTime * dt;
+
+        t.rotation = std::fmod(t.rotation + rotationAmountDegrees, 360.0f);
+
+        // Update position of children Transforms.
+        if (entity->hasComponent<Children>()) {
+            auto&[children] = entity->getComponent<Children>();
+
+            for (const auto& child : children) {
+                if (child->hasComponent<Transform>()) {
+                    auto& childTransform = child->getComponent<Transform>();
+                    childTransform.rotation = std::fmod(childTransform.rotation + rotationAmountDegrees, 360.0f);
+                }
+            }
+        }
     }
 
     static void updateRotationBasedOnTarget(std::unique_ptr<Entity> &entity) {
@@ -116,7 +130,23 @@ private:
 
         const Vector2D displacement = r.target.position - t.position;
 
+        float oldRotation = t.rotation;
+
         t.rotation = std::fmod(std::atan2(displacement.y, displacement.x) * (180 / std::numbers::pi) +
             r.offsetDegrees - 90.0f, 360.0f);
+
+        float rotationAmountDegrees = t.rotation - oldRotation;
+
+        // Update position of children Transforms.
+        if (entity->hasComponent<Children>()) {
+            auto&[children] = entity->getComponent<Children>();
+
+            for (const auto& child : children) {
+                if (child->hasComponent<Transform>()) {
+                    auto& childTransform = child->getComponent<Transform>();
+                    childTransform.rotation = std::fmod(childTransform.rotation + rotationAmountDegrees, 360.0f);
+                }
+            }
+        }
     }
 };
