@@ -152,8 +152,8 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 
 	// Spawner parented on player for testing parenting. TODO: remove when no longer needed.
 	auto& playerPortableSpawner(world.createEntity());
-	Transform playerPortableSpawnerTransform = playerPortableSpawner.addComponent<Transform>(Vector2D(playerStartingX + 50, playerStartingY), 0.0f, 1.0f);
-	playerPortableSpawner.addComponent<TimedSpawner>(3.0f, [this, playerPortableSpawnerTransform] {
+	auto& playerPortableSpawnerTransform = playerPortableSpawner.addComponent<Transform>(Vector2D(playerStartingX + 50, playerStartingY), 0.0f, 1.0f);
+	playerPortableSpawner.addComponent<TimedSpawner>(1.0f, [this, &playerPortableSpawnerTransform] {
 		auto& itemEntity(world.createDeferredEntity());
 		ItemFactory::createItem(itemEntity, SmallPower, playerPortableSpawnerTransform.position);
 	});
