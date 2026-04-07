@@ -78,7 +78,8 @@ void EnemyFactory::initBaseFairy(Entity &entity, const std::string& animName, co
     entity.addComponent<Sprite>(tex, src, dst, RenderLayer::World, pivotOffset);
 
     float radius = size / 2.0f;
+    Vector2D bulletSpawnPositionOffset = transform.position * radius;
     auto& bulletCol = entity.addComponent<CircleCollider>("enemy");
-    bulletCol.centerPosition = transform.position;
+    bulletCol.centerPosition = transform.position + bulletSpawnPositionOffset;
     bulletCol.radius = radius / 2;
 }

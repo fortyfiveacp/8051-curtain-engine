@@ -11,19 +11,18 @@ public:
 
         // Find the boss.
         for (auto &entity: entities) {
-            if (entity->hasComponent<Boss>() && entity->isActive()) {
+            if (entity->hasComponent<Boss>()) {
                 bossEntity = entity.get();
-                break;
             }
         }
 
-        // // TODO: temporarily get player stats for testing.
-        // Entity *playerEntity = nullptr;
-        // for (auto &entity: entities) {
-        //     if (entity->hasComponent<PlayerStats>()) {
-        //         playerEntity = entity.get();
-        //     }
-        // }
+        // TODO: temporarily get player stats for testing.
+        Entity *playerEntity = nullptr;
+        for (auto &entity: entities) {
+            if (entity->hasComponent<PlayerStats>()) {
+                playerEntity = entity.get();
+            }
+        }
 
         for (auto &entity: entities) {
             if (entity->hasComponent<BossHealthBar>() && entity->hasComponent<Sprite>() &&
@@ -32,7 +31,6 @@ public:
                 auto &sprite = entity->getComponent<Sprite>();
                 auto &children = entity->getComponent<Children>();
                 auto &fade = entity->getComponent<Fade>();
-                auto& toggle = entity->getComponent<Toggleable>(); // Do we need this?
 
                 if (bossEntity == nullptr) {
                     // If the boss health bar is initialized but no boss was found, it must have spawned and died,
@@ -43,16 +41,14 @@ public:
                         bossHealthBar.timer = 0.0f;
                     }
 
-                    continue;
+                    return;
                 }
 
                 auto &boss = bossEntity->getComponent<Boss>();
-                // auto &playerStats = playerEntity->getComponent<PlayerStats>(); // TODO: temp.
+                auto &playerStats = playerEntity->getComponent<PlayerStats>(); // TODO: temp.
 
                 // If the health bar is not initialized (the boss has just spawned), initialize it first.
                 if (!bossHealthBar.isInitialized) {
-                    if (!entity->getComponent<Toggleable>().enabled) entity->getComponent<Toggleable>().toggle();
-
                     bossHealthBar.timer += dt;
 
                     // Extend the bar to full.
@@ -63,15 +59,14 @@ public:
                         bossHealthBar.isInitialized = true;
                     }
 
-                    continue;
+                    return;
                 }
                 // float healthPercentage = std::clamp(
                 //     static_cast<float>(boss.currentHealth) / boss.maxHealth, 0.0f, 1.0f
                 // );
                 // TODO: temporarily hooked up to player stats for testing.
                 float healthPercentage = std::clamp(
-                    // static_cast<float>(playerStats.currentHealth) / 3, 0.0f, 1.0f
-                    static_cast<float>(boss.currentHealth) / boss.maxHealth, 0.0f, 1.0f
+                    static_cast<float>(playerStats.currentHealth) / 3, 0.0f, 1.0f
                 );
 
                 // Crop health bar destination to visibly lower the health bar.
@@ -87,9 +82,9 @@ public:
 
                     if (child->hasComponent<IconCounter>()) {
                         auto &counter = child->getComponent<IconCounter>();
-                        counter.currentNumber = boss.phasesLeft;
+                        //counter.currentNumber = boss.phasesLeft;
                         // TODO: temporarily hooked up to player stats for testing.
-                        // counter.currentNumber = playerStats.currentHealth;
+                        counter.currentNumber = playerStats.currentHealth;
                         counter.dirty = true;
                     }
                 }

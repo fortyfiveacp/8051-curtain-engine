@@ -197,9 +197,6 @@ void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
                 auto& bombComp = bomb->getComponent<PlayerBomb>();
 
                 health.current -= static_cast<int>(bombComp.damage);
-                if (health.current < 0) {
-                    health.current = 0;
-                }
             }
         }
     }
