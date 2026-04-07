@@ -404,11 +404,39 @@ struct LootDropTable {
     std::vector<Vector2D> offsets;
 };
 
+struct BossPhase {
+    float thresholdPercentage = 0.3f;
+
+    // Normal pattern and where it attaches
+    DanmakuPattern normalPattern;
+    int normalNodeId = -1;
+
+    // Threshold (Spellcard) pattern and where it attaches
+    DanmakuPattern thresholdPattern;
+    int thresholdNodeId = -1;
+};
+
 struct Boss {
     std::string bossName{};
     int maxHealth{};
     int currentHealth{};
     int phasesLeft{};
+
+    std::vector<BossPhase> phases{};
+    int currentPhaseIndex = 0;
+    bool inThresholdPhase = false;
+
+    // Children tracking
+    std::vector<Vector2D> childOffsets{};
+    std::vector<Entity*> childrenEntities{};
+
+    // State Tracking
+    float invulnerabilityTimer = 0.0f;
+    bool isInvulnerable = false;
+
+    // Intro movement state
+    bool introComplete = false;
+    Vector2D targetIntroPosition{384.0f, 300.0f};
 };
 
 struct BossHealthBar {

@@ -78,6 +78,8 @@ set(SRC_FILES
         src/utils/BossFactory.h
         src/ecs/system/EnemyHealthSystem.h
         src/ecs/system/EnemyHealthSystem.cpp
+        src/ecs/system/BossSystem.h
+        src/ecs/system/BossSystem.cpp
         #add all new source files here
 )
 
