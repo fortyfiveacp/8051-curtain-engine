@@ -98,8 +98,6 @@ private:
                 if (child->hasComponent<Transform>()) {
                     auto& childTransform = child->getComponent<Transform>();
                     childTransform.position += t.position - t.oldPosition;
-
-                    std::cout << childTransform.position << std::endl;
                 }
             }
         }
