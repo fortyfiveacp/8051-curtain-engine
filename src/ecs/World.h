@@ -12,6 +12,7 @@
 #include "DeathBombSystem.h"
 #include "DebugRenderSystem.h"
 #include "DestructionSystem.h"
+#include "EnemyHealthSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
 #include "FadeSystem.h"
@@ -86,6 +87,7 @@ class World {
     FadeSystem fadeSystem;
     BossHealthBarSystem bossHealthBarSystem;
     BossTrackerSystem bossTrackerSystem;
+    EnemyHealthSystem enemyHealthSystem;
     WorldBackgroundRenderSystem worldBackgroundRenderSystem;
     PlayerFocusRenderSystem playerFocusRenderSystem;
 
@@ -129,6 +131,7 @@ public:
                 timelineSystem.update(entities, dt);
                 stageBackgroundSystem.update(entities, dt);
                 bossHealthBarSystem.update(entities, dt);
+                enemyHealthSystem.update(*this);
             }
 
             debugRenderSystem.update(*this, event, isDebugging);
