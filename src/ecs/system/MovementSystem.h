@@ -97,7 +97,7 @@ private:
             for (const auto& child : children) {
                 if (child->hasComponent<Transform>()) {
                     auto& childTransform = child->getComponent<Transform>();
-                    childTransform.position += velocityVector * dt;
+                    childTransform.position += t.position - t.oldPosition;
                 }
             }
         }

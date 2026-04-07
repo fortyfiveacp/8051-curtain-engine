@@ -63,7 +63,7 @@ void PathSystem::update(World& world, std::vector<std::unique_ptr<Entity>>& enti
                     pf.currentHoverTimer = path.points[i + 1].hoverTime;
                     pf.lastPointReached = i + 1;
                     pf.distance = accumulatedDist;
-                    tf.position = path.points[i + 1].position;
+                    TransformUtils::setPosition(e, path.points[i + 1].position);
 
                     isHovering = true;
                     break;
@@ -76,7 +76,7 @@ void PathSystem::update(World& world, std::vector<std::unique_ptr<Entity>>& enti
             Vector2D nextPosition = evaluatePath(path, nextDistance);
             Vector2D direction = nextPosition - tf.position;
             vel.direction = direction.normalize();
-            tf.position = nextPosition;
+            TransformUtils::setPosition(e, nextPosition);
         }
     }
 }
