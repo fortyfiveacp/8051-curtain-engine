@@ -189,8 +189,15 @@ void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
 
         if (otherTag == "projectile") {
             other->destroy();
-        } else if (otherTag == "enemy") {
-            // TODO: Have enemy/boss entities take damage while they are inside the collider.
+        }
+
+        if (otherTag == "enemy" && other->hasComponent<EnemyHealth>()) {
+            if (e.state == CollisionState::Stay || e.state == CollisionState::Enter) {
+                auto& health = other->getComponent<EnemyHealth>();
+                auto& bombComp = bomb->getComponent<PlayerBomb>();
+
+                health.current -= static_cast<int>(bombComp.damage);
+            }
         }
     }
 }

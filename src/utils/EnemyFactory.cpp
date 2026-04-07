@@ -1,6 +1,7 @@
 #include "EnemyFactory.h"
 
 #include "DanmakuFactory.h"
+#include "ItemFactory.h"
 #include "manager/AssetManager.h"
 
 class World;
@@ -28,10 +29,16 @@ void EnemyFactory::buildEnemy(Entity &entity, World& world, const Convoy& convoy
 }
 
 void EnemyFactory::buildSmallFairy(Entity &entity, World& world, const EnemyType& enemyType, const DanmakuPattern& danmakuPattern) {
+    entity.addComponent<EnemyHealth>(100, 100);
+    auto& loot = entity.addComponent<LootDropTable>();
+    loot.offsets = { {0, 0} };
+
     if (enemyType == EnemyType::SmallRedFairy) {
         initBaseFairy(entity, "redFairy", "../asset/animations/small_fairies_anim.png", 32);
+        loot.types = { SmallPower };
     } else {
         initBaseFairy(entity, "blueFairy", "../asset/animations/small_fairies_anim.png", 32);
+        loot.types = { Point };
     }
 
     if (danmakuPattern.shouldTargetPlayer) {
@@ -49,11 +56,14 @@ void EnemyFactory::buildSmallFairy(Entity &entity, World& world, const EnemyType
 
 void EnemyFactory::buildLargeFairy(Entity &entity, World& world, const DanmakuPattern& danmakuPattern) {
     initBaseFairy(entity, "largeFairy", "../asset/animations/large_fairy_anim.png", 64);
+
+    entity.addComponent<EnemyHealth>(100);
+
+    auto& loot = entity.addComponent<LootDropTable>();
+    loot.types = { Point, Point, LargePower, Point, Point };
+    loot.offsets = { {-50, 0}, {50, 0}, {0, 0}, {0, -50}, {0, 50} };
+
     DanmakuFactory::buildDanmaku(entity, world, danmakuPattern);
-}
-
-void EnemyFactory::buildStageBoss(Entity &entity, Transform &transform) {
-
 }
 
 void EnemyFactory::initBaseFairy(Entity &entity, const std::string& animName, const char* spritesheetPath, float size) {
