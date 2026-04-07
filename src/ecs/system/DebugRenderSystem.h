@@ -2,7 +2,6 @@
 #include <memory>
 #include <vector>
 
-#include "Component.h"
 #include "Entity.h"
 #include "../../manager/TextureManager.h"
 

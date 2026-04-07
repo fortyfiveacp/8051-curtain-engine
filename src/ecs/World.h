@@ -32,6 +32,7 @@
 #include "ItemBounceSystem.h"
 #include "PlayerBombSystem.h"
 #include "PlayerBoundsSystem.h"
+#include "PlayerFocusRenderSystem.h"
 #include "PlayerRespawnSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
@@ -86,6 +87,7 @@ class World {
     BossHealthBarSystem bossHealthBarSystem;
     BossTrackerSystem bossTrackerSystem;
     WorldBackgroundRenderSystem worldBackgroundRenderSystem;
+    PlayerFocusRenderSystem playerFocusRenderSystem;
 
     // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
@@ -156,18 +158,15 @@ public:
         SDL_Rect stageRect = { paddingX, paddingY, stageWidth, stageHeight };
         SDL_SetRenderViewport(renderer, &stageRect);
 
-        // TODO: purge.
-        // for (auto& entity : entities) {
-        //     if (entity->hasComponent<Camera>()) {
-        //         map.draw(entity->getComponent<Camera>());
-        //         break;
-        //     }
-        // }
         worldBackgroundRenderSystem.render(entities);
         renderSystem.render(entities);
 
+        // Render debug visuals if debugging.
+        // Only render player focus if not debugging.
         if (isDebugging) {
             debugRenderSystem.render(entities);
+        } else {
+            playerFocusRenderSystem.render(entities);
         }
 
         // Reset viewport for rendering UI.
