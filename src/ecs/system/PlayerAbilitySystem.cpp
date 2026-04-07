@@ -1,30 +1,68 @@
 #include "PlayerAbilitySystem.h"
+
+#include "PlayerBombFactory.h"
 #include "Component.h"
 #include "Entity.h"
 #include "Game.h"
 #include "manager/AudioManager.h"
 
-void PlayerAbilitySystem::update(const std::vector<std::unique_ptr<Entity>>& entities) {
-    for (auto& entity : entities) {
-        if (entity->hasComponent<PlayerTag>() && entity->hasComponent<KeyboardInput>() && entity->hasComponent<PlayerStats>()) {
+void PlayerAbilitySystem::update(World& world, float deltaTime) {
+    for (auto& entity : world.getEntities()) {
+        if (entity->hasComponent<PlayerTag>() && entity->hasComponent<KeyboardInput>()
+            && entity->hasComponent<PlayerStats>() && entity->hasComponent<PlayerBombAbility>()) {
+            auto& bomb = entity->getComponent<PlayerBombAbility>();
+            auto& stats = entity->getComponent<PlayerStats>();
             auto& keyboardInput = entity->getComponent<KeyboardInput>();
-            auto& playerStats = entity->getComponent<PlayerStats>();
 
             if (keyboardInput.shoot) {
                 // TODO: shooting logic.
             }
 
-            if (keyboardInput.bomb && playerStats.currentBombs > 0) {
-                AudioManager::playSfx("bomb");
-                keyboardInput.bomb = false;
+            if (bomb.active) {
+                bomb.cooldownTimer -= deltaTime;
+                if (bomb.cooldownTimer <= 0.0f) {
+                    bomb.active = false;
+                    bomb.cooldownTimer = 0.0f;
+                }
+            }
 
-                playerStats.currentBombs--;
-                Game::gameState.playerBombs = playerStats.currentBombs;
+            bool isRespawning = entity->hasComponent<PlayerRespawn>() && entity->getComponent<PlayerRespawn>().isRespawning;
+            bool isDeathBombing = entity->hasComponent<DeathBombState>() && entity->getComponent<DeathBombState>().isHit;
 
-                // TODO: actual bomb logic.
-            } else if (keyboardInput.bomb) {
+            if (keyboardInput.bomb) {
+                bool canCast = !bomb.active && !isRespawning;
+                if (stats.currentBombs > 0 && canCast) {
+                    stats.currentBombs--;
+                    Game::gameState.playerBombs = stats.currentBombs;
+
+                    bomb.active = true;
+                    bomb.cooldownTimer = bomb.cooldown;
+
+                    if (isDeathBombing) {
+                        entity->getComponent<DeathBombState>().isHit = false;
+                        entity->getComponent<DeathBombState>().timer = 0.0f;
+                    }
+
+                    AudioManager::playSfx("bomb");
+                    castBomb(*entity, entity->getComponent<Transform>(), world);
+                }
+
                 keyboardInput.bomb = false;
             }
         }
+    }
+}
+
+void PlayerAbilitySystem::castBomb(Entity& entity, const Transform& transform, World& world) {
+    float bombSize = 600.0f;
+    float bombX = transform.position.x - (bombSize / 2.0f);
+    float bombY = transform.position.y - (bombSize / 2.0f);
+
+    PlayerBombFactory::buildBasicBomb(world, Vector2D(bombX, bombY), bombSize);
+
+    if (entity.hasComponent<InvincibilityFrames>()) {
+        auto& iFrames = entity.getComponent<InvincibilityFrames>();
+        iFrames.active = true;
+        iFrames.timer = 0.0f;
     }
 }
