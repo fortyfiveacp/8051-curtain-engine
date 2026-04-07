@@ -74,6 +74,7 @@ set(SRC_FILES
         src/ecs/system/PlayerBombSystem.h
         src/ecs/system/DeathBombSystem.h
         src/ecs/system/DeathBombSystem.cpp
+        src/utils/TransformUtils.h
         #add all new source files here
 )
 

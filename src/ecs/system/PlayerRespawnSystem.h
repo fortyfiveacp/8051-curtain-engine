@@ -4,6 +4,7 @@
 
 #include "Component.h"
 #include "Entity.h"
+#include "TransformUtils.h"
 
 class PlayerRespawnSystem {
 public:
@@ -17,8 +18,7 @@ public:
                     auto& playerTransform = entity->getComponent<Transform>();
 
                     // Hide player off-screen.
-                    playerTransform.position.x = playerRespawn.playerStartingPosition.x;
-                    playerTransform.position.y = playerRespawn.playerStartingPosition.y + 150;
+                    TransformUtils::setPosition(entity, playerRespawn.playerStartingPosition + Vector2D(0, 150));
 
                     playerRespawn.timer += dt;
 
@@ -28,7 +28,7 @@ public:
                         playerRespawn.isRespawning = false;
 
                         // Reposition player at starting position.
-                        playerTransform.position = playerRespawn.playerStartingPosition;
+                        TransformUtils::setPosition(entity, playerRespawn.playerStartingPosition);
                     }
                 }
 

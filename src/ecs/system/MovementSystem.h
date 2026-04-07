@@ -66,8 +66,8 @@ private:
         auto& t = entity->getComponent<Transform>();
         auto& v = entity->getComponent<Velocity>();
 
-                // Track previous frame's position (for collisions).
-                t.oldPosition = t.position;
+        // Track previous frame's position (for collisions).
+        t.oldPosition = t.position;
 
         Vector2D directionVector = v.direction;
 
@@ -89,13 +89,39 @@ private:
 
         // Update position.
         t.position += velocityVector * dt;
+
+        // Update position of children Transforms.
+        if (entity->hasComponent<Children>()) {
+            auto&[children] = entity->getComponent<Children>();
+
+            for (const auto& child : children) {
+                if (child->hasComponent<Transform>()) {
+                    auto& childTransform = child->getComponent<Transform>();
+                    childTransform.position += t.position - t.oldPosition;
+                }
+            }
+        }
     }
 
     static void updateRotationBasedOnAngularVelocity(float dt, std::unique_ptr<Entity> &entity) {
         auto& t = entity->getComponent<Transform>();
         auto& v = entity->getComponent<AngularVelocity>();
 
-        t.rotation = std::fmod(t.rotation + (v.rotationOverTime * dt), 360.0f);
+        float rotationAmountDegrees = v.rotationOverTime * dt;
+
+        t.rotation = std::fmod(t.rotation + rotationAmountDegrees, 360.0f);
+
+        // Update position of children Transforms.
+        if (entity->hasComponent<Children>()) {
+            auto&[children] = entity->getComponent<Children>();
+
+            for (const auto& child : children) {
+                if (child->hasComponent<Transform>()) {
+                    auto& childTransform = child->getComponent<Transform>();
+                    childTransform.rotation = std::fmod(childTransform.rotation + rotationAmountDegrees, 360.0f);
+                }
+            }
+        }
     }
 
     static void updateRotationBasedOnTarget(std::unique_ptr<Entity> &entity) {
@@ -104,7 +130,23 @@ private:
 
         const Vector2D displacement = r.target.position - t.position;
 
+        float oldRotation = t.rotation;
+
         t.rotation = std::fmod(std::atan2(displacement.y, displacement.x) * (180 / std::numbers::pi) +
             r.offsetDegrees - 90.0f, 360.0f);
+
+        float rotationAmountDegrees = t.rotation - oldRotation;
+
+        // Update position of children Transforms.
+        if (entity->hasComponent<Children>()) {
+            auto&[children] = entity->getComponent<Children>();
+
+            for (const auto& child : children) {
+                if (child->hasComponent<Transform>()) {
+                    auto& childTransform = child->getComponent<Transform>();
+                    childTransform.rotation = std::fmod(childTransform.rotation + rotationAmountDegrees, 360.0f);
+                }
+            }
+        }
     }
 };
