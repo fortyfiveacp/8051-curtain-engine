@@ -45,6 +45,7 @@ struct LookAtRotator {
 
 enum class RenderLayer {
     Background,
+    WorldBackground,
     World,
     UI
 };
