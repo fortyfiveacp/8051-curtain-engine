@@ -39,8 +39,7 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-characters.png", 1.25f, 0.3f);
 
 	// Menu text.
-	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-title.png", 1.5f, 1.7f);
-	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-start.png", 1.5f, 1.7f);
+	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-text.png", 1.5f, 1.7f);
 
 	// FPS counter.
 	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40,
@@ -147,7 +146,8 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		Game::gameState.playerBombs,
 		Game::gameState.power,
 		Game::gameState.graze,
-		Game::gameState.point
+		Game::gameState.point,
+		Game::gameState.continues
 		);
 
 	// Spawner parented on player for testing parenting. TODO: remove when no longer needed.
@@ -539,10 +539,13 @@ void Scene::createContinueGameUIComponents(Entity& overlay, int windowWidth, int
 			for (auto& entity : world.getEntities()) {
 				if (entity->hasComponent<PlayerStats>()) {
 					auto& playerStats = entity->getComponent<PlayerStats>();
+					// Update continues so far.
+					playerStats.currentContinues++;
+					Game::gameState.continues = playerStats.currentContinues;
 
-					// Set player health back to 3 and reset score to 0.
+					// Set player health back to 3 and reset score to 0 + current continues.
 					playerStats.currentHealth = 3;
-					playerStats.currentScore = 0;
+					playerStats.currentScore = playerStats.currentContinues;
 
 					break;
 				}
@@ -644,10 +647,10 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 void Scene::createBossHealthBar(int windowWidth, int windowHeight) {
 	float stageWidth = StageUtils::CalculateStageWidth(windowWidth);
 
-	float barWidth = stageWidth * 0.97f;
+	float barWidth = stageWidth * 0.965f;
 	float barPadding = (stageWidth - barWidth) / 2.0f;
 	float barX = StageUtils::CalculateStagePaddingX(windowWidth) + barPadding;
-	float barY = StageUtils::CalculateStagePaddingY(windowHeight) + barPadding;
+	float barY = StageUtils::CalculateStagePaddingY(windowHeight) + barPadding * 0.75f;
 
 	auto& bossHealthBarEntity = world.createEntity();
 	auto& children = bossHealthBarEntity.addComponent<Children>();
@@ -666,8 +669,9 @@ void Scene::createBossHealthBar(int windowWidth, int windowHeight) {
 	// Boss name label.
 	SDL_Color colour {206, 197, 237, 255};
 	const char* font = "tiranti";
-	float labelY = barY + barPadding;
-	auto& bossNameLabel = UIUtils::createLabel(world, barX, labelY, colour, font, "No Boss!", "BossLabel", LabelType::Static);
+	float labelY = barY + 13.0f;
+	auto& bossNameLabel = UIUtils::createLabel(world, barX, labelY, colour, font, " ",
+		"BossLabel", LabelType::Static);
 	auto& label = bossNameLabel.getComponent<Label>();
 	label.outlineColor = {29, 25, 55, 200};
 	label.visible = false;
@@ -677,8 +681,10 @@ void Scene::createBossHealthBar(int windowWidth, int windowHeight) {
 	bossNameLabel.addComponent<Fade>(0.5f, bossHealthBar.initializationDuration);
 
 	// Phase icon counter.
-	float counterY = labelY + TTF_GetFontSize(AssetManager::getFont(font)) - 3;
-	auto& phaseCounter = UIUtils::createIconCounter(world, barX, counterY, 3, 24, 24, IconCounterType::BossPhase, "../asset/ui/white-star.png");
+	float iconSize = 24.0f;
+	float counterY = labelY + iconSize + 3.0f;
+	auto& phaseCounter = UIUtils::createIconCounter(world, barX, counterY, 3, iconSize, iconSize,
+		IconCounterType::BossPhase, "../asset/ui/white-star.png");
 	phaseCounter.addComponent<Parent>(&bossHealthBarEntity);
 	children.children.push_back(&phaseCounter);
 
@@ -699,4 +705,5 @@ void Scene::resetGameState() {
 	Game::gameState.power = 0;
 	Game::gameState.graze = 0;
 	Game::gameState.point = 0;
+	Game::gameState.continues = 0;
 }

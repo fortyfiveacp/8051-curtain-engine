@@ -13,6 +13,7 @@ struct GameState {
 	int power;
 	int graze;
 	int point;
+	int continues;
 };
 
 class Game {

@@ -15,7 +15,7 @@ public:
         SDL_Texture* tex = TextureManager::load("../asset/bomb.png");
         SDL_FRect src = {0, 0, 64, 64};
         SDL_FRect dst = {0, 0, size, size};
-        bomb.addComponent<Sprite>(tex, src, dst, RenderLayer::World);
+        bomb.addComponent<Sprite>(tex, src, dst, RenderLayer::WorldBackground);
 
         auto& col = bomb.addComponent<CircleCollider>("bomb");
         float radius = size / 2.0f;

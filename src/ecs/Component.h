@@ -45,6 +45,7 @@ struct LookAtRotator {
 
 enum class RenderLayer {
     Background,
+    WorldBackground,
     World,
     UI
 };
@@ -162,6 +163,7 @@ struct PlayerStats {
     int currentPower{};
     int currentGraze{};
     int currentPoint{};
+    int currentContinues{};
     static constexpr int MAX_SCORE = 999999999;
     static constexpr int MAX_HEALTH = 8;
     static constexpr int MAX_BOMBS = 8;
