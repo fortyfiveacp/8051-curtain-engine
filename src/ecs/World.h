@@ -42,6 +42,7 @@
 #include "SelectableUISystem.h"
 #include "StageBackgroundSystem.h"
 #include "StageUtils.h"
+#include "WorldBackgroundRenderSystem.h"
 #include "event/AudioEventQueue.h"
 
 class World {
@@ -84,6 +85,7 @@ class World {
     FadeSystem fadeSystem;
     BossHealthBarSystem bossHealthBarSystem;
     BossTrackerSystem bossTrackerSystem;
+    WorldBackgroundRenderSystem worldBackgroundRenderSystem;
 
     // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
@@ -161,7 +163,7 @@ public:
         //         break;
         //     }
         // }
-
+        worldBackgroundRenderSystem.render(entities);
         renderSystem.render(entities);
 
         if (isDebugging) {

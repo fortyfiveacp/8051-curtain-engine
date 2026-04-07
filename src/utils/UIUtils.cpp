@@ -40,7 +40,7 @@ Entity& UIUtils::createFadeInMenuLayer(World& world, float width, float height, 
 	SDL_Texture* text = TextureManager::load(texturePath);
 	SDL_FRect src {0, 0, static_cast<float>(text->w), static_cast<float>(text->h)};
 	SDL_FRect dst {0, 0, width, height};
-	entity.addComponent<Sprite>(text, src, dst, RenderLayer::UI);
+	entity.addComponent<Sprite>(text, src, dst, RenderLayer::Background);
 
 	auto& charFade = entity.addComponent<Fade>(fadeDuration, fadeDelay);
 	charFade.isFading = true;
@@ -48,6 +48,7 @@ Entity& UIUtils::createFadeInMenuLayer(World& world, float width, float height, 
 	return entity;
 }
 
+// Note that this defaults to setting the buttons to invisible.
 Entity& UIUtils::createSelectableButton(World& world, const char* font, SDL_Color selectedColour, SDL_Color unselectedColour,
 	const char* text, const char* cacheKey, const std::function<void()>& onPressed) {
 

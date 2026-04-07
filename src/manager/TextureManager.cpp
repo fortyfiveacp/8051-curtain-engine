@@ -98,6 +98,9 @@ void TextureManager::updateLabel(Label& label) {
     SDL_SetSurfaceBlendMode(tempFillSurface, SDL_BLENDMODE_BLEND);
     SDL_BlitSurface(tempFillSurface, nullptr, tempOutlineSurface, &dst);
 
+    // Apply a subtle gradient that darkens the bottom of the text.
+    applyVerticalGradient(tempOutlineSurface);
+
     // Create the texture.
     SDL_Texture* texture = SDL_CreateTextureFromSurface(game->renderer, tempOutlineSurface);
 
@@ -121,6 +124,47 @@ void TextureManager::updateLabel(Label& label) {
 
     // Clean the texture.
     label.dirty = false;
+}
+
+void TextureManager::applyVerticalGradient(SDL_Surface* surface) {
+    SDL_LockSurface(surface);
+
+    Uint8* pixels = static_cast<Uint8*>(surface->pixels);
+    const int width  = surface->w;
+    const int height = surface->h;
+    const int pitch  = surface->pitch;
+
+    // Where the gradient starts (0 = top, 1 = bottom).
+    float gradientStart = 0.3f;
+    float inverseRange = 1.0f / (1.0f - gradientStart);
+    float darkAmount = 0.9f;
+    float minFactor = 0.6f;
+
+    // Apply gradient row by row, darkening more as we go further down.
+    for (int y = 0; y < height; y++) {
+        float t = static_cast<float>(y) / (height - 1);
+
+        float remapped = std::max(0.0f, (t - gradientStart) * inverseRange);
+
+        // Cubic curve to control gradient ramp up.
+        float gradient = remapped * remapped * remapped;
+
+        float factor = 1.0f - gradient * darkAmount;
+        factor = std::max(factor, minFactor);
+
+        // Apply gradient to row.
+        Uint8* row = pixels + y * pitch;
+        for (int x = 0; x < width; x++) {
+            Uint8* pixel = row + x * 4;
+
+            // Scale RGB channels.
+            pixel[0] = static_cast<Uint8>(pixel[0] * factor);
+            pixel[1] = static_cast<Uint8>(pixel[1] * factor);
+            pixel[2] = static_cast<Uint8>(pixel[2] * factor);
+        }
+    }
+
+    SDL_UnlockSurface(surface);
 }
 
 void TextureManager::draw(SDL_Texture* texture, const SDL_FRect* src, const SDL_FRect* dst) {

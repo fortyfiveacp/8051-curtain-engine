@@ -14,6 +14,8 @@ public:
     static void loadLabel(Label& label);
     static void updateLabel(Label& label);
 
+    static void applyVerticalGradient(SDL_Surface* surface) ;
+
     // Floating point Rect = FRect
     static void draw(SDL_Texture* texture, const SDL_FRect* src, const SDL_FRect* dst);
 

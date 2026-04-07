@@ -105,6 +105,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	gameState.power = 0;
 	gameState.graze = 0;
 	gameState.point = 0;
+	gameState.continues = 0;
 
 	// Start music.
 	audioManager.playMusic("stage-theme");
