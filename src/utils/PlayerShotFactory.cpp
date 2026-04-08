@@ -12,16 +12,16 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 	float largeShotFrequency = 0.08f;
     float fanShotFrequency = 0.15f;
     float yOffset = 50;
-    float fanSpread = 10;
+    float fanSpread = 5;
 
     float smallShotBulletSpeed = 1200.0f;
     float largeShotBulletSpeed = 1200.0f;
     float smallFanBulletSpeed = 1200.0f;
 
     // TODO: balance these values
-    float smallShotBulletDamage = 6.0f; // 0.03 * 4 bullets * 1/0.05 = 2.4 damage per second.
-    float largeShotBulletDamage = 20.0f; // 0.05 * 1 bullet * 1/0.05 =  2 damage per second.
-    float smallFanBulletDamage = 3.0f; // 0.015 * 4 bullets * 1/0.05 = 1.2 damage per second.
+    float smallShotBulletDamage = 6.0f;
+    float largeShotBulletDamage = 20.0f;
+    float smallFanBulletDamage = 3.0f;
 
     // Small shot.
     auto& smallShotEntity(world.createEntity());
