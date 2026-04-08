@@ -292,14 +292,35 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	// 	linearSpawner.isActive = false;
 	// });
 	// TODO: debug for simulating boss spawn, remove later.
-	debugTimeline.timeline.emplace_back(1.25, [this, &player] {
+	debugTimeline.timeline.emplace_back(1.25, [this, &player, stageWidth, stageHeight] {
 		player.addComponent<Boss>("Reimu Hakurei");
 
 		for (auto& entity : world.getEntities()) {
 			if (entity->hasComponent<BossHealthBar>()) {
 				entity->getComponent<Toggleable>().toggle();
 			}
+
+			// if (entity->hasComponent<StageBackground>()) {
+			// 	auto& stageBackground = entity->getComponent<StageBackground>();
+			//
+			// 	if (stageBackground.type == Background) {
+			// 		stageBackground.pendingTexture = TextureManager::load("../asset/stage/stage-test.png");
+			// 	} else if (stageBackground.type == Foreground) {
+			// 		stageBackground.pendingTexture = TextureManager::load("../asset/stage/blank.png");
+			// 	}
+			// }
 		}
+
+		// Create 2 new stage backgrounds, with one starting positioned above the stage.
+		// If you need to call this elsewhere, you can get the stage width and height using a function in StageUtils (you do need the window width/height though).
+		auto& newBackground1 = StageUtils::createStageBackground(world, stageWidth, stageHeight, 0, 60.0f, "../asset/stage/stage-test.png");
+		auto& newBackground2 = StageUtils::createStageBackground(world, stageWidth, stageHeight, -stageHeight, 60.0f, "../asset/stage/stage-test.png");
+
+		// Make new backgrounds fade in to soften the transition.
+		auto& fade1 = newBackground1.addComponent<Fade>();
+		auto& fade2 = newBackground2.addComponent<Fade>();
+		fade1.isFading = true;
+		fade2.isFading = true;
 	});
 	// // TODO: debug for win screen, remove later.
 	debugTimeline.timeline.emplace_back(90.0, [this] {

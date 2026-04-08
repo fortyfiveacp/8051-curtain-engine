@@ -1,4 +1,5 @@
 #pragma once
+#include "Component.h"
 #include "Entity.h"
 #include "SDL3/SDL_rect.h"
 
