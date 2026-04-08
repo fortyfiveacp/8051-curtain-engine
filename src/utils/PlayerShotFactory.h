@@ -6,5 +6,5 @@ class World;
 
 class PlayerShotFactory {
 public:
-    static void buildPlayerDanmaku(Entity& player, World& world, const PlayerShot& playerShot);
+    static void buildPlayerDanmaku(Entity& player, World& world, const Vector2D& playerPosition);
 };

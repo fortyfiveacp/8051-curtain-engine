@@ -7,6 +7,7 @@
 #include "StageUtils.h"
 #include "../manager/AudioManager.h"
 #include "EnemyFactory.h"
+#include "PlayerShotFactory.h"
 #include "StageLoader.h"
 
 Scene::Scene(SceneType sceneType, const char* sceneName, const char* stageDataPath, const char* stageBackgroundPath,
@@ -153,7 +154,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		);
 
 	// TODO: attach player shooting components
-
+	PlayerShotFactory::buildPlayerDanmaku(player, world, { playerStartingX, playerStartingY });
 
 	// Test spawners for items. TODO: remove when no longer needed.
 	auto& pointSpawner(world.createEntity());

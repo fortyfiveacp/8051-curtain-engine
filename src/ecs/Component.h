@@ -171,18 +171,7 @@ struct PlayerStats {
 };
 
 struct PlayerShot {
-    float frequency = 0.05f;
-    float yOffset = 50;
-    float fanSpread = 5;
-
-    float smallShotBulletSpeed = 1200.0f;
-    float largeShotBulletSpeed = 1200.0f;
-    float smallFanBulletSpeed = 1200.0f;
-
-    // TODO: balance these values
-    float smallShotBulletDamage = 0.03f; // 0.03 * 4 bullets * 1/0.05 = 2.4 damage per second.
-    float largeShotBulletDamage = 0.05f; // 0.05 * 1 bullet * 1/0.05 =  2 damage per second.
-    float smallFanBulletDamage = 0.015f; // 0.015 * 4 bullets * 1/0.05 = 1.2 damage per second.
+    float damage = 0.05f;
 };
 
 struct PlayerShotAbility {
