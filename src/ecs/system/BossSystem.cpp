@@ -41,11 +41,18 @@ void BossSystem::update(World &world, float dt)  {
         if (boss.movementTimer >= boss.movementInterval) {
             boss.movementTimer = 0.0f;
 
-            if (!boss.movementPoints.empty()) {
-                std::uniform_int_distribution<size_t> dist(0, boss.movementPoints.size() - 1);
-                size_t randomIndex = dist(gen);
-                boss.targetPoint = boss.movementPoints[randomIndex];
+            // Select a random point among the list that is not the current point to move to.
+            auto it = std::find(boss.movementPoints.begin(), boss.movementPoints.end(), boss.targetPoint);
+            size_t currentIndex = std::distance(boss.movementPoints.begin(), it);
+
+            std::uniform_int_distribution<size_t> dist(0, boss.movementPoints.size() - 2);
+            size_t randomIndex = dist(gen);
+
+            if (randomIndex >= currentIndex) {
+                randomIndex++;
             }
+
+            boss.targetPoint = boss.movementPoints[randomIndex];
         }
     }
 }

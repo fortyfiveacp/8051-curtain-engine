@@ -145,10 +145,10 @@
             <Emitter name="RightWing" x="50" y="20" />
         </Emitters>
         <MovementPoints>
-            <Point x="384" y="200" />
-            <Point x="200" y="150" />
-            <Point x="568" y="150" />
+            <Point x="384" y="100" />
             <Point x="384" y="300" />
+            <Point x="284" y="200" />
+            <Point x="484" y="200" />
         </MovementPoints>
         <Phases>
             <Phase id="0" healthThreshold="0.5">
