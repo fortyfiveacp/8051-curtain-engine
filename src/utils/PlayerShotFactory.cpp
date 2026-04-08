@@ -50,7 +50,8 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
 			SDL_FRect src = {0, 31, 32, 31};
 			SDL_FRect dest { position.x, position.y, 32, 31 };
-			e.addComponent<Sprite>(tex, src, dest);
+			Vector2D pivotOffset = Vector2D(dest.w / 2.0f, dest.h / 2.0f);
+			e.addComponent<Sprite>(tex, src, dest, RenderLayer::World, pivotOffset);
 
 			// TODO: adjust bullet collider
 			auto& c = e.addComponent<CircleCollider>("player-shot");
@@ -84,7 +85,8 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
 			SDL_FRect src = {0, 31, 32, 31};
 			SDL_FRect dest { position.x, position.y, 32, 31 };
-			e.addComponent<Sprite>(tex, src, dest);
+			Vector2D pivotOffset = Vector2D(dest.w / 2.0f, dest.h / 2.0f);
+			e.addComponent<Sprite>(tex, src, dest, RenderLayer::World, pivotOffset);
 
 			// TODO: adjust bullet collider
 			auto& c = e.addComponent<CircleCollider>("player-shot");
@@ -97,12 +99,12 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
     // Small fan.
     auto& smallFanEntity(world.createEntity());
     std::vector<Vector2D> smallFanPositions = {
-    		{-2 * fanSpread, yOffset},
-		{-1 * fanSpread, yOffset},
-		{1 * fanSpread, yOffset},
-		{2 * fanSpread, yOffset}
+    		{-2 * fanSpread, -yOffset},
+		{-1 * fanSpread, -yOffset},
+		{1 * fanSpread, -yOffset},
+		{2 * fanSpread, -yOffset}
     };
-    smallFanEntity.addComponent<Transform>(playerPosition, 180.0f, 1.0f);
+    smallFanEntity.addComponent<Transform>(playerPosition, 0.0f, 1.0f);
     auto& smallFanSpawner = player.addComponent<LinearSpawner>(
 		true,
 		true,
@@ -123,7 +125,8 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
 			SDL_FRect src = {0, 31, 32, 31};
 			SDL_FRect dest { position.x, position.y, 32, 31 };
-			e.addComponent<Sprite>(tex, src, dest);
+            Vector2D pivotOffset = Vector2D(dest.w / 2.0f, dest.h / 2.0f);
+			e.addComponent<Sprite>(tex, src, dest, RenderLayer::World, pivotOffset);
 
 			// TODO: adjust bullet collider
 			auto& c = e.addComponent<CircleCollider>("player-shot");
