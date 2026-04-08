@@ -321,6 +321,9 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		auto& fade2 = newBackground2.addComponent<Fade>();
 		fade1.isFading = true;
 		fade2.isFading = true;
+
+		// If you want new foregrounds too just repeat the process but with a different scroll speed.
+		// Check out the code around line 99 for the settings I used for the default.
 	});
 	// // TODO: debug for win screen, remove later.
 	debugTimeline.timeline.emplace_back(90.0, [this] {
