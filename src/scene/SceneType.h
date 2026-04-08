@@ -1,3 +1,3 @@
 #pragma once
 
-enum class SceneType { Gameplay, MainMenu };
+enum class SceneType { Gameplay, MainMenu, Credits };

@@ -107,6 +107,16 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 		height
 	);
 
+	sceneManager.loadScene(
+		SceneType::Credits,
+		"credits",
+		nullptr,
+		nullptr,
+		nullptr,
+		width,
+		height
+	);
+
 	// Init game data / state.
 	gameState.hiScore = 0;
 	gameState.score = 0;
@@ -166,9 +176,9 @@ void Game::update(float deltaTime) {
 }
 
 void Game::render() {
-	r = 100;
+	r = 255;
 	g = 255;
-	b = 50;
+	b = 255;
 	a = 255;
 
 	// TODO: purge

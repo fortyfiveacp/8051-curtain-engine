@@ -33,15 +33,20 @@ void UIUtils::updateIconCounter(Entity& entity) {
     }
 }
 
-Entity& UIUtils::createFadeInMenuLayer(World& world, float width, float height, const char* texturePath, float fadeDuration, float fadeDelay) {
-	auto& entity(world.createEntity());
-	entity.addComponent<Transform>(Vector2D(0, 0), 0.0f, 1.0f);
+Entity& UIUtils::createBackground(World& world, float windowWidth, float windowHeight, const char* texturePath) {
+	auto& background(world.createEntity());
+	background.addComponent<Transform>(Vector2D(0, 0), 0.0f, 1.0f);
 
-	SDL_Texture* text = TextureManager::load(texturePath);
-	SDL_FRect src {0, 0, static_cast<float>(text->w), static_cast<float>(text->h)};
-	SDL_FRect dst {0, 0, width, height};
-	entity.addComponent<Sprite>(text, src, dst, RenderLayer::Background);
+	SDL_Texture* backTex = TextureManager::load(texturePath);
+	SDL_FRect backSrc {0, 0, static_cast<float>(backTex->w), static_cast<float>(backTex->h)};
+	SDL_FRect menuDst {0, 0, windowWidth, windowHeight };
+	background.addComponent<Sprite>(backTex, backSrc, menuDst, RenderLayer::Background);
 
+	return background;
+}
+
+Entity& UIUtils::createFadeInBackgroundLayer(World& world, float width, float height, const char* texturePath, float fadeDuration, float fadeDelay) {
+	auto& entity = createBackground(world, width, height, texturePath);
 	auto& charFade = entity.addComponent<Fade>(fadeDuration, fadeDelay);
 	charFade.isFading = true;
 
