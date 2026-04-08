@@ -418,7 +418,7 @@ void Scene::initCredits(int windowWidth, int windowHeight) {
 	creditsTransform.position.y = -height;
 
 	// Make the background slowly move downwards.
-	creditsBackground.addComponent<Velocity>(Vector2D(0, 1), 10.0f);
+	creditsBackground.addComponent<Velocity>(Vector2D(0, 1), 7.0f);
 
 	// PAths to all the credit textures.
 	std::vector<std::string> creditsPaths = {

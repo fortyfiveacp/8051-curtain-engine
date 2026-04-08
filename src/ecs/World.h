@@ -9,6 +9,7 @@
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
 #include "ConvoySystem.h"
+#include "CreditsSystem.h"
 #include "DeathBombSystem.h"
 #include "DebugRenderSystem.h"
 #include "DestructionSystem.h"
@@ -90,6 +91,7 @@ class World {
     EnemyHealthSystem enemyHealthSystem;
     WorldBackgroundRenderSystem worldBackgroundRenderSystem;
     PlayerFocusRenderSystem playerFocusRenderSystem;
+    CreditsSystem creditsSystem;
 
     // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
@@ -143,6 +145,7 @@ public:
                 break;
             case SceneType::Credits:
                 // Credits systems.
+                creditsSystem.update(event);
                 movementSystem.update(entities, dt);
                 timelineSystem.update(entities, dt);
                 break;
