@@ -1,4 +1,6 @@
 #include "StageLoader.h"
+
+#include "BossFactory.h"
 #include "tinyxml2.h"
 
 void StageLoader::loadStage(const char *path, World &world) {
@@ -45,40 +47,94 @@ void StageLoader::loadStage(const char *path, World &world) {
 
         auto* danmakuPatternElem = convoyElement->FirstChildElement("Pattern");
         if (danmakuPatternElem) {
-            data.danmakuPattern.hasPattern = true;
-            data.danmakuPattern.danmakuType = stringToDanmakuType(danmakuPatternElem->Attribute("type"));
-            data.danmakuPattern.bulletType = stringToBulletType(danmakuPatternElem->Attribute("bullet"));
-            data.danmakuPattern.startTime = danmakuPatternElem->FloatAttribute("startTime");
-            data.danmakuPattern.endTime = danmakuPatternElem->FloatAttribute("endTime");
-            data.danmakuPattern.frequency = danmakuPatternElem->FloatAttribute("frequency");
-            data.danmakuPattern.bulletSpeed = danmakuPatternElem->FloatAttribute("bulletSpeed");
-
-            data.danmakuPattern.bulletsPerBurst = danmakuPatternElem->IntAttribute("bulletsPerBurst");
-            data.danmakuPattern.rotationSpeed = danmakuPatternElem->FloatAttribute("rotationSpeed");
-            data.danmakuPattern.bulletAngularVel = danmakuPatternElem->FloatAttribute("bulletAngularVel");
-            data.danmakuPattern.radius = danmakuPatternElem->FloatAttribute("radius");
-
-            data.danmakuPattern.isFanPattern = danmakuPatternElem->BoolAttribute("isFanPattern");
-            data.danmakuPattern.shouldTargetPlayer = danmakuPatternElem->BoolAttribute("targeted");
-            data.danmakuPattern.speedMultiplier = danmakuPatternElem->FloatAttribute("speedMultiplier");
-
-            auto* bulletPosRoot = danmakuPatternElem->FirstChildElement("BulletPositions");
-            if (bulletPosRoot) {
-                for (auto* pos = bulletPosRoot->FirstChildElement("Pos");
-                     pos;
-                     pos = pos->NextSiblingElement("Pos")) {
-
-                    float posX = pos->FloatAttribute("x");
-                    float posY = pos->FloatAttribute("y");
-                    data.danmakuPattern.bulletPositions.emplace_back(posX, posY);
-                }
-            }
+            data.danmakuPattern = parseDanmakuPattern(danmakuPatternElem);
         }
 
         timelineEntity.getComponent<Timeline>().timeline.emplace_back(startTime, [&world, data]() {
             auto& spawner = world.createDeferredEntity();
             spawner.addComponent<Convoy>(data);
         });
+    }
+
+    auto* bossElem = root->FirstChildElement("Boss");
+    if (bossElem) {
+        float startTime = bossElem->FloatAttribute("start");
+        Boss data;
+        data.bossName = bossElem->Attribute("name");
+        data.maxHealth = bossElem->IntAttribute("maxHealth");
+        data.currentHealth = data.maxHealth;
+        data.phasesLeft = bossElem->IntAttribute("phases");
+
+        std::vector<Vector2D> emitterOffsets;
+        auto* emittersRoot = bossElem->FirstChildElement("Emitters");
+        if (emittersRoot) {
+            for (auto* e = emittersRoot->FirstChildElement("Emitter"); e; e = e->NextSiblingElement("Emitter")) {
+                emitterOffsets.emplace_back( e->FloatAttribute("x"), e->FloatAttribute("y") );
+            }
+        }
+
+        auto* movePointsRoot = bossElem->FirstChildElement("MovementPoints");
+        if (movePointsRoot) {
+            for (auto* p = movePointsRoot->FirstChildElement("Point"); p; p = p->NextSiblingElement("Point")) {
+                data.movementPoints.emplace_back( p->FloatAttribute("x"), p->FloatAttribute("y") );
+            }
+        }
+
+        auto* phasesRoot = bossElem->FirstChildElement("Phases");
+        if (phasesRoot) {
+            for (auto* phaseElem = phasesRoot->FirstChildElement("Phase");
+                 phaseElem;
+                 phaseElem = phaseElem->NextSiblingElement("Phase")) {
+
+                PhaseData pData;
+                pData.phaseId = phaseElem->IntAttribute("id");
+
+                const char* trigger = phaseElem->Attribute("trigger");
+                if (trigger && std::string(trigger) == "death") {
+                    pData.triggerType = PhaseTrigger::Death;
+                    pData.healthThreshold = 0.0f;
+                } else {
+                    pData.triggerType = PhaseTrigger::HealthThreshold;
+                    pData.healthThreshold = phaseElem->FloatAttribute("healthThreshold");
+                }
+
+                const char* targetStr = phaseElem->Attribute("target");
+                if (targetStr && std::string(targetStr) == "emitters") {
+                    pData.target = PatternTarget::Emitters;
+                } else {
+                    pData.target = PatternTarget::Boss;
+                }
+
+                for (auto* patternElem = phaseElem->FirstChildElement("Pattern");
+                     patternElem;
+                     patternElem = patternElem->NextSiblingElement("Pattern")) {
+                    pData.patterns.push_back(parseDanmakuPattern(patternElem));
+                }
+
+                data.phaseList.push_back(pData);
+            }
+        }
+
+        auto* initPosElem = bossElem->FirstChildElement("InitialPosition");
+        Vector2D startPos{ initPosElem->FloatAttribute("x"), initPosElem->FloatAttribute("y") };
+
+        timelineEntity.getComponent<Timeline>().timeline.emplace_back(startTime,
+            [&world, data, startPos, emitterOffsets]() {
+                auto& boss = world.createDeferredEntity();
+                BossFactory::buildStageBoss(boss, world, data, startPos, emitterOffsets);
+                AudioManager::playMusic("boss-theme");
+
+                for (auto& entity : world.getEntities()) {
+                    if (entity->hasComponent<BossHealthBar>()) {
+                        entity->getComponent<Toggleable>().toggle();
+                    }
+
+                    if (entity->hasComponent<ProjectileTag>() || entity->hasComponent<EnemyTag>()) {
+                        entity->destroy();
+                    }
+                }
+            }
+        );
     }
 }
 
@@ -113,4 +169,37 @@ BulletType StageLoader::stringToBulletType(const std::string &name) {
     }
 
     return BulletType::Circle;
+}
+
+DanmakuPattern StageLoader::parseDanmakuPattern(tinyxml2::XMLElement* elem) {
+    DanmakuPattern pattern{};
+    if (!elem) {
+        return pattern;
+    }
+
+    pattern.hasPattern = true;
+    pattern.danmakuType = stringToDanmakuType(elem->Attribute("type"));
+    pattern.bulletType = stringToBulletType(elem->Attribute("bullet"));
+    pattern.startTime = elem->FloatAttribute("startTime");
+    pattern.endTime = elem->FloatAttribute("endTime");
+    pattern.frequency = elem->FloatAttribute("frequency");
+    pattern.bulletSpeed = elem->FloatAttribute("bulletSpeed");
+    pattern.bulletsPerBurst = elem->IntAttribute("bulletsPerBurst");
+    pattern.rotationSpeed = elem->FloatAttribute("rotationSpeed");
+    pattern.bulletAngularVel = elem->FloatAttribute("bulletAngularVel");
+    pattern.radius = elem->FloatAttribute("radius");
+
+    pattern.isFanPattern = elem->BoolAttribute("isFanPattern");
+    pattern.shouldTargetPlayer = elem->BoolAttribute("targeted");
+    pattern.speedMultiplier = elem->FloatAttribute("speedMultiplier");
+
+
+    auto* bulletPosRoot = elem->FirstChildElement("BulletPositions");
+    if (bulletPosRoot) {
+        for (auto* pos = bulletPosRoot->FirstChildElement("Pos"); pos; pos = pos->NextSiblingElement("Pos")) {
+            pattern.bulletPositions.emplace_back(pos->FloatAttribute("x"), pos->FloatAttribute("y"));
+        }
+    }
+
+    return pattern;
 }

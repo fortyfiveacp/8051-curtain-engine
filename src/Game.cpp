@@ -54,7 +54,12 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	}
 
 	// Load audio.
+	audioManager.loadAudio("menu-theme", "../asset/audio/music/Menu Theme.flac");
 	audioManager.loadAudio("stage-theme", "../asset/audio/music/Stage Theme.mp3");
+	audioManager.loadAudio("boss-theme", "../asset/audio/music/Boss Theme.flac");
+	audioManager.loadAudio("credits-theme", "../asset/audio/music/Credits Theme.flac");
+
+	// Load sfx.
 	audioManager.loadAudio("player-hit", "../asset/audio/sfx/se_pldead00.flac");
 	audioManager.loadAudio("pause", "../asset/audio/sfx/se_pause.flac");
 	audioManager.loadAudio("select", "../asset/audio/sfx/se_select00.flac");
@@ -65,6 +70,8 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	audioManager.loadAudio("enemy-hit", "../asset/audio/sfx/se_damage00.flac");
 	audioManager.loadAudio("enemy-hit-low", "../asset/audio/sfx/se_damage01.flac");
 	audioManager.loadAudio("enemy-dead", "../asset/audio/sfx/se_enep00.flac");
+	audioManager.loadAudio("boss-transition", "../asset/audio/sfx/se_cat00.flac");
+	audioManager.loadAudio("boss-dead", "../asset/audio/sfx/se_enep01.flac");
 
 	// Load fonts.
 	AssetManager::loadFont("pop1", "../asset/fonts/pop1-w9.ttf", 32);
@@ -121,7 +128,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	gameState.continues = 0;
 
 	// Start music.
-	audioManager.playMusic("stage-theme");
+	// audioManager.playMusic("menu-theme");
 
 	// Start level 1.
 	sceneManager.changeSceneDeferred("mainmenu");

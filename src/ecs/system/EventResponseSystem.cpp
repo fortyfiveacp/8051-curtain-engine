@@ -200,6 +200,18 @@ void EventResponseSystem::onPlayerShotCollision(const CollisionEvent& e) {
             // Destroy shot after impact.
             playerShotEntity->destroy();
         }
+
+        if (otherTag == "boss" && other->hasComponent<Boss>()) {
+            if (e.state == CollisionState::Enter) {
+                auto& boss = other->getComponent<Boss>();
+                auto& playerShot = playerShotEntity->getComponent<PlayerShot>();
+
+                boss.currentHealth -= static_cast<int>(playerShot.damage);
+            }
+
+            // Destroy shot after impact.
+            playerShotEntity->destroy();
+        }
     }
 }
 
@@ -231,12 +243,19 @@ void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
             other->destroy();
         }
 
-        if (otherTag == "enemy" && other->hasComponent<EnemyHealth>()) {
-            if (e.state == CollisionState::Stay || e.state == CollisionState::Enter) {
-                auto& health = other->getComponent<EnemyHealth>();
-                auto& bombComp = bomb->getComponent<PlayerBomb>();
+        if (otherTag == "enemy" || otherTag == "boss") {
+            if (e.state == CollisionState::Exit) {
+                return;
+            }
 
-                health.current -= static_cast<int>(bombComp.damage);
+            float bombDamage = bomb->getComponent<PlayerBomb>().damage;
+            if (other->hasComponent<EnemyHealth>()) {
+                other->getComponent<EnemyHealth>().current -= static_cast<int>(bombDamage);
+            } else if (other->hasComponent<Boss>()) {
+                auto& boss = other->getComponent<Boss>();
+                if (!boss.isInvulnerable) {
+                    boss.currentHealth -= static_cast<int>(bombDamage * 5);
+                }
             }
         }
     }

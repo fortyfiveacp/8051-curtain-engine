@@ -50,6 +50,8 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40,
 		{240, 240, 240, 255}, "pop1", "0.000fps", "fpsCounter", LabelType::FPSCounter);
 	fpsCounter.addComponent<FPSCounter>();
+
+	AudioManager::playMusic("menu-theme");
 }
 
 void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight) {
@@ -61,6 +63,12 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 
 		const auto& pauseEvent = dynamic_cast<const PauseEvent&>(e);
 		isPaused = pauseEvent.isPaused;
+
+		if (pauseEvent.isPaused) {
+			AudioManager::pauseMusic();
+		} else {
+			AudioManager::resumeMusic();
+		}
 	});
 
 	// Subscribe to event for debugging the game.
@@ -73,6 +81,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		isDebugging = debugEvent.isDebugging;
 	});
 
+	AudioManager::playMusic("stage-theme");
 
 	SDL_Texture* backgroundTex = TextureManager::load("../asset/background.png");
 	float texWidth = backgroundTex->w;
@@ -299,13 +308,16 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	// 		}
 	// 	}
 	// });
-	// // // TODO: debug for win screen, remove later.
+	// // TODO: debug for win screen, remove later.
 	// debugTimeline.timeline.emplace_back(90.0, [this] {
 	// 	for (auto& entity : world.getEntities()) {
 	// 		if (entity->hasComponent<WinGameMenuTag>()) {
 	// 			entity->getComponent<Toggleable>().toggle();
 	// 		}
 	// 	}
+	//
+	// 	// TODO: play credits theme when boss is defeated.
+	// 	AudioManager::playMusic("credits-theme");
 	// });
 
 	// Add scene state.
