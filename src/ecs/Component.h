@@ -170,6 +170,14 @@ struct PlayerStats {
     static constexpr int MAX_POWER = 400;
 };
 
+struct PlayerShot {
+    float damage = 0.05f;
+};
+
+struct PlayerShotAbility {
+    bool wasShootingLastFrame = false;
+};
+
 struct PlayerBomb {
     float timer = 0.0f;
     float duration = 3.0f;

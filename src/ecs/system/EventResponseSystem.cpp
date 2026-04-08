@@ -18,6 +18,7 @@ EventResponseSystem::EventResponseSystem(World &world) {
         onCollision(collision, "enemy", world);
 
         onBombCollision(collision);
+        onPlayerShotCollision(collision);
     });
 
     world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
@@ -159,6 +160,45 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
 
                 world.getAudioEventQueue().push(std::make_unique<AudioEvent>("player-hit"));
             }
+        }
+    }
+}
+
+void EventResponseSystem::onPlayerShotCollision(const CollisionEvent& e) {
+    if (e.entityA == nullptr || e.entityB == nullptr) {
+        return;
+    }
+
+    Entity* playerShotEntity = nullptr;
+    Entity* other = nullptr;
+
+    if (e.entityA->hasComponent<CircleCollider>() && e.entityA->getComponent<CircleCollider>().tag == "player-shot") {
+        playerShotEntity = e.entityA;
+        other = e.entityB;
+    } else if (e.entityB->hasComponent<CircleCollider>() && e.entityB->getComponent<CircleCollider>().tag == "player-shot") {
+        playerShotEntity = e.entityB;
+        other = e.entityA;
+    }
+
+    if (playerShotEntity && other) {
+        std::string otherTag{};
+
+        if (other->hasComponent<RectCollider>()) {
+            otherTag = other->getComponent<RectCollider>().tag;
+        } else if (other->hasComponent<CircleCollider>()) {
+            otherTag = other->getComponent<CircleCollider>().tag;
+        }
+
+        if (otherTag == "enemy" && other->hasComponent<EnemyHealth>()) {
+            if (e.state == CollisionState::Enter) {
+                auto& health = other->getComponent<EnemyHealth>();
+                auto& playerShot = playerShotEntity->getComponent<PlayerShot>();
+
+                health.current -= static_cast<int>(playerShot.damage);
+            }
+
+            // Destroy shot after impact.
+            playerShotEntity->destroy();
         }
     }
 }

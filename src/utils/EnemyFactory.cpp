@@ -57,7 +57,7 @@ void EnemyFactory::buildSmallFairy(Entity &entity, World& world, const EnemyType
 void EnemyFactory::buildLargeFairy(Entity &entity, World& world, const DanmakuPattern& danmakuPattern) {
     initBaseFairy(entity, "largeFairy", "../asset/animations/large_fairy_anim.png", 64);
 
-    entity.addComponent<EnemyHealth>(100);
+    entity.addComponent<EnemyHealth>(500);
 
     auto& loot = entity.addComponent<LootDropTable>();
     loot.types = { Point, Point, LargePower, Point, Point };
