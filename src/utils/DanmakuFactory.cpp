@@ -67,6 +67,9 @@ void DanmakuFactory::initLinearPattern(Entity &entity, World &world, const Danma
             auto& bulletCol = bullet.addComponent<CircleCollider>("projectile");
             bulletCol.centerPosition = position;
             bulletCol.radius = 4;
+
+            // TODO: temporarily moved audio logic here.
+            AudioManager::playSfx("circle-bullet-shot");
         }
     );
 }

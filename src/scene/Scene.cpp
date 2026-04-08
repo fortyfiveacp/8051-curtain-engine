@@ -1,10 +1,13 @@
 #include "../manager/AssetManager.h"
 #include "Game.h"
 #include "Scene.h"
+
+#include "DanmakuFactory.h"
 #include "ItemFactory.h"
 #include "StageUtils.h"
 #include "../manager/AudioManager.h"
 #include "EnemyFactory.h"
+#include "PlayerShotFactory.h"
 #include "StageLoader.h"
 
 Scene::Scene(SceneType sceneType, const char* sceneName, const char* stageDataPath, const char* stageBackgroundPath,
@@ -148,7 +151,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	player.addComponent<KeyboardInput>();
 	player.addComponent<InvincibilityFrames>();
 	player.addComponent<PlayerRespawn>(Vector2D(playerStartingX, playerStartingY));
-	player.addComponent<PlayerStats>(
+	auto& playerStats = player.addComponent<PlayerStats>(
 		Game::gameState.hiScore,
 		Game::gameState.score,
 		Game::gameState.playerHealth,
@@ -159,15 +162,8 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		Game::gameState.continues
 		);
 
-	// Spawner parented on player for testing parenting. TODO: remove when no longer needed.
-	auto& playerPortableSpawner(world.createEntity());
-	auto& playerPortableSpawnerTransform = playerPortableSpawner.addComponent<Transform>(Vector2D(playerStartingX + 50, playerStartingY), 0.0f, 1.0f);
-	playerPortableSpawner.addComponent<TimedSpawner>(1.0f, [this, &playerPortableSpawnerTransform] {
-		auto& itemEntity(world.createDeferredEntity());
-		ItemFactory::createItem(itemEntity, SmallPower, playerPortableSpawnerTransform.position);
-	});
-
-	player.addComponent<Children>().children.emplace_back(&playerPortableSpawner);
+	// Attach player shooting components.
+	PlayerShotFactory::buildPlayerDanmaku(player, world, { playerStartingX, playerStartingY }, playerStats);
 
 	// Test spawners for items. TODO: remove when no longer needed.
 	auto& pointSpawner(world.createEntity());
