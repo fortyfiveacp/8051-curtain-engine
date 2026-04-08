@@ -22,21 +22,7 @@ void BossFactory::buildStageBoss(Entity &entity, World &world, const Boss &bossD
     collider.radius = 16;
 
     entity.addComponent<EnemyTag>();
-
-    auto& children = entity.addComponent<Children>();
-
-    auto& leftEmitter = world.createDeferredEntity();
-    leftEmitter.addComponent<Transform>().position = startPos + Vector2D(-60, 20);
-    leftEmitter.addComponent<Parent>().parent = &entity;
-    leftEmitter.addComponent<RadialSpawner>();
-    children.children.push_back(&leftEmitter);
-
-    auto& rightEmitter = world.createDeferredEntity();
-    rightEmitter.addComponent<Transform>().position = startPos + Vector2D(60, 20);
-    rightEmitter.addComponent<Parent>().parent = &entity;
-    rightEmitter.addComponent<RadialSpawner>();
-    children.children.push_back(&rightEmitter);
-
+    entity.addComponent<Children>();
     entity.addComponent<Boss>(bossData);
 
     for (const auto& offset : emitterOffsets) {

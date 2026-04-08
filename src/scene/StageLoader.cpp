@@ -96,14 +96,14 @@ void StageLoader::loadStage(const char *path, World &world) {
         auto* emittersRoot = bossElem->FirstChildElement("Emitters");
         if (emittersRoot) {
             for (auto* e = emittersRoot->FirstChildElement("Emitter"); e; e = e->NextSiblingElement("Emitter")) {
-                emitterOffsets.push_back({ e->FloatAttribute("x"), e->FloatAttribute("y") });
+                emitterOffsets.emplace_back( e->FloatAttribute("x"), e->FloatAttribute("y") );
             }
         }
 
         auto* movePointsRoot = bossElem->FirstChildElement("MovementPoints");
         if (movePointsRoot) {
             for (auto* p = movePointsRoot->FirstChildElement("Point"); p; p = p->NextSiblingElement("Point")) {
-                data.movementPoints.push_back({ p->FloatAttribute("x"), p->FloatAttribute("y") });
+                data.movementPoints.emplace_back( p->FloatAttribute("x"), p->FloatAttribute("y") );
             }
         }
         auto* phasesRoot = bossElem->FirstChildElement("Phases");
