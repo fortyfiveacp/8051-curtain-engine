@@ -2,6 +2,7 @@
 #include <string>
 
 #include "Component.h"
+#include "tinyxml2.h"
 #include "World.h"
 
 class StageLoader {
@@ -12,4 +13,6 @@ private:
     static EnemyType stringToEnemyType(const std::string& name);
     static DanmakuType stringToDanmakuType(const std::string& name);
     static BulletType stringToBulletType(const std::string& name);
+
+    static DanmakuPattern parseDanmakuPattern(tinyxml2::XMLElement *elem);
 };

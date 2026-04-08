@@ -144,5 +144,17 @@
             <Emitter name="LeftWing" x="-50" y="20" />
             <Emitter name="RightWing" x="50" y="20" />
         </Emitters>
+        <MovementPoints>
+            <Point x="384" y="200" />
+            <Point x="200" y="150" />
+            <Point x="568" y="150" />
+            <Point x="384" y="300" />
+        </MovementPoints>
+        <Phases>
+            <Phase id="0" healthThreshold="0.5">
+                <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="99.0" frequency="0.5" bulletSpeed="120.0"
+                         bulletsPerBurst="24" rotationSpeed="10.0" bulletAngularVel="0.0" radius="15.0"/>
+            </Phase>
+        </Phases>
     </Boss>
 </Stage>

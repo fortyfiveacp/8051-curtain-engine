@@ -406,6 +406,12 @@ struct LootDropTable {
     std::vector<Vector2D> offsets;
 };
 
+struct PhaseData {
+    int phaseId{};
+    float healthThreshold = 0.3;
+    DanmakuPattern pattern{};
+};
+
 struct Boss {
     std::string bossName{};
     int maxHealth{};
@@ -415,6 +421,12 @@ struct Boss {
     Vector2D targetPoint{384.0f, 200.0f};
     bool introCompleted = false;
     float movementSpeed = 300.0f;
+
+    std::vector<Vector2D> movementPoints{};
+    float movementTimer = 0.0f;
+    float movementInterval = 2.0f;
+
+    std::vector<PhaseData> phaseList;
 };
 
 struct BossHealthBar {
