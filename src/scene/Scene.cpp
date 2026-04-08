@@ -422,9 +422,13 @@ void Scene::initCredits(int windowWidth, int windowHeight) {
 
 	// Fade in the actual credits.
 	std::vector<std::string> creditsPaths = {
-		"../asset/credits/credits-test.png",
-		"../asset/credits/credits-test.png",
-		"../asset/credits/credits-test.png"
+		"../asset/credits/credits-title.png",
+		"../asset/credits/credits-zun.png",
+		"../asset/credits/credits-programmers.png",
+		"../asset/credits/credits-sprites.png",
+		"../asset/credits/credits-art.png",
+		"../asset/credits/credits-sound.png",
+		"../asset/credits/credits-special.png"
 	};
 
 	auto& timelineEntity = world.createEntity();
@@ -433,30 +437,45 @@ void Scene::initCredits(int windowWidth, int windowHeight) {
 }
 
 void Scene::createCreditsTimeline(Timeline& timeline, std::vector<std::string> creditsPaths, int windowWidth, int windowHeight) {
-	float creditsStayDuration = 5.0f;
+	float fadeDuration = 2.0f;
+	float creditsStayDuration = 3.0f;
+	float baseDelay = 2.5f;
+
+	float creditsSlotDuration = fadeDuration + creditsStayDuration + fadeDuration;
 
 	for (int i = 0; i < creditsPaths.size(); i++) {
 		std::string creditsPath = creditsPaths[i];
 
 		auto& creditsEntity = UIUtils::createBackground(world, windowWidth, windowHeight, creditsPath.c_str());
-		auto& fade = creditsEntity.addComponent<Fade>();
+		auto& fade = creditsEntity.addComponent<Fade>(fadeDuration);
 		auto& sprite = creditsEntity.getComponent<Sprite>();
 		sprite.visible = false;
 
-		float delayBetweenCredits = creditsStayDuration + fade.fadeDuration * 2;
+		float fadeInStart = baseDelay + creditsSlotDuration * i;
 
 		// Fade credit in.
-		timeline.timeline.emplace_back(delayBetweenCredits * i, [&fade, &sprite] {
+		timeline.timeline.emplace_back(fadeInStart, [&fade, &sprite] {
 			sprite.visible = true;
+			fade.durationTimer = 0.0f;
 			fade.isFading = true;
 		});
 
+		float fadeOutStart = fadeInStart + fadeDuration + creditsStayDuration;
+
 		// Fade credit out in time for the next credit.
-		timeline.timeline.emplace_back(delayBetweenCredits * (i + 1), [&fade] {
+		timeline.timeline.emplace_back(fadeOutStart, [&fade] {
 			fade.startingAlpha = 255;
 			fade.endingAlpha = 0;
+			fade.durationTimer = 0.0f;
 			fade.isFading = true;
 		});
+
+		// Go back to the main menu a bit after the last credit.
+		if (i == creditsPaths.size() - 1) {
+			timeline.timeline.emplace_back(fadeOutStart + fadeDuration + 0.5f, [] {
+				Game::onSceneChangeRequest("mainmenu");
+			});
+		}
 	}
 }
 
@@ -662,6 +681,16 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 	overlay.getComponent<Children>().children.push_back(&darken);
 
 	// Create quit to title button.
+	auto& creditButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
+		"View Credits", "CreditsButton", [this] {
+			// Reset game state.
+			resetGameState();
+
+			// Request scene change to credits.
+			Game::onSceneChangeRequest("credits");
+		});
+
+	// Create quit to title button.
 	auto& quitTitleButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
 		"Quit To Title", "WinQuitTitleButton", [this] {
 			// Reset game state.
@@ -681,6 +710,7 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 		});
 
 	std::vector<Entity*> buttons;
+	buttons.push_back(&creditButton);
 	buttons.push_back(&quitTitleButton);
 	buttons.push_back(&quitButton);
 
