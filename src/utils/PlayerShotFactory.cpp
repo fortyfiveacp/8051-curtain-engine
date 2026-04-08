@@ -17,9 +17,9 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
     float smallFanBulletSpeed = 1200.0f;
 
     // TODO: balance these values
-    float smallShotBulletDamage = 0.03f; // 0.03 * 4 bullets * 1/0.05 = 2.4 damage per second.
-    float largeShotBulletDamage = 0.05f; // 0.05 * 1 bullet * 1/0.05 =  2 damage per second.
-    float smallFanBulletDamage = 0.015f; // 0.015 * 4 bullets * 1/0.05 = 1.2 damage per second.
+    float smallShotBulletDamage = 6.0f; // 0.03 * 4 bullets * 1/0.05 = 2.4 damage per second.
+    float largeShotBulletDamage = 10.0f; // 0.05 * 1 bullet * 1/0.05 =  2 damage per second.
+    float smallFanBulletDamage = 3.0f; // 0.015 * 4 bullets * 1/0.05 = 1.2 damage per second.
 
     // Small shot.
     auto& smallShotEntity(world.createEntity());
@@ -43,15 +43,12 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, speed, false);
 
-			// TODO: add new bullet sprites here!
-			Animation anim = AssetManager::getAnimation("blueFairy");
-			e.addComponent<Animation>(anim);
-
-			SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
-			SDL_FRect src = {0, 31, 32, 31};
-			SDL_FRect dest { position.x, position.y, 32, 31 };
+			SDL_Texture* tex = TextureManager::load("../asset/bullet-spritesheet.png");
+			SDL_SetTextureAlphaMod(tex, 150);
+			SDL_FRect src = {240, 80, 16, 16};
+			SDL_FRect dest { position.x, position.y, 32, 32 };
 			Vector2D pivotOffset = Vector2D(dest.w / 2.0f, dest.h / 2.0f);
-			e.addComponent<Sprite>(tex, src, dest, RenderLayer::World, pivotOffset);
+			e.addComponent<Sprite>(tex, src, dest, RenderLayer::WorldBackground, pivotOffset);
 
 			// TODO: adjust bullet collider
 			auto& c = e.addComponent<CircleCollider>("player-shot");
@@ -78,15 +75,12 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, speed, false);
 
-			// TODO: add new bullet sprites here!
-			Animation anim = AssetManager::getAnimation("blueFairy");
-			e.addComponent<Animation>(anim);
-
-			SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
-			SDL_FRect src = {0, 31, 32, 31};
-			SDL_FRect dest { position.x, position.y, 32, 31 };
+			SDL_Texture* tex = TextureManager::load("../asset/bullet-spritesheet.png");
+			SDL_SetTextureAlphaMod(tex, 100);
+			SDL_FRect src = {32, 96, 16, 16};
+			SDL_FRect dest { position.x, position.y, 32, 32 };
 			Vector2D pivotOffset = Vector2D(dest.w / 2.0f, dest.h / 2.0f);
-			e.addComponent<Sprite>(tex, src, dest, RenderLayer::World, pivotOffset);
+			e.addComponent<Sprite>(tex, src, dest, RenderLayer::WorldBackground, pivotOffset);
 
 			// TODO: adjust bullet collider
 			auto& c = e.addComponent<CircleCollider>("player-shot");
@@ -118,15 +112,12 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, speed, false);
 
-			// TODO: add new bullet sprites here!
-			Animation anim = AssetManager::getAnimation("blueFairy");
-			e.addComponent<Animation>(anim);
-
-			SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
-			SDL_FRect src = {0, 31, 32, 31};
-			SDL_FRect dest { position.x, position.y, 32, 31 };
+			SDL_Texture* tex = TextureManager::load("../asset/bullet-spritesheet.png");
+			SDL_SetTextureAlphaMod(tex, 150);
+			SDL_FRect src = {240, 32, 16, 16};
+			SDL_FRect dest { position.x, position.y, 32, 32 };
             Vector2D pivotOffset = Vector2D(dest.w / 2.0f, dest.h / 2.0f);
-			e.addComponent<Sprite>(tex, src, dest, RenderLayer::World, pivotOffset);
+			e.addComponent<Sprite>(tex, src, dest, RenderLayer::WorldBackground, pivotOffset);
 
 			// TODO: adjust bullet collider
 			auto& c = e.addComponent<CircleCollider>("player-shot");
