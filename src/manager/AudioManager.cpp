@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <chrono>
 
+MIX_Mixer* AudioManager::mixer = nullptr;
+MIX_Track* AudioManager::musicTrack = nullptr;
 std::vector<MIX_Track*> AudioManager::sfxTracks;
 std::unordered_map<std::string, MIX_Audio*> AudioManager::audio;
 std::unordered_map<std::string, double> AudioManager::sfxLastPlayedTimes;
@@ -33,7 +35,7 @@ AudioManager::AudioManager() {
     MIX_SetTrackGain(musicTrack, BGM_VOLUME);
 }
 
-void AudioManager::loadAudio(const std::string &name, const char *path) const {
+void AudioManager::loadAudio(const std::string &name, const char *path) {
     if (audio.contains(name)) {
         return;
     }
@@ -46,7 +48,7 @@ void AudioManager::loadAudio(const std::string &name, const char *path) const {
     audio.emplace(name, audioPtr);
 }
 
-void AudioManager::playMusic(const std::string &name) const {
+void AudioManager::playMusic(const std::string &name) {
     if (MIX_SetTrackAudio(musicTrack, audio[name]) == 0) {
         std::cout << "MIX_SetTrackAudio() Failed" << std::endl;
         return;
@@ -60,7 +62,21 @@ void AudioManager::playMusic(const std::string &name) const {
     SDL_DestroyProperties(props);
 }
 
-void AudioManager::stopMusic(const std::string &name) const {
+void AudioManager::pauseMusic() {
+    if (musicTrack) {
+        MIX_PauseTrack(musicTrack);
+        std::cout << "Music paused." << std::endl;
+    }
+}
+
+void AudioManager::resumeMusic() {
+    if (musicTrack) {
+        MIX_ResumeTrack(musicTrack);
+        std::cout << "Music resumed." << std::endl;
+    }
+}
+
+void AudioManager::stopMusic() {
     MIX_StopTrack(musicTrack, 0);
 }
 
