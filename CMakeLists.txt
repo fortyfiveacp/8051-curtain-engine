@@ -78,6 +78,7 @@ set(SRC_FILES
         src/utils/BossFactory.h
         src/ecs/system/EnemyHealthSystem.h
         src/ecs/system/EnemyHealthSystem.cpp
+        src/ecs/system/CreditsSystem.cpp
         src/utils/PlayerShotFactory.h
         src/utils/PlayerShotFactory.cpp
         #add all new source files here

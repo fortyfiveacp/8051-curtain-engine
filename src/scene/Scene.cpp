@@ -13,12 +13,19 @@
 Scene::Scene(SceneType sceneType, const char* sceneName, const char* stageDataPath, const char* stageBackgroundPath,
 	const char* foregroundPath, const int windowWidth, const int windowHeight) : name(sceneName), type(sceneType) {
 
-	if (sceneType == SceneType::MainMenu) {
-		initMainMenu(windowWidth, windowHeight);
-		return;
+	switch (sceneType) {
+		case SceneType::MainMenu:
+			initMainMenu(windowWidth, windowHeight);
+			break;
+		case SceneType::Gameplay:
+			initGameplay(stageDataPath, stageBackgroundPath, foregroundPath, windowWidth, windowHeight);
+			break;
+		case SceneType::Credits:
+			initCredits(windowWidth, windowHeight);
+			break;
+		default:
+			break;
 	}
-
-	initGameplay(stageDataPath, stageBackgroundPath, foregroundPath, windowWidth, windowHeight);
 }
 
 void Scene::initMainMenu(int windowWidth, int windowHeight) {
@@ -31,18 +38,13 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	auto height = static_cast<float>(windowHeight);
 
 	// Menu background.
-	auto& background(world.createEntity());
-	background.addComponent<Transform>(Vector2D(0, 0), 0.0f, 1.0f);
-	SDL_Texture* backTex = TextureManager::load("../asset/menu/main-menu-background.png");
-	SDL_FRect backSrc {0, 0, static_cast<float>(backTex->w), static_cast<float>(backTex->h)};
-	SDL_FRect menuDst {0, 0, width, height };
-	background.addComponent<Sprite>(backTex, backSrc, menuDst, RenderLayer::Background);
+	UIUtils::createBackground(world, width, height, "../asset/menu/main-menu-background.png");
 
 	// Menu characters.
-	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-characters.png", 1.25f, 0.3f);
+	UIUtils::createFadeInBackgroundLayer(world, width, height, "../asset/menu/main-menu-characters.png", 1.25f, 0.3f);
 
 	// Menu text.
-	UIUtils::createFadeInMenuLayer(world, width, height, "../asset/menu/main-menu-text.png", 1.5f, 1.7f);
+	UIUtils::createFadeInBackgroundLayer(world, width, height, "../asset/menu/main-menu-text.png", 1.5f, 1.7f);
 
 	// FPS counter.
 	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40,
@@ -396,6 +398,79 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	createSidebarUILabels(windowWidth, windowHeight, stageWidth, stageHeight);
 }
 
+void Scene::initCredits(int windowWidth, int windowHeight) {
+	float width = static_cast<float>(windowWidth);
+	float height = static_cast<float>(windowHeight);
+
+	// Create credits background.
+	auto& creditsBackground = UIUtils::createFadeInBackgroundLayer(world, width, height * 2,
+		"../asset/credits/credits-background.png", 2.0f, 0.5f);
+	auto& creditsTransform = creditsBackground.getComponent<Transform>();
+	creditsTransform.position.y = -height;
+
+	// Make the background slowly move downwards.
+	creditsBackground.addComponent<Velocity>(Vector2D(0, 1), 7.0f);
+
+	// Paths to all the credit textures, credits display in the order listed.
+	std::vector<std::string> creditsPaths = {
+		"../asset/credits/credits-title.png",
+		"../asset/credits/credits-zun.png",
+		"../asset/credits/credits-programmers.png",
+		"../asset/credits/credits-sprites.png",
+		"../asset/credits/credits-art.png",
+		"../asset/credits/credits-sound.png",
+		"../asset/credits/credits-special.png"
+	};
+
+	// Use a timeline to manage fading credits in/out and returning to main menu.
+	auto& timelineEntity = world.createEntity();
+	auto& creditsTimeline = timelineEntity.addComponent<Timeline>();
+	createCreditsTimeline(creditsTimeline, creditsPaths, windowWidth, windowHeight);
+}
+
+void Scene::createCreditsTimeline(Timeline& timeline, std::vector<std::string> creditsPaths, int windowWidth, int windowHeight) {
+	float fadeDuration = 2.0f;
+	float creditsStayDuration = 3.0f;
+	float baseDelay = 2.5f;
+
+	float creditsSlotDuration = fadeDuration + creditsStayDuration + fadeDuration;
+
+	for (int i = 0; i < creditsPaths.size(); i++) {
+		std::string creditsPath = creditsPaths[i];
+
+		auto& creditsEntity = UIUtils::createBackground(world, windowWidth, windowHeight, creditsPath.c_str());
+		auto& fade = creditsEntity.addComponent<Fade>(fadeDuration);
+		auto& sprite = creditsEntity.getComponent<Sprite>();
+		sprite.visible = false;
+
+		float fadeInStart = baseDelay + creditsSlotDuration * i;
+
+		// Fade credit in.
+		timeline.timeline.emplace_back(fadeInStart, [&fade, &sprite] {
+			sprite.visible = true;
+			fade.durationTimer = 0.0f;
+			fade.isFading = true;
+		});
+
+		float fadeOutStart = fadeInStart + fadeDuration + creditsStayDuration;
+
+		// Fade credit out in time for the next credit.
+		timeline.timeline.emplace_back(fadeOutStart, [&fade] {
+			fade.startingAlpha = 255;
+			fade.endingAlpha = 0;
+			fade.durationTimer = 0.0f;
+			fade.isFading = true;
+		});
+
+		// Go back to the main menu a bit after the last credit.
+		if (i == creditsPaths.size() - 1) {
+			timeline.timeline.emplace_back(fadeOutStart + fadeDuration + 0.75f, [] {
+				Game::onSceneChangeRequest("mainmenu");
+			});
+		}
+	}
+}
+
 void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stageWidth, float stageHeight) {
 	const char* staticLabelFont = "DFPPOPCorn";
 	const char* dynamicLabelFont = "pop1";
@@ -598,6 +673,16 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 	overlay.getComponent<Children>().children.push_back(&darken);
 
 	// Create quit to title button.
+	auto& creditButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
+		"View Credits", "CreditsButton", [this] {
+			// Reset game state.
+			resetGameState();
+
+			// Request scene change to credits.
+			Game::onSceneChangeRequest("credits");
+		});
+
+	// Create quit to title button.
 	auto& quitTitleButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
 		"Quit To Title", "WinQuitTitleButton", [this] {
 			// Reset game state.
@@ -617,6 +702,7 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 		});
 
 	std::vector<Entity*> buttons;
+	buttons.push_back(&creditButton);
 	buttons.push_back(&quitTitleButton);
 	buttons.push_back(&quitButton);
 

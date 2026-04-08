@@ -12,6 +12,10 @@ void MainMenuSystem::update(const SDL_Event& event) {
                 AudioManager::playSfx("ok");
                 Game::onSceneChangeRequest("level1");
                 break;
+            case SDLK_TAB:
+                AudioManager::playSfx("ok");
+                Game::onSceneChangeRequest("credits");
+                break;
             default:
                 break;
         }
