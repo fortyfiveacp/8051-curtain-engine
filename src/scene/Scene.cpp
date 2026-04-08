@@ -418,9 +418,9 @@ void Scene::initCredits(int windowWidth, int windowHeight) {
 	creditsTransform.position.y = -height;
 
 	// Make the background slowly move downwards.
-	creditsBackground.addComponent<Velocity>(Vector2D(0, 1), 3.0f);
+	creditsBackground.addComponent<Velocity>(Vector2D(0, 1), 10.0f);
 
-	// Fade in the actual credits.
+	// PAths to all the credit textures.
 	std::vector<std::string> creditsPaths = {
 		"../asset/credits/credits-title.png",
 		"../asset/credits/credits-zun.png",
@@ -431,6 +431,7 @@ void Scene::initCredits(int windowWidth, int windowHeight) {
 		"../asset/credits/credits-special.png"
 	};
 
+	// Use a timeline to manage fading credits in/out and returning to main menu.
 	auto& timelineEntity = world.createEntity();
 	auto& creditsTimeline = timelineEntity.addComponent<Timeline>();
 	createCreditsTimeline(creditsTimeline, creditsPaths, windowWidth, windowHeight);
@@ -472,7 +473,7 @@ void Scene::createCreditsTimeline(Timeline& timeline, std::vector<std::string> c
 
 		// Go back to the main menu a bit after the last credit.
 		if (i == creditsPaths.size() - 1) {
-			timeline.timeline.emplace_back(fadeOutStart + fadeDuration + 0.5f, [] {
+			timeline.timeline.emplace_back(fadeOutStart + fadeDuration + 0.75f, [] {
 				Game::onSceneChangeRequest("mainmenu");
 			});
 		}
