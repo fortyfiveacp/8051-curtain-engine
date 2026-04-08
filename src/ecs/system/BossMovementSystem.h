@@ -2,7 +2,7 @@
 
 class World;
 
-class BossSystem {
+class BossMovementSystem {
 public:
     void update(World& world, float dt);
 };

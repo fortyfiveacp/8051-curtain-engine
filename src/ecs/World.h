@@ -5,7 +5,7 @@
 #include "AnimationSystem.h"
 #include "BackgroundRenderSystem.h"
 #include "BossHealthBarSystem.h"
-#include "BossSystem.h"
+#include "BossMovementSystem.h"
 #include "BossTrackerSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
@@ -96,7 +96,7 @@ class World {
     EventResponseSystem eventResponseSystem{*this};
 
     ConvoySystem convoySystem;
-    BossSystem bossSystem;
+    BossMovementSystem bossSystem;
 
 public:
     World() = default;

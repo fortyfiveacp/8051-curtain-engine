@@ -1,9 +1,9 @@
-#include "BossSystem.h"
+#include "BossMovementSystem.h"
 #include "World.h"
 #include "TransformUtils.h"
 #include <random>
 
-void BossSystem::update(World &world, float dt) {
+void BossMovementSystem::update(World &world, float dt) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
 
@@ -37,7 +37,7 @@ void BossSystem::update(World &world, float dt) {
                 TransformUtils::setPosition(entity, newPos);
             }
 
-            if (boss.introCompleted) {
+            if (boss.introCompleted && boss.movementPoints.size() > 1) {
                 boss.movementTimer += dt;
 
                 if (boss.movementTimer >= boss.movementInterval) {
@@ -55,6 +55,8 @@ void BossSystem::update(World &world, float dt) {
 
                     boss.targetPoint = boss.movementPoints[randomIndex];
                 }
+            } else if (!boss.movementPoints.empty()) {
+                boss.targetPoint = boss.movementPoints.front();
             }
         }
     }
