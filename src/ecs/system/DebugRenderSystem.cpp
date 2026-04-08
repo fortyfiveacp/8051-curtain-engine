@@ -5,13 +5,13 @@
 
 void DebugRenderSystem::update(World& world, const SDL_Event& event, bool isDebugging) {
     if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_TAB) {
-        // Enable debugging via event.
+        // Toggle debugging via event.
         world.getEventManager().emit(DebugEvent{!isDebugging});
     }
 }
 
 void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>>& entities) {
-    // Draw all colliders.
+    // If debugging, draw all colliders with accurate sizing.
     for (auto& entity : entities) {
         if (entity->hasComponent<RectCollider>()) {
             auto& c = entity->getComponent<RectCollider>();
@@ -24,7 +24,7 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>>& entit
         if (entity->hasComponent<CircleCollider>()) {
             auto& c = entity->getComponent<CircleCollider>();
 
-            SDL_Texture* tex = TextureManager::load("../asset/coin.png");
+            SDL_Texture* tex = TextureManager::load("../asset/ui/debug-circle.png");
             SDL_FRect colSrc {0, 0, 32, 32};
 
             float colliderTopLeftX = c.centerPosition.x - c.radius;

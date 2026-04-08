@@ -12,6 +12,7 @@
 #include "DeathBombSystem.h"
 #include "DebugRenderSystem.h"
 #include "DestructionSystem.h"
+#include "EnemyHealthSystem.h"
 #include "Entity.h"
 #include "EventResponseSystem.h"
 #include "FadeSystem.h"
@@ -32,6 +33,7 @@
 #include "ItemBounceSystem.h"
 #include "PlayerBombSystem.h"
 #include "PlayerBoundsSystem.h"
+#include "PlayerFocusRenderSystem.h"
 #include "PlayerRespawnSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
@@ -85,7 +87,9 @@ class World {
     FadeSystem fadeSystem;
     BossHealthBarSystem bossHealthBarSystem;
     BossTrackerSystem bossTrackerSystem;
+    EnemyHealthSystem enemyHealthSystem;
     WorldBackgroundRenderSystem worldBackgroundRenderSystem;
+    PlayerFocusRenderSystem playerFocusRenderSystem;
 
     // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
@@ -129,6 +133,7 @@ public:
                     timelineSystem.update(entities, dt);
                     stageBackgroundSystem.update(entities, dt);
                     bossHealthBarSystem.update(entities, dt);
+                    enemyHealthSystem.update(*this);
                 }
 
                 debugRenderSystem.update(*this, event, isDebugging);
@@ -167,18 +172,15 @@ public:
         SDL_Rect stageRect = { paddingX, paddingY, stageWidth, stageHeight };
         SDL_SetRenderViewport(renderer, &stageRect);
 
-        // TODO: purge.
-        // for (auto& entity : entities) {
-        //     if (entity->hasComponent<Camera>()) {
-        //         map.draw(entity->getComponent<Camera>());
-        //         break;
-        //     }
-        // }
         worldBackgroundRenderSystem.render(entities);
         renderSystem.render(entities);
 
+        // Render debug visuals if debugging.
+        // Only render player focus if not debugging.
         if (isDebugging) {
             debugRenderSystem.render(entities);
+        } else {
+            playerFocusRenderSystem.render(entities);
         }
 
         // Reset viewport for rendering UI.

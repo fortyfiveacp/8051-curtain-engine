@@ -9,10 +9,6 @@ public:
 private:
     static void buildSmallFairy(Entity &entity, World &world, const EnemyType &enemyType, const DanmakuPattern &danmakuPattern);
     static void buildLargeFairy(Entity &entity, World &world, const DanmakuPattern &danmakuPattern);
-
-    // TODO: implement.
-    static void buildStageBoss(Entity& entity, Transform& transform);
-
     static void initBaseFairy(Entity& entity, const std::string& animName, const char* spritesheetPath, float size);
 
 };

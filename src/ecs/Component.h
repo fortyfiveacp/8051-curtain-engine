@@ -396,6 +396,16 @@ struct Fade {
     bool isFading = false;
 };
 
+struct EnemyHealth {
+    int max{};
+    int current{max};
+};
+
+struct LootDropTable {
+    std::vector<ItemType> types;
+    std::vector<Vector2D> offsets;
+};
+
 struct Boss {
     std::string bossName{};
     int maxHealth{};
