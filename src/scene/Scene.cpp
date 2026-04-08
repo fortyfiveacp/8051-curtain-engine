@@ -403,13 +403,8 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 }
 
 void Scene::initCredits(int windowWidth, int windowHeight) {
-	// Camera.
-	auto& cam = world.createEntity();
-	cam.addComponent<Camera>();
-
-	// Create the credits screen.
-	auto width = static_cast<float>(windowWidth);
-	auto height = static_cast<float>(windowHeight);
+	float width = static_cast<float>(windowWidth);
+	float height = static_cast<float>(windowHeight);
 
 	// Create credits background.
 	auto& creditsBackground = UIUtils::createFadeInBackgroundLayer(world, width, height * 2,
@@ -420,7 +415,7 @@ void Scene::initCredits(int windowWidth, int windowHeight) {
 	// Make the background slowly move downwards.
 	creditsBackground.addComponent<Velocity>(Vector2D(0, 1), 7.0f);
 
-	// PAths to all the credit textures.
+	// Paths to all the credit textures, credits display in the order listed.
 	std::vector<std::string> creditsPaths = {
 		"../asset/credits/credits-title.png",
 		"../asset/credits/credits-zun.png",
