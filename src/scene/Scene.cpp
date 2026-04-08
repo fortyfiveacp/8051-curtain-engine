@@ -1,6 +1,8 @@
 #include "../manager/AssetManager.h"
 #include "Game.h"
 #include "Scene.h"
+
+#include "DanmakuFactory.h"
 #include "ItemFactory.h"
 #include "StageUtils.h"
 #include "../manager/AudioManager.h"
@@ -150,15 +152,32 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		Game::gameState.continues
 		);
 
-	// Spawner parented on player for testing parenting. TODO: remove when no longer needed.
-	auto& playerPortableSpawner(world.createEntity());
-	auto& playerPortableSpawnerTransform = playerPortableSpawner.addComponent<Transform>(Vector2D(playerStartingX + 50, playerStartingY), 0.0f, 1.0f);
-	playerPortableSpawner.addComponent<TimedSpawner>(1.0f, [this, &playerPortableSpawnerTransform] {
-		auto& itemEntity(world.createDeferredEntity());
-		ItemFactory::createItem(itemEntity, SmallPower, playerPortableSpawnerTransform.position);
-	});
+	// Spawners parented on player for making player shots.
+	// TODO: replace with player danmaku
+	auto playerSmallForwardShotSettings = DanmakuPattern(
+		true,
+		DanmakuType::Linear,
+		BulletType::Circle,
+		2.0f,
+		30.0f,
+		0.05f,
+		1200.0f);
+	playerSmallForwardShotSettings.isFanPattern = false;
+	playerSmallForwardShotSettings.shouldTargetPlayer = false;
+	playerSmallForwardShotSettings.bulletPositions = { {-20, 10}, {-10, 10}, {10, 10}, {20, 10} };
 
-	player.addComponent<Children>().children.emplace_back(&playerPortableSpawner);
+	// Forward firing small bullets
+	auto& playerSmallForwardShotSpawner(world.createEntity());
+	auto& playerSmallForwardShotSpawnerTransform = playerSmallForwardShotSpawner.addComponent<Transform>(
+		Vector2D(playerStartingX, playerStartingY), 180.0f, 1.0f);
+
+	DanmakuFactory::buildDanmaku(playerSmallForwardShotSpawner, world, playerSmallForwardShotSettings);
+
+	auto& debug = playerSmallForwardShotSpawner.addComponent<RectCollider>("player-shot", SDL_FRect(0, 0, 10, 10));
+
+	// Add player's shot spawners.
+	auto& playerChildren = player.addComponent<Children>();
+	playerChildren.children.emplace_back(&playerSmallForwardShotSpawner);
 
 	// Test spawners for items. TODO: remove when no longer needed.
 	auto& pointSpawner(world.createEntity());
