@@ -17,12 +17,12 @@ public:
         }
 
         // TODO: temporarily get player stats for testing.
-        Entity *playerEntity = nullptr;
-        for (auto &entity: entities) {
-            if (entity->hasComponent<PlayerStats>()) {
-                playerEntity = entity.get();
-            }
-        }
+        // Entity *playerEntity = nullptr;
+        // for (auto &entity: entities) {
+        //     if (entity->hasComponent<PlayerStats>()) {
+        //         playerEntity = entity.get();
+        //     }
+        // }
 
         for (auto &entity: entities) {
             if (entity->hasComponent<BossHealthBar>() && entity->hasComponent<Sprite>() &&
@@ -45,7 +45,7 @@ public:
                 }
 
                 auto &boss = bossEntity->getComponent<Boss>();
-                auto &playerStats = playerEntity->getComponent<PlayerStats>(); // TODO: temp.
+                // auto &playerStats = playerEntity->getComponent<PlayerStats>(); // TODO: temp.
 
                 // If the health bar is not initialized (the boss has just spawned), initialize it first.
                 if (!bossHealthBar.isInitialized) {
@@ -66,7 +66,7 @@ public:
                 // );
                 // TODO: temporarily hooked up to player stats for testing.
                 float healthPercentage = std::clamp(
-                    static_cast<float>(playerStats.currentHealth) / 3, 0.0f, 1.0f
+                    static_cast<float>(boss.currentHealth) / boss.maxHealth, 0.0f, 1.0f
                 );
 
                 // Crop health bar destination to visibly lower the health bar.
@@ -82,9 +82,9 @@ public:
 
                     if (child->hasComponent<IconCounter>()) {
                         auto &counter = child->getComponent<IconCounter>();
-                        //counter.currentNumber = boss.phasesLeft;
+                        counter.currentNumber = boss.phasesLeft;
                         // TODO: temporarily hooked up to player stats for testing.
-                        counter.currentNumber = playerStats.currentHealth;
+                        // counter.currentNumber = playerStats.currentHealth;
                         counter.dirty = true;
                     }
                 }

@@ -1,4 +1,6 @@
 #include "StageLoader.h"
+
+#include "BossFactory.h"
 #include "tinyxml2.h"
 
 void StageLoader::loadStage(const char *path, World &world) {
@@ -78,6 +80,25 @@ void StageLoader::loadStage(const char *path, World &world) {
         timelineEntity.getComponent<Timeline>().timeline.emplace_back(startTime, [&world, data]() {
             auto& spawner = world.createDeferredEntity();
             spawner.addComponent<Convoy>(data);
+        });
+    }
+
+    // Inside StageLoader::loadStage...
+    auto* bossElem = root->FirstChildElement("Boss");
+    if (bossElem) {
+        float startTime = bossElem->FloatAttribute("start");
+        Boss data;
+        data.bossName = bossElem->Attribute("name");
+        data.maxHealth = bossElem->IntAttribute("maxHealth");
+        data.currentHealth = data.maxHealth;
+        data.phasesLeft = bossElem->IntAttribute("phases");
+
+        auto* initPosElem = bossElem->FirstChildElement("InitialPosition");
+        Vector2D startPos{ initPosElem->FloatAttribute("x"), initPosElem->FloatAttribute("y") };
+
+        timelineEntity.getComponent<Timeline>().timeline.emplace_back(startTime, [&world, data, startPos]() {
+            auto& boss = world.createDeferredEntity();
+            BossFactory::buildStageBoss(boss, world, data, startPos);
         });
     }
 }

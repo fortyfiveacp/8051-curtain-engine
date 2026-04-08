@@ -292,15 +292,15 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	// 	linearSpawner.isActive = false;
 	// });
 	// TODO: debug for simulating boss spawn, remove later.
-	debugTimeline.timeline.emplace_back(1.25, [this, &player] {
-		player.addComponent<Boss>("Reimu Hakurei");
-
-		for (auto& entity : world.getEntities()) {
-			if (entity->hasComponent<BossHealthBar>()) {
-				entity->getComponent<Toggleable>().toggle();
-			}
-		}
-	});
+	// debugTimeline.timeline.emplace_back(1.25, [this, &player] {
+	// 	player.addComponent<Boss>("Reimu Hakurei");
+	//
+	// 	for (auto& entity : world.getEntities()) {
+	// 		if (entity->hasComponent<BossHealthBar>()) {
+	// 			entity->getComponent<Toggleable>().toggle();
+	// 		}
+	// 	}
+	// });
 	// // TODO: debug for win screen, remove later.
 	debugTimeline.timeline.emplace_back(90.0, [this] {
 		for (auto& entity : world.getEntities()) {

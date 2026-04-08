@@ -411,6 +411,10 @@ struct Boss {
     int maxHealth{};
     int currentHealth{};
     int phasesLeft{};
+
+    Vector2D targetPoint{384.0f, 200.0f};
+    bool introCompleted = false;
+    float movementSpeed = 300.0f;
 };
 
 struct BossHealthBar {
