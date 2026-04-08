@@ -55,7 +55,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 
 	// Load audio.
 	audioManager.loadAudio("menu-theme", "../asset/audio/music/Menu Theme.flac");
-	audioManager.loadAudio("stage-theme", "../asset/audio/music/Stage Theme.mp3");
+	audioManager.loadAudio("stage-theme", "../asset/audio/music/Stage Theme.flac");
 	audioManager.loadAudio("boss-theme", "../asset/audio/music/Boss Theme.flac");
 	audioManager.loadAudio("credits-theme", "../asset/audio/music/Credits Theme.flac");
 
