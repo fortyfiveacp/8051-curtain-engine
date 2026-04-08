@@ -406,10 +406,23 @@ struct LootDropTable {
     std::vector<Vector2D> offsets;
 };
 
+enum class PhaseTrigger {
+    HealthThreshold,
+    Death
+};
+
+enum class PatternTarget {
+    Boss,
+    Emitters
+};
+
 struct PhaseData {
     int phaseId{};
-    float healthThreshold = 0.3;
-    DanmakuPattern pattern{};
+    PhaseTrigger triggerType = PhaseTrigger::HealthThreshold;
+    float healthThreshold = 0.0f;
+
+    PatternTarget target = PatternTarget::Boss;
+    std::vector<DanmakuPattern> patterns{};
 };
 
 struct Boss {
@@ -418,7 +431,13 @@ struct Boss {
     int currentHealth{};
     int phasesLeft{};
 
-    Vector2D targetPoint{384.0f, 200.0f};
+    bool isInvulnerable = false;
+    float invulnerabilityTimer = 0.0f;
+    static constexpr float INVULNERABLE_DURATION = 2.0f;
+
+    Vector2D targetPoint{384.0f, 300.0f};
+    // Reference for targetPoint, since targetPoint may change.
+    Vector2D originPoint{384.0f, 300.0f};
     bool introCompleted = false;
     float movementSpeed = 150.0f;
 
@@ -448,3 +467,6 @@ struct ContinueGameMenuTag{};
 struct WinGameMenuTag{};
 struct ProjectileTag{};
 struct EnemyTag{};
+struct EnemyDanmakuTag{};
+struct BossTag{};
+struct ItemTag{};

@@ -47,7 +47,8 @@ void ItemFactory::createBaseItem(Entity& entity, Vector2D position, float textur
     collider.offset.y = -collider.rect.h / 2.0f;
 
     // Add projectile tag so items are destroyed when they go off-screen.
-    entity.addComponent<ProjectileTag>();
+    // entity.addComponent<ProjectileTag>();
+    entity.addComponent<ItemTag>();
 }
 
 void ItemFactory::createPointItem(Entity& entity, Vector2D position) {

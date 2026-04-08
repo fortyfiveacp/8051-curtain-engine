@@ -6,6 +6,7 @@
 #include "BackgroundRenderSystem.h"
 #include "BossHealthBarSystem.h"
 #include "BossMovementSystem.h"
+#include "BossStateSystem.h"
 #include "BossTrackerSystem.h"
 #include "CameraSystem.h"
 #include "CollisionSystem.h"
@@ -96,7 +97,8 @@ class World {
     EventResponseSystem eventResponseSystem{*this};
 
     ConvoySystem convoySystem;
-    BossMovementSystem bossSystem;
+    BossMovementSystem bossMovementSystem;
+    BossStateSystem bossStateSystem;
 
 public:
     World() = default;
@@ -134,7 +136,8 @@ public:
                 stageBackgroundSystem.update(entities, dt);
                 bossHealthBarSystem.update(entities, dt);
                 enemyHealthSystem.update(*this);
-                bossSystem.update(*this, dt);
+                bossMovementSystem.update(*this, dt);
+                bossStateSystem.update(*this, dt);
             }
 
             debugRenderSystem.update(*this, event, isDebugging);

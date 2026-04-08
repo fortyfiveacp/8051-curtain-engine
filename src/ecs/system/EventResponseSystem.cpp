@@ -200,7 +200,11 @@ void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
             if (other->hasComponent<EnemyHealth>()) {
                 other->getComponent<EnemyHealth>().current -= static_cast<int>(bombDamage);
             } else if (other->hasComponent<Boss>()) {
-                other->getComponent<Boss>().currentHealth -= static_cast<int>(bombDamage);
+                auto& boss = other->getComponent<Boss>();
+                if (!boss.isInvulnerable) {
+                    boss.currentHealth -= static_cast<int>(bombDamage);
+                    std::cout << boss.currentHealth << std::endl;
+                }
             }
         }
     }

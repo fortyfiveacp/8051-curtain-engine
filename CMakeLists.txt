@@ -81,6 +81,9 @@ set(SRC_FILES
         src/utils/BossFactory.cpp
         src/ecs/system/BossMovementSystem.h
         src/ecs/system/BossMovementSystem.cpp
+        src/ecs/system/BossStateSystem.h
+        src/ecs/system/BossStateSystem.cpp
+        src/utils/ComponentUtils.h
         #add all new source files here
 )
 
