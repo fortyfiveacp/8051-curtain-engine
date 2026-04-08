@@ -36,6 +36,7 @@
 #include "PlayerBoundsSystem.h"
 #include "PlayerFocusRenderSystem.h"
 #include "PlayerRespawnSystem.h"
+#include "PlayerShootingSystem.h"
 #include "RenderSystem.h"
 #include "SpawnTimerSystem.h"
 #include "TimelineSystem.h"
@@ -92,6 +93,7 @@ class World {
     WorldBackgroundRenderSystem worldBackgroundRenderSystem;
     PlayerFocusRenderSystem playerFocusRenderSystem;
     CreditsSystem creditsSystem;
+    PlayerShootingSystem playerShootingSystem;
 
     // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
@@ -123,6 +125,7 @@ public:
                     invincibilityFramesSystem.update(entities, dt);
                     playerAbilitySystem.update(*this, dt);
                     playerBombSystem.update(entities, dt);
+                    playerShootingSystem.update(entities);
                     convoySystem.update(*this, dt);
                     pathSystem.update(*this, entities, dt);
                     bossTrackerSystem.update(entities);

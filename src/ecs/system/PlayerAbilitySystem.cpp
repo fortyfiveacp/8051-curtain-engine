@@ -14,10 +14,6 @@ void PlayerAbilitySystem::update(World& world, float deltaTime) {
             auto& stats = entity->getComponent<PlayerStats>();
             auto& keyboardInput = entity->getComponent<KeyboardInput>();
 
-            if (keyboardInput.shoot) {
-                // TODO: shooting logic.
-            }
-
             if (bomb.active) {
                 bomb.cooldownTimer -= deltaTime;
                 if (bomb.cooldownTimer <= 0.0f) {
