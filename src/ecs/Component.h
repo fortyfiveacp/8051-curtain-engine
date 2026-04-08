@@ -470,3 +470,4 @@ struct EnemyTag{};
 struct EnemyDanmakuTag{};
 struct BossTag{};
 struct ItemTag{};
+struct DeadTag{};

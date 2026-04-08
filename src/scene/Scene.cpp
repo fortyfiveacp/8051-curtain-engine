@@ -281,8 +281,8 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 
 
 	// Add timeline object (for testing danmaku scripting).
-	auto& timelineManager(world.createEntity());
-	auto& debugTimeline = timelineManager.addComponent<Timeline>();
+	// auto& timelineManager(world.createEntity());
+	// auto& debugTimeline = timelineManager.addComponent<Timeline>();
 	//
 	// debugTimeline.timeline.emplace_back(1.0, [&radialSpawner] {
 	// 	std::cout << "Radial start!" << std::endl;
@@ -311,16 +311,16 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	// 	}
 	// });
 	// // TODO: debug for win screen, remove later.
-	debugTimeline.timeline.emplace_back(90.0, [this] {
-		for (auto& entity : world.getEntities()) {
-			if (entity->hasComponent<WinGameMenuTag>()) {
-				entity->getComponent<Toggleable>().toggle();
-			}
-		}
-
-		// TODO: play credits theme when boss is defeated.
-		AudioManager::playMusic("credits-theme");
-	});
+	// debugTimeline.timeline.emplace_back(90.0, [this] {
+	// 	for (auto& entity : world.getEntities()) {
+	// 		if (entity->hasComponent<WinGameMenuTag>()) {
+	// 			entity->getComponent<Toggleable>().toggle();
+	// 		}
+	// 	}
+	//
+	// 	// TODO: play credits theme when boss is defeated.
+	// 	AudioManager::playMusic("credits-theme");
+	// });
 
 	// Add scene state.
 	auto& state(world.createEntity());

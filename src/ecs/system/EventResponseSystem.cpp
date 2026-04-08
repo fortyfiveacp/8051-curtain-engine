@@ -202,8 +202,7 @@ void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
             } else if (other->hasComponent<Boss>()) {
                 auto& boss = other->getComponent<Boss>();
                 if (!boss.isInvulnerable) {
-                    boss.currentHealth -= static_cast<int>(bombDamage);
-                    std::cout << boss.currentHealth << std::endl;
+                    boss.currentHealth -= static_cast<int>(bombDamage * 5);
                 }
             }
         }

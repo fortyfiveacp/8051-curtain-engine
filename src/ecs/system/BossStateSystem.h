@@ -10,5 +10,5 @@ public:
 
 private:
     void transitionToPhase(Entity* bossEntity, Boss& boss, const PhaseData& phase, World& world);
-    bool tryConsumePhase(Entity* bossEntity, Boss& boss, World& world);
+    bool decrementPhase(Entity* bossEntity, Boss& boss, World& world);
 };
