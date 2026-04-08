@@ -153,7 +153,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		Game::gameState.continues
 		);
 
-	// TODO: attach player shooting components
+	// Attach player shooting components.
 	PlayerShotFactory::buildPlayerDanmaku(player, world, { playerStartingX, playerStartingY });
 
 	// Test spawners for items. TODO: remove when no longer needed.
