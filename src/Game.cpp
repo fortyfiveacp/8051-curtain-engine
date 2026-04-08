@@ -70,6 +70,8 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	audioManager.loadAudio("enemy-hit", "../asset/audio/sfx/se_damage00.flac");
 	audioManager.loadAudio("enemy-hit-low", "../asset/audio/sfx/se_damage01.flac");
 	audioManager.loadAudio("enemy-dead", "../asset/audio/sfx/se_enep00.flac");
+	audioManager.loadAudio("boss-transition", "../asset/audio/sfx/se_cat00.flac");
+	audioManager.loadAudio("boss-dead", "../asset/audio/sfx/se_enep01.flac");
 
 	// Load fonts.
 	AssetManager::loadFont("pop1", "../asset/fonts/pop1-w9.ttf", 32);
