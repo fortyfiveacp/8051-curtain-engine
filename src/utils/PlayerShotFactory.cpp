@@ -7,10 +7,12 @@
 
 class World;
 
-void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const Vector2D& playerPosition) {
-    float frequency = 0.05f;
+void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const Vector2D& playerPosition, PlayerStats& playerStats) {
+    float smallShotFrequency = 0.1f;
+	float largeShotFrequency = 0.08f;
+    float fanShotFrequency = 0.15f;
     float yOffset = 50;
-    float fanSpread = 5;
+    float fanSpread = 10;
 
     float smallShotBulletSpeed = 1200.0f;
     float largeShotBulletSpeed = 1200.0f;
@@ -18,7 +20,7 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 
     // TODO: balance these values
     float smallShotBulletDamage = 6.0f; // 0.03 * 4 bullets * 1/0.05 = 2.4 damage per second.
-    float largeShotBulletDamage = 10.0f; // 0.05 * 1 bullet * 1/0.05 =  2 damage per second.
+    float largeShotBulletDamage = 20.0f; // 0.05 * 1 bullet * 1/0.05 =  2 damage per second.
     float smallFanBulletDamage = 3.0f; // 0.015 * 4 bullets * 1/0.05 = 1.2 damage per second.
 
     // Small shot.
@@ -36,8 +38,8 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 		smallShotBulletSpeed,
 		1.0f,
 		smallShotPositions,
-		frequency,
-		[&world, smallShotBulletDamage](Vector2D position, Vector2D direction, float speed) {
+		smallShotFrequency,
+		[&world, smallShotBulletDamage, &playerStats](Vector2D position, Vector2D direction, float speed) {
 			auto& e(world.createDeferredEntity());
 
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
@@ -53,9 +55,9 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			// TODO: adjust bullet collider
 			auto& c = e.addComponent<CircleCollider>("player-shot");
 			c.centerPosition = position;
-			c.radius = 10;
+			c.radius = 16;
 
-			e.addComponent<PlayerShot>(smallShotBulletDamage);
+			e.addComponent<PlayerShot>(powerToDamage(smallShotBulletDamage, playerStats.currentPower));
 		});
 
     // Large shot.
@@ -68,26 +70,27 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 		largeShotBulletSpeed,
 		1.0f,
 		largeShotPositions,
-		frequency,
-		[&world, largeShotBulletDamage](Vector2D position, Vector2D direction, float speed) {
+		largeShotFrequency,
+		[&world, largeShotBulletDamage, &playerStats](Vector2D position, Vector2D direction, float speed) {
 			auto& e(world.createDeferredEntity());
 
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, speed, false);
 
 			SDL_Texture* tex = TextureManager::load("../asset/bullet-spritesheet.png");
-			SDL_SetTextureAlphaMod(tex, 100);
+			SDL_SetTextureAlphaMod(tex, 120);
 			SDL_FRect src = {32, 96, 16, 16};
-			SDL_FRect dest { position.x, position.y, 32, 32 };
+			SDL_FRect dest { position.x, position.y, 36, 36 };
 			Vector2D pivotOffset = Vector2D(dest.w / 2.0f, dest.h / 2.0f);
 			e.addComponent<Sprite>(tex, src, dest, RenderLayer::WorldBackground, pivotOffset);
 
 			// TODO: adjust bullet collider
 			auto& c = e.addComponent<CircleCollider>("player-shot");
 			c.centerPosition = position;
-			c.radius = 10;
+			c.radius = 18;
 
-			e.addComponent<PlayerShot>(largeShotBulletDamage);
+			e.addComponent<PlayerShot>(powerToDamage(largeShotBulletDamage, playerStats.currentPower));
+			std::cout << powerToDamage(largeShotBulletDamage, playerStats.currentPower) << std::endl;
 		});
 
     // Small fan.
@@ -105,8 +108,8 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 		smallFanBulletSpeed,
 		1.0f,
 		smallFanPositions,
-		frequency,
-		[&world, smallFanBulletDamage](Vector2D position, Vector2D direction, float speed) {
+		fanShotFrequency,
+		[&world, smallFanBulletDamage, &playerStats](Vector2D position, Vector2D direction, float speed) {
 			auto& e(world.createDeferredEntity());
 
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
@@ -122,9 +125,9 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			// TODO: adjust bullet collider
 			auto& c = e.addComponent<CircleCollider>("player-shot");
 			c.centerPosition = position;
-			c.radius = 10;
+			c.radius = 16;
 
-			e.addComponent<PlayerShot>(smallFanBulletDamage);
+			e.addComponent<PlayerShot>(powerToDamage(smallFanBulletDamage, playerStats.currentPower));
 		});
 
 	// Add shot spawners as children of player.
@@ -133,3 +136,7 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 	playerChildren.children.emplace_back(&largeShotEntity);
 	playerChildren.children.emplace_back(&smallFanEntity);
 };
+
+float PlayerShotFactory::powerToDamage(float baseDamage, int power) {
+	return baseDamage + 0.3f * (static_cast<float>(power) / static_cast<float>(PlayerStats::MAX_POWER));
+}

@@ -142,7 +142,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	player.addComponent<KeyboardInput>();
 	player.addComponent<InvincibilityFrames>();
 	player.addComponent<PlayerRespawn>(Vector2D(playerStartingX, playerStartingY));
-	player.addComponent<PlayerStats>(
+	auto& playerStats = player.addComponent<PlayerStats>(
 		Game::gameState.hiScore,
 		Game::gameState.score,
 		Game::gameState.playerHealth,
@@ -154,7 +154,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		);
 
 	// Attach player shooting components.
-	PlayerShotFactory::buildPlayerDanmaku(player, world, { playerStartingX, playerStartingY });
+	PlayerShotFactory::buildPlayerDanmaku(player, world, { playerStartingX, playerStartingY }, playerStats);
 
 	// Test spawners for items. TODO: remove when no longer needed.
 	auto& pointSpawner(world.createEntity());
