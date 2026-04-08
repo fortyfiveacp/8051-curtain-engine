@@ -4,21 +4,11 @@
 #include "manager/AssetManager.h"
 
 void BossFactory::buildStageBoss(Entity &entity, World &world, const Boss &bossData, const Vector2D& startPos) {
-    auto& boss = entity.addComponent<Boss>();
-    boss.maxHealth = 1000;
-    boss.currentHealth = bossData.maxHealth;
-    boss.bossName = "Sanae Kochiya";
-    boss.phasesLeft = 2;
-
-    std::cout << boss.bossName << std::endl;
-    std::cout << boss.maxHealth << std::endl;
-    std::cout << boss.currentHealth << std::endl;
-    std::cout << boss.phasesLeft << std::endl;
-
     auto& transform = entity.addComponent<Transform>();
     transform.position = startPos;
 
     entity.addComponent<Animation>(AssetManager::getAnimation("sanae"));
+    entity.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 0.0f);
 
     SDL_Texture* tex = TextureManager::load("../asset/animations/sanae_anim.png");
     SDL_FRect src {0, 0, 63, 65};
@@ -46,4 +36,6 @@ void BossFactory::buildStageBoss(Entity &entity, World &world, const Boss &bossD
     rightEmitter.addComponent<Parent>().parent = &entity;
     rightEmitter.addComponent<RadialSpawner>();
     children.children.push_back(&rightEmitter);
+
+    entity.addComponent<Boss>(bossData);
 }
