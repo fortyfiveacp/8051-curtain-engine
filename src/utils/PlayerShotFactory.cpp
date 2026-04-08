@@ -31,7 +31,7 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
     };
     smallShotEntity.addComponent<Transform>(playerPosition, 180.0f, 1.0f);
     auto& smallShotSpawner = smallShotEntity.addComponent<LinearSpawner>(
-		true,
+		false,
 		false,
 		smallShotBulletSpeed,
 		1.0f,
@@ -66,7 +66,7 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
     std::vector<Vector2D> largeShotPositions = { {0, yOffset} };
     largeShotEntity.addComponent<Transform>(playerPosition, 180.0f, 1.0f);
     auto& largeShotSpawner = largeShotEntity.addComponent<LinearSpawner>(
-		true,
+		false,
 		false,
 		largeShotBulletSpeed,
 		1.0f,
@@ -105,8 +105,8 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 		{2 * fanSpread, -yOffset}
     };
     smallFanEntity.addComponent<Transform>(playerPosition, 0.0f, 1.0f);
-    auto& smallFanSpawner = player.addComponent<LinearSpawner>(
-		true,
+    auto& smallFanSpawner = smallFanEntity.addComponent<LinearSpawner>(
+		false,
 		true,
 		smallFanBulletSpeed,
 		1.0f,
