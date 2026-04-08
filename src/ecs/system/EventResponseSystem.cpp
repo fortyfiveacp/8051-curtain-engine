@@ -200,6 +200,18 @@ void EventResponseSystem::onPlayerShotCollision(const CollisionEvent& e) {
             // Destroy shot after impact.
             playerShotEntity->destroy();
         }
+
+        if (otherTag == "boss" && other->hasComponent<Boss>()) {
+            if (e.state == CollisionState::Enter) {
+                auto& boss = other->getComponent<Boss>();
+                auto& playerShot = playerShotEntity->getComponent<PlayerShot>();
+
+                boss.currentHealth -= static_cast<int>(playerShot.damage);
+            }
+
+            // Destroy shot after impact.
+            playerShotEntity->destroy();
+        }
     }
 }
 
