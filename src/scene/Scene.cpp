@@ -152,74 +152,8 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		Game::gameState.continues
 		);
 
-	// Spawners parented on player for making player shots.
-	// TODO: replace with player danmaku
-	float playerShotYOffset = 50;
-	float playerFanSpread = 5;
+	// TODO: attach player shooting components
 
-	auto playerSmallForwardShotSettings = DanmakuPattern(
-		true,
-		DanmakuType::Linear,
-		BulletType::Circle,
-		2.0f,
-		30.0f,
-		0.05f,
-		1200.0f);
-	playerSmallForwardShotSettings.isFanPattern = false;
-	playerSmallForwardShotSettings.shouldTargetPlayer = false;
-	playerSmallForwardShotSettings.bulletPositions = {
-		{-20, playerShotYOffset}, {-10, playerShotYOffset}, {10, playerShotYOffset}, {20, playerShotYOffset} };
-
-	auto playerLargeForwardShotSettings = DanmakuPattern(
-		true,
-		DanmakuType::Linear,
-		BulletType::LargeOrb,
-		2.0f,
-		30.0f,
-		0.05f,
-		1200.0f);
-	playerLargeForwardShotSettings.isFanPattern = false;
-	playerLargeForwardShotSettings.shouldTargetPlayer = false;
-	playerLargeForwardShotSettings.bulletPositions = { { 0, playerShotYOffset }};
-
-	auto playerSmallForwardFanSettings = DanmakuPattern(
-		true,
-		DanmakuType::Linear,
-		BulletType::Circle,
-		2.0f,
-		30.0f,
-		0.05f,
-		1200.0f);
-	playerSmallForwardFanSettings.isFanPattern = true;
-	playerSmallForwardFanSettings.shouldTargetPlayer = false;
-	playerSmallForwardFanSettings.bulletPositions = {
-		{-2 * playerFanSpread, playerShotYOffset},
-		{-1 * playerFanSpread, playerShotYOffset},
-		{1 * playerFanSpread, playerShotYOffset},
-		{2 * playerFanSpread, playerShotYOffset} };
-
-	// Forward firing small bullets
-	auto& playerSmallForwardShotSpawner(world.createEntity());
-	playerSmallForwardShotSpawner.addComponent<Transform>(Vector2D(playerStartingX, playerStartingY), 180.0f, 1.0f);
-
-	// Forward firing large bullets
-	auto& playerLargeForwardShotSpawner(world.createEntity());
-	playerLargeForwardShotSpawner.addComponent<Transform>(Vector2D(playerStartingX, playerStartingY), 180.0f, 1.0f);
-
-	// Forward firing fan small bullets
-	auto& playerSmallForwardFanSpawner(world.createEntity());
-	playerSmallForwardFanSpawner.addComponent<Transform>(Vector2D(playerStartingX, playerStartingY), 180.0f, 1.0f);
-
-	// Build danmaku
-	DanmakuFactory::buildDanmaku(playerSmallForwardShotSpawner, world, playerSmallForwardShotSettings);
-	DanmakuFactory::buildDanmaku(playerLargeForwardShotSpawner, world, playerLargeForwardShotSettings);
-	DanmakuFactory::buildDanmaku(playerSmallForwardFanSpawner, world, playerSmallForwardFanSettings);
-
-	// Add shot spawners as children of player.
-	auto& playerChildren = player.addComponent<Children>();
-	playerChildren.children.emplace_back(&playerSmallForwardShotSpawner);
-	playerChildren.children.emplace_back(&playerLargeForwardShotSpawner);
-	playerChildren.children.emplace_back(&playerSmallForwardFanSpawner);
 
 	// Test spawners for items. TODO: remove when no longer needed.
 	auto& pointSpawner(world.createEntity());
