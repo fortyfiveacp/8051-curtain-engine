@@ -420,7 +420,7 @@ struct Boss {
 
     Vector2D targetPoint{384.0f, 200.0f};
     bool introCompleted = false;
-    float movementSpeed = 300.0f;
+    float movementSpeed = 150.0f;
 
     std::vector<Vector2D> movementPoints{};
     float movementTimer = 0.0f;

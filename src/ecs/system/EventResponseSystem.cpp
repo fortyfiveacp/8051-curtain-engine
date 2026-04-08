@@ -191,12 +191,16 @@ void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
             other->destroy();
         }
 
-        if (otherTag == "enemy" && other->hasComponent<EnemyHealth>()) {
-            if (e.state == CollisionState::Stay || e.state == CollisionState::Enter) {
-                auto& health = other->getComponent<EnemyHealth>();
-                auto& bombComp = bomb->getComponent<PlayerBomb>();
+        if (otherTag == "enemy" || otherTag == "boss") {
+            if (e.state == CollisionState::Exit) {
+                return;
+            }
 
-                health.current -= static_cast<int>(bombComp.damage);
+            float bombDamage = bomb->getComponent<PlayerBomb>().damage;
+            if (other->hasComponent<EnemyHealth>()) {
+                other->getComponent<EnemyHealth>().current -= static_cast<int>(bombDamage);
+            } else if (other->hasComponent<Boss>()) {
+                other->getComponent<Boss>().currentHealth -= static_cast<int>(bombDamage);
             }
         }
     }
