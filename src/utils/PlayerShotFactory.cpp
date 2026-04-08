@@ -138,5 +138,5 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 };
 
 float PlayerShotFactory::powerToDamage(float baseDamage, int power) {
-	return baseDamage + 0.3f * (static_cast<float>(power) / static_cast<float>(PlayerStats::MAX_POWER));
+	return baseDamage + baseDamage * (0.3f * (static_cast<float>(power) / static_cast<float>(PlayerStats::MAX_POWER)));
 }
