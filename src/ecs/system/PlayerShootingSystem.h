@@ -18,7 +18,7 @@ public:
 
                 bool isRespawning = false;
 
-                // Check if tf the player is respawning.
+                // Check if the player is respawning.
                 if (entity->hasComponent<PlayerRespawn>() && entity->getComponent<PlayerRespawn>().isRespawning) {
                     isRespawning = true;
                 }
