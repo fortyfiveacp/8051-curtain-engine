@@ -8,27 +8,31 @@
 class ItemHomingSystem {
 public:
     void update(const std::vector<std::unique_ptr<Entity>>& entities) {
-        Entity* itemHomingTargetEntity = nullptr;
+        Entity* playerEntity = nullptr;
 
-        // Find item homing target.
+        // Find player.
         for (auto& entity : entities) {
             if (entity->hasComponent<PlayerTag>() && entity->hasComponent<Transform>() &&
                 entity->hasComponent<PlayerBombAbility>()) {
-                itemHomingTargetEntity = entity.get();
+                playerEntity = entity.get();
             }
         }
 
-        // If no target, return.
-        if (itemHomingTargetEntity == nullptr) {
+        // If no player, return.
+        if (playerEntity == nullptr) {
             return;
         }
-        auto& playerBombAbility = itemHomingTargetEntity->getComponent<PlayerBombAbility>();
+        auto& playerBombAbility = playerEntity->getComponent<PlayerBombAbility>();
+        auto& playerTransform = playerEntity->getComponent<Transform>();
 
-        // Make all items home to target if a bomb is active.
-        if (playerBombAbility.active) {
+        // The distance from the top of the stage that the player needs to be above to auto collect items.
+        float itemCollectionZoneThreshold = 294.0f;
+
+        // Make all items home to target if a bomb is active or player is above the item collection zone threshold.
+        if (playerBombAbility.active || playerTransform.position.y < itemCollectionZoneThreshold) {
             for (auto& entity : entities) {
                 if (entity->hasComponent<Item>() && entity->hasComponent<Velocity>() && entity->hasComponent<LookAtRotator>()) {
-                    ItemUtils::enableItemHoming(*entity, *itemHomingTargetEntity);
+                    ItemUtils::enableItemHoming(*entity, *playerEntity);
                 }
             }
         }
