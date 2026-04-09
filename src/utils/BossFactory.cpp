@@ -12,8 +12,8 @@ void BossFactory::buildStageBoss(Entity &entity, World &world, const Boss &bossD
     entity.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 0.0f);
 
     SDL_Texture* tex = TextureManager::load("../asset/animations/sanae_anim.png");
-    SDL_FRect src {0, 0, 63, 65};
-    SDL_FRect dst {0, 0, 63, 65};
+    SDL_FRect src {0, 0, 92, 125};
+    SDL_FRect dst {0, 0, 73.6, 100}; // Scale down the destination rect a bit.
 
     Vector2D pivotOffset = Vector2D(dst.w / 2.0f, dst.h / 2.0f);
     entity.addComponent<Sprite>(tex, src, dst, RenderLayer::World, pivotOffset);
