@@ -9,6 +9,7 @@ class ItemFactory {
     static void createLargePowerItem(Entity& entity, Vector2D position);
     static void createSmallPowerItem(Entity& entity, Vector2D position);
     static void createBombItem(Entity& entity, Vector2D position);
+    static void createStarItem(Entity& entity, Vector2D position);
 public:
     static void createItem(Entity& entity, ItemType type, Vector2D position);
 };

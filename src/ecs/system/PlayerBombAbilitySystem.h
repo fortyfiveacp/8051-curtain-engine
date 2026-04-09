@@ -1,13 +1,11 @@
 #pragma once
-#include <memory>
-#include <vector>
 
 #include "Component.h"
 #include "Entity.h"
 
 class World;
 
-class PlayerAbilitySystem {
+class PlayerBombAbilitySystem {
 public:
     void update(World& world, float deltaTime);
 

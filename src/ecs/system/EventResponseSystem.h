@@ -16,7 +16,7 @@ private:
 
     void onPlayerShotCollision(const CollisionEvent& e);
 
-    void onBombCollision(const CollisionEvent &e);
+    void onBombCollision(const CollisionEvent &e, World& world);
 
     bool getCollisionEntities(const CollisionEvent& e, const char* otherTag, Entity*& player, Entity*& other);
 

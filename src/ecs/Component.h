@@ -37,10 +37,12 @@ struct AngularVelocity {
 // Sets the rotation property of the Transform to point toward a different target Transform.
 struct LookAtRotator {
     // The target so that the rotator will point local space DOWN toward the target.
-    Transform& target;
+    Transform* target = nullptr;
 
     // Offset to the target in degrees.
     float offsetDegrees{};
+
+    bool enabled = true;
 };
 
 enum class RenderLayer {
@@ -372,7 +374,8 @@ enum ItemType {
     Point,
     LargePower,
     SmallPower,
-    Bomb
+    Bomb,
+    Star
 };
 
 struct Item {

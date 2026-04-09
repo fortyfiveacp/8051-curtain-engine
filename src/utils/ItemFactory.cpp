@@ -16,6 +16,9 @@ void ItemFactory::createItem(Entity& entity, ItemType type, Vector2D position) {
         case Bomb:
             createBombItem(entity, position);
             break;
+        case Star:
+            createStarItem(entity, position);
+            break;
         default:
             break;
     }
@@ -46,14 +49,17 @@ void ItemFactory::createBaseItem(Entity& entity, Vector2D position, float textur
     collider.offset.x = -collider.rect.w / 2.0f;
     collider.offset.y = -collider.rect.h / 2.0f;
 
-    // Add projectile tag so items are destroyed when they go off-screen.
-    // entity.addComponent<ProjectileTag>();
+    // Add item tag so items are destroyed when they go off-screen.
     entity.addComponent<ItemTag>();
+
+    // Rotator added without target and disabled immediately. Add target and enable to home.
+    auto& rotator = entity.addComponent<LookAtRotator>();
+    rotator.enabled = false;
 }
 
 void ItemFactory::createPointItem(Entity& entity, Vector2D position) {
     createBaseItem(entity, position, 16, 0);
-    entity.addComponent<Item>(7500, Point);
+    entity.addComponent<Item>(30000, Point);
 }
 
 void ItemFactory::createLargePowerItem(Entity& entity, Vector2D position) {
@@ -69,4 +75,9 @@ void ItemFactory::createSmallPowerItem(Entity& entity, Vector2D position) {
 void ItemFactory::createBombItem(Entity& entity, Vector2D position) {
     createBaseItem(entity, position, 48, 0);
     entity.addComponent<Item>(1, Bomb);
+}
+
+void ItemFactory::createStarItem(Entity& entity, Vector2D position) {
+    createBaseItem(entity, position, 96, 0);
+    entity.addComponent<Item>(100, Star);
 }
