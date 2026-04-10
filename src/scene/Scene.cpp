@@ -86,7 +86,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		isDebugging = debugEvent.isDebugging;
 	});
 
-	SDL_Texture* backgroundTex = TextureManager::load("../asset/background.png");
+	SDL_Texture* backgroundTex = TextureManager::load("../asset/ui/background.png");
 	float texWidth = backgroundTex->w;
 	float texHeight = backgroundTex->h;
 

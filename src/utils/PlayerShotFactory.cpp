@@ -45,7 +45,7 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, speed, false);
 
-			SDL_Texture* tex = TextureManager::load("../asset/bullet-spritesheet.png");
+			SDL_Texture* tex = TextureManager::load("../asset/objects/bullet-spritesheet.png");
 			SDL_SetTextureAlphaMod(tex, 150);
 			SDL_FRect src = {240, 80, 16, 16};
 			SDL_FRect dest { position.x, position.y, 32, 32 };
@@ -77,7 +77,7 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, speed, false);
 
-			SDL_Texture* tex = TextureManager::load("../asset/bullet-spritesheet.png");
+			SDL_Texture* tex = TextureManager::load("../asset/objects/bullet-spritesheet.png");
 			SDL_SetTextureAlphaMod(tex, 120);
 			SDL_FRect src = {32, 96, 16, 16};
 			SDL_FRect dest { position.x, position.y, 36, 36 };
@@ -115,7 +115,7 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, speed, false);
 
-			SDL_Texture* tex = TextureManager::load("../asset/bullet-spritesheet.png");
+			SDL_Texture* tex = TextureManager::load("../asset/objects/bullet-spritesheet.png");
 			SDL_SetTextureAlphaMod(tex, 150);
 			SDL_FRect src = {240, 32, 16, 16};
 			SDL_FRect dest { position.x, position.y, 32, 32 };
