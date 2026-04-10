@@ -1,6 +1,7 @@
 #include "StageLoader.h"
 
 #include "BossFactory.h"
+#include "ItemFactory.h"
 #include "tinyxml2.h"
 
 void StageLoader::loadStage(const char *path, World &world) {
@@ -130,6 +131,23 @@ void StageLoader::loadStage(const char *path, World &world) {
                     }
 
                     if (entity->hasComponent<ProjectileTag>() || entity->hasComponent<EnemyTag>()) {
+                        // Find the player.
+                        Entity* playerEntity = nullptr;
+                        for (auto& e : world.getEntities()) {
+                            if (e->hasComponent<PlayerTag>() && e->hasComponent<Transform>()) {
+                                playerEntity = e.get();
+                                break;
+                            }
+                        }
+
+                        // If the player was found and the bullet has a transform, create a star item at its location that homes to
+                        // the player.
+                        if (playerEntity != nullptr && entity->hasComponent<Transform>()) {
+                            auto& itemEntity = world.createDeferredEntity();
+                            ItemFactory::createItem(itemEntity, Star, entity->getComponent<Transform>().position);
+                            ItemUtils::enableItemHoming(itemEntity, *playerEntity);
+                        }
+
                         entity->destroy();
                     }
                 }

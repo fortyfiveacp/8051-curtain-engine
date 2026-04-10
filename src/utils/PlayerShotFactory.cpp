@@ -90,6 +90,7 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			c.radius = 18;
 
 			e.addComponent<PlayerShot>(powerToDamage(largeShotBulletDamage, playerStats.currentPower));
+			AudioManager::playSfx("player-shot", 0.35f);
 		});
 
     // Small fan.

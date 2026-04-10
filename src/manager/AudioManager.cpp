@@ -12,7 +12,7 @@ std::unordered_map<std::string, MIX_Audio*> AudioManager::audio;
 std::unordered_map<std::string, double> AudioManager::sfxLastPlayedTimes;
 constexpr int MAX_SFX_TRACKS = 32;
 constexpr float BGM_VOLUME = 0.7f;
-constexpr float SFX_VOLUME = 0.3f;
+constexpr float SFX_BASE_VOLUME = 0.3f;
 
 AudioManager::AudioManager() {
     if (MIX_Init() == 0) {
@@ -80,7 +80,7 @@ void AudioManager::stopMusic() {
     MIX_StopTrack(musicTrack, 0);
 }
 
-void AudioManager::playSfx(const std::string &name) {
+void AudioManager::playSfx(const std::string &name, float volume) {
     auto now = std::chrono::system_clock::now().time_since_epoch();
     double currentTimeMS = std::chrono::duration<double, std::milli>(now).count();
     double cooldownMS = 25.0;
@@ -101,7 +101,7 @@ void AudioManager::playSfx(const std::string &name) {
             if (MIX_SetTrackAudio(track, audio[name]) == 0) {
                 return;
             }
-            MIX_SetTrackGain(track, SFX_VOLUME);
+            MIX_SetTrackGain(track, SFX_BASE_VOLUME * volume);
             MIX_PlayTrack(track, 0);
             sfxLastPlayedTimes[name] = currentTimeMS;
             return;
