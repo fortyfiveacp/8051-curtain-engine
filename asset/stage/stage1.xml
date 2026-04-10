@@ -203,7 +203,7 @@
                      bulletsPerBurst="16" rotationSpeed="10.0" bulletAngularVel="0.0" radius="12.0"/>
         </Convoy>
 
-        <Convoy start="50.0" enemyType="LargeFairy" pathId="8" numEnemies="2" interval="3.0" speed="300">
+        <Convoy start="50.0" enemyType="LargeFairy" pathId="8" numEnemies="3" interval="3.0" speed="300">
             <Pattern type="Radial" bullet="Circle" startTime="1.0" endTime="6.0" frequency="0.8" bulletSpeed="150.0"
                      bulletsPerBurst="16" rotationSpeed="15.0" bulletAngularVel="0.0" radius="12.0"/>
         </Convoy>
@@ -266,9 +266,9 @@
             </Phase>
 
             <Phase id="3" trigger="threshold" healthThreshold="0.5" target="emitters">
-                <Pattern type="Linear" bullet="Circle" startTime="0.1" endTime="999" frequency="0.7" bulletSpeed="200"
+                <Pattern type="Linear" bullet="Circle" startTime="0.1" endTime="999" frequency="0.6" bulletSpeed="200"
                          bulletsPerBurst="7" isFanPattern="false" targeted="true" speedMultiplier="1.1">
-                    <BulletPositions><Pos x="0" y="0" /></BulletPositions>
+                    <BulletPositions><Pos x="-0.1" y="5" /><Pos x="0.1" y="5" /></BulletPositions>
                 </Pattern>
                 <Pattern type="Linear" bullet="Circle" startTime="0.1" endTime="999" frequency="0.7" bulletSpeed="200"
                          bulletsPerBurst="7" isFanPattern="false" targeted="true" speedMultiplier="1.1">
@@ -290,7 +290,7 @@
                          bulletsPerBurst="10" isFanPattern="false" targeted="true" speedMultiplier="1.2">
                     <BulletPositions><Pos x="0" y="0" /></BulletPositions>
                 </Pattern>
-                <Pattern type="Linear" bullet="Circle" startTime="0.1" endTime="999" frequency="0.4" bulletSpeed="240"
+                <Pattern type="Linear" bullet="Circle" startTime="0.1" endTime="999" frequency="0.4" bulletSpeed="300"
                          bulletsPerBurst="10" isFanPattern="false" targeted="true" speedMultiplier="1.2">
                     <BulletPositions><Pos x="0" y="0" /></BulletPositions>
                 </Pattern>
