@@ -208,8 +208,9 @@ void EventResponseSystem::onPlayerShotCollision(const CollisionEvent& e) {
             if (e.state == CollisionState::Enter) {
                 auto& boss = other->getComponent<Boss>();
                 auto& playerShot = playerShotEntity->getComponent<PlayerShot>();
-
-                boss.currentHealth -= static_cast<int>(playerShot.damage);
+                if (!boss.isInvulnerable) {
+                    boss.currentHealth -= static_cast<int>(playerShot.damage);
+                }
             }
 
             // Destroy shot after impact.
