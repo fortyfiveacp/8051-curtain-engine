@@ -62,8 +62,9 @@ void BossStateSystem::handleBossDeath(Entity* entity, Boss& boss, World& world) 
 
         // An inelegant solution to making the boss disappear on death, as there doesn't seem to be a way to
         // disable both Sprite and Animation components.
-        if (entity->hasComponent<Transform>()) {
-            entity->getComponent<Transform>().position = { 0.0f, -100.0f };
+        if (entity->hasComponent<Sprite>()) {
+            auto& sprite = entity->getComponent<Sprite>();
+            sprite.dst = {0, 0, 0, 0};
         }
 
         deactivateDanmakuSpawners(entity);
@@ -80,6 +81,7 @@ void BossStateSystem::initWinScreen(Entity* entity, const std::vector<std::uniqu
     if (entity->hasComponent<Timeline>()) {
         auto& timeline = entity->getComponent<Timeline>();
         float triggerTime = timeline.currentTime + 2.0f;
+        std::cout << timeline.currentTime << std::endl;
 
         timeline.timeline.emplace_back(triggerTime, [&entities]() {\
             for (auto& e : entities) {

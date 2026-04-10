@@ -183,7 +183,7 @@ struct PlayerShotAbility {
 struct PlayerBomb {
     float timer = 0.0f;
     float duration = 3.0f;
-    float damage = 5.0f;
+    float damage = 4.0f;
 };
 
 struct PlayerBombAbility {
