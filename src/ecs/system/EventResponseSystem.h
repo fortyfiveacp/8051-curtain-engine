@@ -20,9 +20,5 @@ private:
 
     bool getCollisionEntities(const CollisionEvent& e, const char* otherTag, Entity*& player, Entity*& other);
 
-    // Player action
-    void onPlayerAction(const PlayerActionEvent& e,
-        const std::function<void(Entity* player, PlayerAction action)>& callback);
-
     void onUIInteraction(const UIInteractionEvent& e);
 };

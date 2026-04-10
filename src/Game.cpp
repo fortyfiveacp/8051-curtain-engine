@@ -127,28 +127,11 @@ void Game::init(const char* title, int width, int height, bool fullscreen) {
 	gameState.point = 0;
 	gameState.continues = 0;
 
-	// Start music.
-	// audioManager.playMusic("menu-theme");
-
 	// Start level 1.
 	sceneManager.changeSceneDeferred("mainmenu");
 
 	// Resolve scene callback.
 	onSceneChangeRequest = [this](std::string sceneName) {
-		// TODO purge.
-		// Some game state happening here.
-		// if (sceneManager.currentScene->getName() == "level2" && sceneName == "level2") {
-		// 	std::cout << "You win!" << std::endl;
-		// 	isRunning = false;
-		// 	return;
-		// }
-		//
-		// if (sceneName == "gameover") {
-		// 	std::cout << "Mission failed we'll get'em next time" << std::endl;
-		// 	isRunning = false;
-		// 	return;
-		// }
-
 		sceneManager.changeSceneDeferred(sceneName);
 	};
 }
@@ -180,12 +163,6 @@ void Game::render() {
 	g = 255;
 	b = 255;
 	a = 255;
-
-	// TODO: purge
-	// r = (frameCount / 120 * 15) % 255;
-	// g = (frameCount / 120 * 36) % 255;
-	// b = (frameCount / 120 * 55) % 255;
-	// a = 255;
 
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
 

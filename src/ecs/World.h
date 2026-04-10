@@ -53,7 +53,6 @@
 #include "event/AudioEventQueue.h"
 
 class World {
-    Map map; // TODO purge.
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     std::unordered_map<int, Path> pathLibrary;
@@ -63,7 +62,6 @@ class World {
     KeyboardInputSystem keyboardInputSystem;
     CollisionSystem collisionSystem;
     AnimationSystem animationSystem;
-    CameraSystem cameraSystem;
     EventManager eventManager;
     SpawnTimerSystem spawnTimerSystem;
     RadialSpawnerSystem radialSpawnerSystem;
@@ -137,7 +135,6 @@ public:
                     pathSystem.update(*this, entities, dt);
                     bossTrackerSystem.update(entities);
                     animationSystem.update(entities, dt);
-                    // cameraSystem.update(entities); // TODO: decide what to do with the camera system.
                     spawnTimerSystem.update(entities, dt);
                     itemBounceSystem.update(entities, dt);
                     radialSpawnerSystem.update(entities, dt);
@@ -263,10 +260,6 @@ public:
 
     AudioEventQueue& getAudioEventQueue() {
         return audioEventQueue;
-    }
-
-    Map& getMap() {
-        return map;
     }
 
     std::function<void(Vector2D pos, Vector2D dir, float speed)> requestBulletSpawn;

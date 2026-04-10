@@ -17,11 +17,7 @@ void EnemyFactory::buildEnemy(Entity &entity, World& world, const Convoy& convoy
             buildSmallFairy(entity, world, convoyData.enemyType, convoyData.danmakuPattern);
             break;
         case EnemyType::LargeFairy:
-            // TODO: find spritesheet of large fairy - use small fairy spritesheet as placeholder.
             buildLargeFairy(entity, world, convoyData.danmakuPattern);
-            break;
-        case EnemyType::Boss:
-            // TODO: find spritesheet of boss.
             break;
         default:
             break;

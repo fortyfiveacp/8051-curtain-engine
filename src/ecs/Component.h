@@ -154,7 +154,7 @@ struct LinearSpawner {
 
 // Our game state, might have multiple scenes.
 struct SceneState {
-    int coinsCollected = 0; // TODO: do we actually even need this?
+    // Currently unused but kept for potential future use.
 };
 
 struct PlayerStats {
@@ -183,7 +183,7 @@ struct PlayerShotAbility {
 struct PlayerBomb {
     float timer = 0.0f;
     float duration = 3.0f;
-    float damage = 1.0f; // TODO: Test damage values once boss and health are implemented.
+    float damage = 1.0f;
 };
 
 struct PlayerBombAbility {

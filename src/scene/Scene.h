@@ -35,8 +35,8 @@ private:
     SceneType type;
     bool isPaused = false;
     bool isDebugging = false;
-    //void createProjectile(Vector2D pos, Vector2D dir, int speed); TODO: commented out during tutorial, not needed?
 
+    // Init scene types.
     void initMainMenu(int windowWidth, int windowHeight);
     void initGameplay(const char* stageDataPath, const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight);
     void initCredits(int windowWidth, int windowHeight);
