@@ -180,7 +180,7 @@ struct PlayerShotAbility {
 struct PlayerBomb {
     float timer = 0.0f;
     float duration = 3.0f;
-    float damage = 1.0f;
+    float damage = 4.0f;
 };
 
 struct PlayerBombAbility {
@@ -250,8 +250,7 @@ struct PathFollower {
 enum class EnemyType {
     SmallBlueFairy,
     SmallRedFairy,
-    LargeFairy,
-    Boss
+    LargeFairy
 };
 
 enum class BulletType {
@@ -414,12 +413,14 @@ struct LootDropTable {
     std::vector<Vector2D> offsets;
 };
 
+// Determines whether a phase transition leads to the boss' death or a specified health threshold.
 enum class PhaseTrigger {
     HealthThreshold,
     Death
 };
 
-enum class PatternTarget {
+// Target for the Danmaku pattern in a phase: the boss, or its emitter children.
+enum class DanmakuPatternTarget {
     Boss,
     Emitters
 };
@@ -429,7 +430,7 @@ struct PhaseData {
     PhaseTrigger triggerType = PhaseTrigger::HealthThreshold;
     float healthThreshold = 0.0f;
 
-    PatternTarget target = PatternTarget::Boss;
+    DanmakuPatternTarget target = DanmakuPatternTarget::Boss;
     std::vector<DanmakuPattern> patterns{};
 };
 
@@ -437,15 +438,14 @@ struct Boss {
     std::string bossName{};
     int maxHealth{};
     int currentHealth{};
-    int phasesLeft{};
+    int phasesLeft{}; // The number of phases to display on the boss health bar.
 
     bool isInvulnerable = false;
     float invulnerabilityTimer = 0.0f;
     static constexpr float INVULNERABLE_DURATION = 2.0f;
 
     Vector2D targetPoint{384.0f, 300.0f};
-    // Reference for targetPoint, since targetPoint may change.
-    Vector2D originPoint{384.0f, 300.0f};
+    Vector2D originPoint{384.0f, 300.0f}; // Reference for targetPoint, since targetPoint may change.
     bool introCompleted = false;
     float movementSpeed = 150.0f;
 
@@ -453,7 +453,7 @@ struct Boss {
     float movementTimer = 0.0f;
     const float movementInterval = 3.5f;
 
-    std::vector<PhaseData> phaseList;
+    std::vector<PhaseData> phaseList{};
 };
 
 struct BossHealthBar {

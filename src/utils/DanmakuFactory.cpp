@@ -78,6 +78,7 @@ void DanmakuFactory::initLinearPattern(Entity &entity, World &world, const Danma
     );
 }
 
+// Initialize the timeline for an entity that will use the Radial Danmaku pattern.
 void DanmakuFactory::buildRadialDanmaku(Entity& entity, World& world, const DanmakuPattern& danmakuPattern) {
     auto& timeline = entity.hasComponent<Timeline>() ? entity.getComponent<Timeline>() : entity.addComponent<Timeline>();
 
@@ -94,6 +95,7 @@ void DanmakuFactory::buildRadialDanmaku(Entity& entity, World& world, const Danm
     });
 }
 
+// Initialize the timeline for an entity that will use the Linear Danmaku pattern.
 void DanmakuFactory::buildLinearDanmaku(Entity& entity, World& world, const DanmakuPattern& danmakuPattern) {
     auto& timeline = entity.hasComponent<Timeline>() ? entity.getComponent<Timeline>() : entity.addComponent<Timeline>();
 

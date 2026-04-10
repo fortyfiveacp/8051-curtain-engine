@@ -4,6 +4,9 @@
 #include "Vector2D.h"
 #include "World.h"
 
+// Normally, in Touhou games, you can choose between different characters. Each character usually has
+// a different kind of bomb, so implementing said bombs can be done here. At the current state of the game,
+// only one kind of bomb is needed.
 class PlayerBombFactory {
 public:
     static void buildBasicBomb(World& world, Vector2D position, const float size) {

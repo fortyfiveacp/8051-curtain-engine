@@ -29,27 +29,6 @@ void BossFactory::buildStageBoss(Entity &entity, World &world, const Boss &bossD
     for (const auto& offset : emitterOffsets) {
         createChildEmitter(entity, world, offset);
     }
-
-    if (!bossData.phaseList.empty()) {
-        const auto& firstPhase = bossData.phaseList[0];
-
-        if (!firstPhase.patterns.empty()) {
-            if (firstPhase.target == PatternTarget::Boss) {
-                DanmakuFactory::buildDanmaku(entity, world, firstPhase.patterns[0]);
-            } else {
-                auto& children = entity.getComponent<Children>();
-                for (size_t i = 0; i < children.children.size(); ++i) {
-                    Entity* child = children.children[i];
-                    if (!child) {
-                        continue;
-                    }
-
-                    const auto& pattern = firstPhase.patterns[i % firstPhase.patterns.size()];
-                    DanmakuFactory::buildDanmaku(*child, world, pattern);
-                }
-            }
-        }
-    }
 }
 
 void BossFactory::createChildEmitter(Entity &parent, World &world, Vector2D offset) {

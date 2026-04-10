@@ -36,17 +36,7 @@ void EnemyFactory::buildSmallFairy(Entity &entity, World& world, const EnemyType
         initBaseFairy(entity, "blueFairy", "../asset/animations/small_fairies_anim.png", 32);
         loot.types = { Point };
     }
-
-    if (danmakuPattern.shouldTargetPlayer) {
-        for (auto& e : world.getEntities()) {
-            if (e->hasComponent<PlayerTag>()) {
-                auto& playerTransform = e->getComponent<Transform>();
-                entity.addComponent<LookAtRotator>(&playerTransform, 0.0f);
-                break;
-            }
-        }
-    }
-
+    initLinearLookAt(entity, danmakuPattern, world.getEntities());
     DanmakuFactory::buildDanmaku(entity, world, danmakuPattern);
 }
 
@@ -59,6 +49,7 @@ void EnemyFactory::buildLargeFairy(Entity &entity, World& world, const DanmakuPa
     loot.types = { Point, Point, LargePower, Point, Point };
     loot.offsets = { {-50, 0}, {50, 0}, {0, 0}, {0, -50}, {0, 50} };
 
+    initLinearLookAt(entity, danmakuPattern, world.getEntities());
     DanmakuFactory::buildDanmaku(entity, world, danmakuPattern);
 }
 
@@ -73,9 +64,20 @@ void EnemyFactory::initBaseFairy(Entity &entity, const std::string& animName, co
     Vector2D pivotOffset = Vector2D(dst.w / 2.0f, dst.h / 2.0f);
     entity.addComponent<Sprite>(tex, src, dst, RenderLayer::World, pivotOffset);
 
-    float radius = size / 2.0f;
-    Vector2D bulletSpawnPositionOffset = transform.position * radius;
-    auto& bulletCol = entity.addComponent<CircleCollider>("enemy");
-    bulletCol.centerPosition = transform.position + bulletSpawnPositionOffset;
-    bulletCol.radius = radius / 2;
+    auto& collider = entity.addComponent<CircleCollider>("enemy");
+    collider.centerPosition = transform.position;
+    collider.radius = size/ 4;
+}
+
+// Adds a LookAtRotator to the fairy if they use a Linear Danmaku Pattern.
+void EnemyFactory::initLinearLookAt(Entity& entity, const DanmakuPattern& danmakuPattern, std::vector<std::unique_ptr<Entity>>& entities) {
+    if (danmakuPattern.shouldTargetPlayer) {
+        for (auto& e : entities) {
+            if (e->hasComponent<PlayerTag>()) {
+                auto& playerTransform = e->getComponent<Transform>();
+                entity.addComponent<LookAtRotator>(&playerTransform, 0.0f);
+                break;
+            }
+        }
+    }
 }
