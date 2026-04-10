@@ -53,7 +53,7 @@ public:
                     // Update rotation based on angular velocity.
                     updateRotationBasedOnAngularVelocity(dt, entity);
                 }
-                else if (entity->hasComponent<LookAtRotator>()) {
+                else if (entity->hasComponent<LookAtRotator>() && entity->getComponent<LookAtRotator>().enabled) {
                     // Update rotation to look at a specific target.
                     updateRotationBasedOnTarget(entity);
                 }
@@ -128,7 +128,12 @@ private:
         auto& t = entity->getComponent<Transform>();
         auto& r = entity->getComponent<LookAtRotator>();
 
-        const Vector2D displacement = r.target.position - t.position;
+        if (r.target == nullptr) {
+            std::cerr << "No target found!" << std::endl;
+            return;
+        }
+
+        const Vector2D displacement = r.target->position - t.position;
 
         float oldRotation = t.rotation;
 

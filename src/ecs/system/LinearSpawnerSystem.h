@@ -50,8 +50,6 @@ public:
                         const auto direction = Vector2D(rotation * (180 / std::numbers::pi));
 
                         spawner.spawnCallback(spawnPosition, direction, spawnSpeed);
-                        // TODO: implement way to differentiate between bullet types, if we have time.
-                        //AudioManager::playSfx("circle-bullet-shot");
                     }
                 }
             }

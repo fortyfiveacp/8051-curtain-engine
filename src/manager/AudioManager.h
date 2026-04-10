@@ -23,5 +23,5 @@ public:
     static void resumeMusic();
     static void stopMusic();
 
-    static void playSfx(const std::string& name);
+    static void playSfx(const std::string& name, float volume = 1.0f);
 };

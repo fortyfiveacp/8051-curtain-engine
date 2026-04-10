@@ -33,9 +33,6 @@ public:
 
                         currentEmissionAngle += angleBetweenBullets;
                     }
-
-                    // TODO: implement way to differentiate between bullet types, if we have time.
-                    AudioManager::playSfx("circle-bullet-shot");
                 }
             }
         }

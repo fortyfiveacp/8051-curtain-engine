@@ -45,7 +45,7 @@ void EnemyFactory::buildSmallFairy(Entity &entity, World& world, const EnemyType
         for (auto& e : world.getEntities()) {
             if (e->hasComponent<PlayerTag>()) {
                 auto& playerTransform = e->getComponent<Transform>();
-                entity.addComponent<LookAtRotator>(playerTransform, 0.0f);
+                entity.addComponent<LookAtRotator>(&playerTransform, 0.0f);
                 break;
             }
         }

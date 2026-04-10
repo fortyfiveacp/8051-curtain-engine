@@ -1,4 +1,4 @@
-#include "PlayerAbilitySystem.h"
+#include "PlayerBombAbilitySystem.h"
 
 #include "PlayerBombFactory.h"
 #include "Component.h"
@@ -6,7 +6,7 @@
 #include "Game.h"
 #include "manager/AudioManager.h"
 
-void PlayerAbilitySystem::update(World& world, float deltaTime) {
+void PlayerBombAbilitySystem::update(World& world, float deltaTime) {
     for (auto& entity : world.getEntities()) {
         if (entity->hasComponent<PlayerTag>() && entity->hasComponent<KeyboardInput>()
             && entity->hasComponent<PlayerStats>() && entity->hasComponent<PlayerBombAbility>()) {
@@ -49,7 +49,7 @@ void PlayerAbilitySystem::update(World& world, float deltaTime) {
     }
 }
 
-void PlayerAbilitySystem::castBomb(Entity& entity, const Transform& transform, World& world) {
+void PlayerBombAbilitySystem::castBomb(Entity& entity, const Transform& transform, World& world) {
     float bombSize = 600.0f;
     float bombX = transform.position.x - (bombSize / 2.0f);
     float bombY = transform.position.y - (bombSize / 2.0f);

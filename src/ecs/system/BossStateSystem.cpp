@@ -3,6 +3,7 @@
 #include "ComponentUtils.h"
 #include "World.h"
 #include "DanmakuFactory.h"
+#include "ItemFactory.h"
 
 void BossStateSystem::update(World& world, float dt) {
     for (auto& entity : world.getEntities()) {
@@ -42,6 +43,7 @@ void BossStateSystem::update(World& world, float dt) {
                 decrementPhase(entity.get(), boss, world);
             }
             else if (boss.phasesLeft <= 0 || boss.phaseList.empty()) {
+                boss.phasesLeft = 0;
                 entity->addComponent<DeadTag>();
                 ComponentUtils::deactivateSpawners(entity.get());
 
@@ -128,7 +130,7 @@ void BossStateSystem::transitionToPhase(Entity* bossEntity, Boss& boss, const Ph
                     for (auto& e : world.getEntities()) {
                         if (e->hasComponent<PlayerTag>()) {
                             auto& playerTransform = e->getComponent<Transform>();
-                            child->addComponent<LookAtRotator>(playerTransform, 0.0f);
+                            child->addComponent<LookAtRotator>(&playerTransform, 0.0f);
                             break;
                         }
                     }
@@ -137,8 +139,26 @@ void BossStateSystem::transitionToPhase(Entity* bossEntity, Boss& boss, const Ph
         }
     }
 
+    // Find the player.
+    Entity* playerEntity = nullptr;
+    for (auto& e : world.getEntities()) {
+        if (e->hasComponent<PlayerTag>() && e->hasComponent<Transform>()) {
+            playerEntity = e.get();
+            break;
+        }
+    }
+
+    // Destroy all bullets.
     for (auto& entity : world.getEntities()) {
-        if (entity->hasComponent<ProjectileTag>()) {
+        if (entity->hasComponent<ProjectileTag>() ) {
+            // If the player was found and the bullet has a transform, create a star item at its location that homes to
+            // the player.
+            if (playerEntity != nullptr && entity->hasComponent<Transform>()) {
+                auto& itemEntity = world.createDeferredEntity();
+                ItemFactory::createItem(itemEntity, Star, entity->getComponent<Transform>().position);
+                ItemUtils::enableItemHoming(itemEntity, *playerEntity);
+            }
+
             entity->destroy();
         }
     }

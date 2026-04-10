@@ -31,8 +31,9 @@
 #include "PathSystem.h"
 #include "RadialSpawnerSystem.h"
 #include "PauseMenuSystem.h"
-#include "PlayerAbilitySystem.h"
+#include "PlayerBombAbilitySystem.h"
 #include "InvincibilityFramesSystem.h"
+#include "ItemHomingSystem.h"
 #include "ItemBounceSystem.h"
 #include "PlayerBombSystem.h"
 #include "PlayerBoundsSystem.h"
@@ -79,7 +80,7 @@ class World {
     BackgroundRenderSystem backgroundRenderSystem;
     StageBackgroundSystem stageBackgroundSystem;
     AudioEventQueue audioEventQueue;
-    PlayerAbilitySystem playerAbilitySystem;
+    PlayerBombAbilitySystem playerBombAbilitySystem;
     DeathBombSystem deathBombSystem;
     InvincibilityFramesSystem invincibilityFramesSystem;
     SelectableUISystem selectableUISystem;
@@ -96,6 +97,7 @@ class World {
     PlayerFocusRenderSystem playerFocusRenderSystem;
     CreditsSystem creditsSystem;
     PlayerShootingSystem playerShootingSystem;
+    ItemHomingSystem itemHomingSystem;
 
     // Reactive systems.
     EventResponseSystem eventResponseSystem{*this};
@@ -127,8 +129,9 @@ public:
                     deathBombSystem.update(entities, dt);
                     playerRespawnSystem.update(entities, dt);
                     invincibilityFramesSystem.update(entities, dt);
-                    playerAbilitySystem.update(*this, dt);
+                    playerBombAbilitySystem.update(*this, dt);
                     playerBombSystem.update(entities, dt);
+                    itemHomingSystem.update(entities);
                     playerShootingSystem.update(entities);
                     convoySystem.update(*this, dt);
                     pathSystem.update(*this, entities, dt);

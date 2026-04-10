@@ -69,7 +69,7 @@ set(SRC_FILES
         src/utils/DanmakuFactory.h
         src/utils/DanmakuFactory.cpp
         src/ecs/system/PlayerRespawnSystem.h
-        src/ecs/system/PlayerAbilitySystem.cpp
+        src/ecs/system/PlayerBombAbilitySystem.cpp
         src/utils/PlayerBombFactory.h
         src/ecs/system/PlayerBombSystem.h
         src/ecs/system/DeathBombSystem.h

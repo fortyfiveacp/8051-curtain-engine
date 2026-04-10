@@ -1,6 +1,8 @@
 #include "EventResponseSystem.h"
 
 #include "Game.h"
+#include "ItemFactory.h"
+#include "ItemUtils.h"
 #include "World.h"
 
 EventResponseSystem::EventResponseSystem(World &world) {
@@ -17,7 +19,7 @@ EventResponseSystem::EventResponseSystem(World &world) {
         onCollision(collision, "projectile", world);
         onCollision(collision, "enemy", world);
 
-        onBombCollision(collision);
+        onBombCollision(collision, world);
         onPlayerShotCollision(collision);
     });
 
@@ -85,11 +87,12 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
 
             switch(item.type) {
                 case Point:
-                    playerStats.currentScore = std::min(playerStats.currentScore + item.value, PlayerStats::MAX_SCORE);
-                    Game::gameState.score = playerStats.currentScore;
-
+                    // Only actual point items count towards the point counter.
                     playerStats.currentPoint++;
                     Game::gameState.point = playerStats.currentPoint;
+                case Star:
+                    playerStats.currentScore = std::min(playerStats.currentScore + item.value, PlayerStats::MAX_SCORE);
+                    Game::gameState.score = playerStats.currentScore;
 
                     // Also update current HiScore if current Score exceeds it.
                     playerStats.currentHiScore = std::max(playerStats.currentHiScore, playerStats.currentScore);
@@ -215,7 +218,7 @@ void EventResponseSystem::onPlayerShotCollision(const CollisionEvent& e) {
     }
 }
 
-void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
+void EventResponseSystem::onBombCollision(const CollisionEvent& e, World& world) {
     if (e.entityA == nullptr || e.entityB == nullptr) {
         return;
     }
@@ -240,6 +243,11 @@ void EventResponseSystem::onBombCollision(const CollisionEvent& e) {
         }
 
         if (otherTag == "projectile") {
+            if (other->hasComponent<Transform>()) {
+                auto& itemEntity = world.createDeferredEntity();
+                ItemFactory::createItem(itemEntity, Star, other->getComponent<Transform>().position);
+            }
+
             other->destroy();
         }
 
