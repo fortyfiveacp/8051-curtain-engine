@@ -227,7 +227,7 @@
         </MovementPoints>
         <Phases>
             <Phase id="0" trigger="threshold" healthThreshold="1.0" target="boss">
-                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="1.2" bulletSpeed="140" bulletsPerBurst="12" rotationSpeed="45" radius="20"/>
+                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="1.2" bulletSpeed="140" bulletsPerBurst="12" rotationSpeed="45" radius="12"/>
             </Phase>
 
             <Phase id="1" trigger="threshold" healthThreshold="0.5" target="emitters">
@@ -237,12 +237,12 @@
                 <Pattern type="Linear" bullet="Circle" startTime="0.1" endTime="999" frequency="0.8" bulletSpeed="180" bulletsPerBurst="5" isFanPattern="false" targeted="true" speedMultiplier="1.0">
                     <BulletPositions><Pos x="0" y="0" /></BulletPositions>
                 </Pattern>
-                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="1.2" bulletSpeed="140" bulletsPerBurst="12" rotationSpeed="45" radius="20"/>
-                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.3" bulletSpeed="240" bulletsPerBurst="5" rotationSpeed="30" radius="20"/>
+                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="1.2" bulletSpeed="140" bulletsPerBurst="12" rotationSpeed="45" radius="12"/>
+                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.3" bulletSpeed="240" bulletsPerBurst="5" rotationSpeed="30" radius="12"/>
             </Phase>
 
             <Phase id="2" trigger="death" target="boss">
-                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.6" bulletSpeed="160" bulletsPerBurst="16" rotationSpeed="-55" radius="20"/>
+                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.6" bulletSpeed="160" bulletsPerBurst="16" rotationSpeed="-55" radius="12"/>
             </Phase>
 
             <Phase id="3" trigger="threshold" healthThreshold="0.5" target="emitters">
@@ -252,12 +252,12 @@
                 <Pattern type="Linear" bullet="Circle" startTime="0.1" endTime="999" frequency="0.7" bulletSpeed="200" bulletsPerBurst="7" isFanPattern="false" targeted="true" speedMultiplier="1.1">
                     <BulletPositions><Pos x="0" y="0" /></BulletPositions>
                 </Pattern>
-                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.5" bulletSpeed="400" bulletsPerBurst="12" rotationSpeed="35" radius="20"/>
-                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.3" bulletSpeed="240" bulletsPerBurst="5" rotationSpeed="45" radius="20"/>
+                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.5" bulletSpeed="400" bulletsPerBurst="12" rotationSpeed="35" radius="12"/>
+                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.3" bulletSpeed="240" bulletsPerBurst="5" rotationSpeed="45" radius="12"/>
             </Phase>
 
             <Phase id="4" trigger="death" target="boss">
-                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.8" bulletSpeed="180" bulletsPerBurst="20" rotationSpeed="65" radius="20"/>
+                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.8" bulletSpeed="180" bulletsPerBurst="20" rotationSpeed="65" radius="12"/>
             </Phase>
 
             <Phase id="5" trigger="threshold" healthThreshold="0.5" target="emitters">
@@ -267,8 +267,8 @@
                 <Pattern type="Linear" bullet="Circle" startTime="0.1" endTime="999" frequency="0.3" bulletSpeed="240" bulletsPerBurst="10" isFanPattern="false" targeted="true" speedMultiplier="1.2">
                     <BulletPositions><Pos x="0" y="0" /></BulletPositions>
                 </Pattern>
-                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.7" bulletSpeed="120" bulletsPerBurst="16" rotationSpeed="-55" radius="20"/>
-                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.6" bulletSpeed="160" bulletsPerBurst="22" rotationSpeed="-20" radius="20"/>
+                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.7" bulletSpeed="120" bulletsPerBurst="16" rotationSpeed="-55" radius="12"/>
+                <Pattern type="Radial" bullet="Circle" startTime="0.1" endTime="999" frequency="0.6" bulletSpeed="160" bulletsPerBurst="22" rotationSpeed="-20" radius="12"/>
             </Phase>
         </Phases>
     </Boss>
