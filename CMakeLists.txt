@@ -38,7 +38,6 @@ set(SRC_FILES
         src/scene/Scene.h
         src/scene/Scene.cpp
         src/manager/SceneManager.h
-        src/ecs/event/BaseEvent.cpp
         src/ecs/event/BaseEvent.h
         src/ecs/system/EventResponseSystem.h
         src/ecs/system/EventResponseSystem.cpp

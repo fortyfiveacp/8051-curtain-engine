@@ -53,7 +53,6 @@
 #include "event/AudioEventQueue.h"
 
 class World {
-    Map map; // TODO purge.
     std::vector<std::unique_ptr<Entity>> entities;
     std::vector<std::unique_ptr<Entity>> deferredEntities;
     std::unordered_map<int, Path> pathLibrary;
@@ -63,7 +62,6 @@ class World {
     KeyboardInputSystem keyboardInputSystem;
     CollisionSystem collisionSystem;
     AnimationSystem animationSystem;
-    CameraSystem cameraSystem;
     EventManager eventManager;
     SpawnTimerSystem spawnTimerSystem;
     RadialSpawnerSystem radialSpawnerSystem;
@@ -75,7 +73,7 @@ class World {
     PauseMenuSystem pauseMenuSystem;
     HUDSystem hudSystem;
     FPSCounterSystem fpsCounterSystem;
-    IconCounterSystem iconLabelSystem;
+    IconCounterSystem iconCounterSystem;
     PreRenderSystem preRenderSystem;
     BackgroundRenderSystem backgroundRenderSystem;
     StageBackgroundSystem stageBackgroundSystem;
@@ -122,7 +120,7 @@ public:
                 pauseMenuSystem.update(entities, event);
                 selectableUISystem.update(entities, *this, event);
 
-                // Only update gameplay systems if the game isn't paused.
+                // Only update these systems if the game isn't paused.
                 if (!isPaused) {
                     movementSystem.update(entities, dt);
                     collisionSystem.update(*this);
@@ -137,7 +135,6 @@ public:
                     pathSystem.update(*this, entities, dt);
                     bossTrackerSystem.update(entities);
                     animationSystem.update(entities, dt);
-                    // cameraSystem.update(entities); // TODO: decide what to do with the camera system.
                     spawnTimerSystem.update(entities, dt);
                     itemBounceSystem.update(entities, dt);
                     radialSpawnerSystem.update(entities, dt);
@@ -153,7 +150,7 @@ public:
                 debugRenderSystem.update(*this, event, isDebugging);
                 destructionSystem.update(entities);
                 hudSystem.update(entities);
-                iconLabelSystem.update(entities);
+                iconCounterSystem.update(entities);
                 break;
             case SceneType::Credits:
                 // Credits systems.
@@ -165,7 +162,7 @@ public:
                 break;
         }
 
-        // Systems available to all scenes.
+        // Systems that run for all scenes.
         fpsCounterSystem.update(entities, dt);
         audioEventQueue.process(); // Process all the audio events.
         preRenderSystem.update(entities);
@@ -175,10 +172,10 @@ public:
         cleanup();
     }
 
-    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool isDebugging) {
+    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool isPaused, bool isDebugging) {
         backgroundRenderSystem.render(entities);
 
-        // Set up stage viewport.
+        // Set up stage viewport for rendering the world layers.
         int stageWidth = StageUtils::CalculateStageWidth(windowWidth);
         int stageHeight = StageUtils::CalculateStageHeight(windowHeight);
         int paddingX = StageUtils::CalculateStagePaddingX(windowWidth);
@@ -191,10 +188,10 @@ public:
         renderSystem.render(entities);
 
         // Render debug visuals if debugging.
-        // Only render player focus if not debugging.
+        // Only render player focus if not debugging or paused.
         if (isDebugging) {
             debugRenderSystem.render(entities);
-        } else {
+        } else if (!isPaused) {
             playerFocusRenderSystem.render(entities);
         }
 
@@ -263,10 +260,6 @@ public:
 
     AudioEventQueue& getAudioEventQueue() {
         return audioEventQueue;
-    }
-
-    Map& getMap() {
-        return map;
     }
 
     std::function<void(Vector2D pos, Vector2D dir, float speed)> requestBulletSpawn;

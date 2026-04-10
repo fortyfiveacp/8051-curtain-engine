@@ -1,10 +1,8 @@
 #pragma once
-#include "Component.h"
 #include "Entity.h"
 
 enum class EventType {
     Collision,
-    PlayerAction,
     UIInteraction,
     Pause,
     Debug
@@ -23,16 +21,6 @@ struct CollisionEvent : BaseEvent {
     CollisionState state{};
     CollisionEvent(Entity* entityA, Entity* entityB, CollisionState state) : entityA(entityA), entityB(entityB), state(state) {
         type = EventType::Collision;
-    }
-};
-
-enum class PlayerAction { Attack, Interact, UseItem, Jump };
-
-struct PlayerActionEvent : BaseEvent {
-    Entity* player = nullptr;
-    PlayerAction action{};
-    PlayerActionEvent(Entity* player, PlayerAction action) : player(player), action(action) {
-        type = EventType::PlayerAction;
     }
 };
 

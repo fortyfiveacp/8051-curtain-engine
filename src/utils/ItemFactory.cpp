@@ -27,7 +27,7 @@ void ItemFactory::createItem(Entity& entity, ItemType type, Vector2D position) {
 void ItemFactory::createBaseItem(Entity& entity, Vector2D position, float textureX, float textureY) {
     auto& transform = entity.addComponent<Transform>(position, 0.0f, 1.0f);
 
-    SDL_Texture* tex = TextureManager::load("../asset/item-spritesheet.png");
+    SDL_Texture* tex = TextureManager::load("../asset/objects/item-spritesheet.png");
     float texWidth = 16;
     float texHeight = 16;
     SDL_FRect src {textureX, textureY, texWidth, texHeight};
@@ -64,12 +64,12 @@ void ItemFactory::createPointItem(Entity& entity, Vector2D position) {
 
 void ItemFactory::createLargePowerItem(Entity& entity, Vector2D position) {
     createBaseItem(entity, position, 32, 0);
-    entity.addComponent<Item>(5, LargePower);
+    entity.addComponent<Item>(15, LargePower);
 }
 
 void ItemFactory::createSmallPowerItem(Entity& entity, Vector2D position) {
     createBaseItem(entity, position, 0, 0);
-    entity.addComponent<Item>(1, SmallPower);
+    entity.addComponent<Item>(3, SmallPower);
 }
 
 void ItemFactory::createBombItem(Entity& entity, Vector2D position) {

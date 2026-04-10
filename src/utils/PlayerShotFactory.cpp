@@ -18,7 +18,6 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
     float largeShotBulletSpeed = 1200.0f;
     float smallFanBulletSpeed = 1200.0f;
 
-    // TODO: balance these values
     float smallShotBulletDamage = 6.0f;
     float largeShotBulletDamage = 20.0f;
     float smallFanBulletDamage = 3.0f;
@@ -45,14 +44,13 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, speed, false);
 
-			SDL_Texture* tex = TextureManager::load("../asset/bullet-spritesheet.png");
+			SDL_Texture* tex = TextureManager::load("../asset/objects/bullet-spritesheet.png");
 			SDL_SetTextureAlphaMod(tex, 150);
 			SDL_FRect src = {240, 80, 16, 16};
 			SDL_FRect dest { position.x, position.y, 32, 32 };
 			Vector2D pivotOffset = Vector2D(dest.w / 2.0f, dest.h / 2.0f);
 			e.addComponent<Sprite>(tex, src, dest, RenderLayer::WorldBackground, pivotOffset);
 
-			// TODO: adjust bullet collider
 			auto& c = e.addComponent<CircleCollider>("player-shot");
 			c.centerPosition = position;
 			c.radius = 16;
@@ -77,14 +75,13 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, speed, false);
 
-			SDL_Texture* tex = TextureManager::load("../asset/bullet-spritesheet.png");
+			SDL_Texture* tex = TextureManager::load("../asset/objects/bullet-spritesheet.png");
 			SDL_SetTextureAlphaMod(tex, 120);
 			SDL_FRect src = {32, 96, 16, 16};
 			SDL_FRect dest { position.x, position.y, 36, 36 };
 			Vector2D pivotOffset = Vector2D(dest.w / 2.0f, dest.h / 2.0f);
 			e.addComponent<Sprite>(tex, src, dest, RenderLayer::WorldBackground, pivotOffset);
 
-			// TODO: adjust bullet collider
 			auto& c = e.addComponent<CircleCollider>("player-shot");
 			c.centerPosition = position;
 			c.radius = 18;
@@ -115,14 +112,13 @@ void PlayerShotFactory::buildPlayerDanmaku(Entity& player, World& world, const V
 			e.addComponent<Transform>(position, 0.0f, 1.0f);
 			e.addComponent<Velocity>(direction, speed, false);
 
-			SDL_Texture* tex = TextureManager::load("../asset/bullet-spritesheet.png");
+			SDL_Texture* tex = TextureManager::load("../asset/objects/bullet-spritesheet.png");
 			SDL_SetTextureAlphaMod(tex, 150);
 			SDL_FRect src = {240, 32, 16, 16};
 			SDL_FRect dest { position.x, position.y, 32, 32 };
             Vector2D pivotOffset = Vector2D(dest.w / 2.0f, dest.h / 2.0f);
 			e.addComponent<Sprite>(tex, src, dest, RenderLayer::WorldBackground, pivotOffset);
 
-			// TODO: adjust bullet collider
 			auto& c = e.addComponent<CircleCollider>("player-shot");
 			c.centerPosition = position;
 			c.radius = 16;
