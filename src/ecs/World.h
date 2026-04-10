@@ -75,7 +75,7 @@ class World {
     PauseMenuSystem pauseMenuSystem;
     HUDSystem hudSystem;
     FPSCounterSystem fpsCounterSystem;
-    IconCounterSystem iconLabelSystem;
+    IconCounterSystem iconCounterSystem;
     PreRenderSystem preRenderSystem;
     BackgroundRenderSystem backgroundRenderSystem;
     StageBackgroundSystem stageBackgroundSystem;
@@ -153,7 +153,7 @@ public:
                 debugRenderSystem.update(*this, event, isDebugging);
                 destructionSystem.update(entities);
                 hudSystem.update(entities);
-                iconLabelSystem.update(entities);
+                iconCounterSystem.update(entities);
                 break;
             case SceneType::Credits:
                 // Credits systems.
