@@ -22,7 +22,7 @@ public:
     }
 
     void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) {
-        world.render(renderer, windowWidth, windowHeight, isDebugging);
+        world.render(renderer, windowWidth, windowHeight, isPaused, isDebugging);
     }
 
     World world;

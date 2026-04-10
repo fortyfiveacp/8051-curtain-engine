@@ -175,7 +175,7 @@ public:
         cleanup();
     }
 
-    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool isDebugging) {
+    void render(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool isPaused, bool isDebugging) {
         backgroundRenderSystem.render(entities);
 
         // Set up stage viewport.
@@ -191,10 +191,10 @@ public:
         renderSystem.render(entities);
 
         // Render debug visuals if debugging.
-        // Only render player focus if not debugging.
+        // Only render player focus if not debugging or paused.
         if (isDebugging) {
             debugRenderSystem.render(entities);
-        } else {
+        } else if (!isPaused) {
             playerFocusRenderSystem.render(entities);
         }
 
