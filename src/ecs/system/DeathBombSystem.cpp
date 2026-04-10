@@ -28,7 +28,7 @@ void DeathBombSystem::update(std::vector<std::unique_ptr<Entity>>& entities, flo
                 }
 
                 // Lose 70% of player power on hit.
-                // playerStats.currentPower *= 0.3;
+                playerStats.currentPower = std::max(playerStats.currentPower - 40, 0);
 
                 // Decrement player health.
                 playerStats.currentHealth--;

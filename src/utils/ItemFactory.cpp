@@ -64,12 +64,12 @@ void ItemFactory::createPointItem(Entity& entity, Vector2D position) {
 
 void ItemFactory::createLargePowerItem(Entity& entity, Vector2D position) {
     createBaseItem(entity, position, 32, 0);
-    entity.addComponent<Item>(5, LargePower);
+    entity.addComponent<Item>(15, LargePower);
 }
 
 void ItemFactory::createSmallPowerItem(Entity& entity, Vector2D position) {
     createBaseItem(entity, position, 0, 0);
-    entity.addComponent<Item>(1, SmallPower);
+    entity.addComponent<Item>(3, SmallPower);
 }
 
 void ItemFactory::createBombItem(Entity& entity, Vector2D position) {
