@@ -8,7 +8,6 @@ void DanmakuFactory::initRadialPattern(Entity& entity, World& world, const Danma
 
     entity.addComponent<RadialSpawner>(
         true,
-        danmakuPattern.rotationSpeed,
         danmakuPattern.frequency,
         danmakuPattern.bulletSpeed,
         danmakuPattern.bulletAngularVel,
