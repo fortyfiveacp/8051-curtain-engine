@@ -16,14 +16,6 @@ public:
             }
         }
 
-        // TODO: temporarily get player stats for testing.
-        // Entity *playerEntity = nullptr;
-        // for (auto &entity: entities) {
-        //     if (entity->hasComponent<PlayerStats>()) {
-        //         playerEntity = entity.get();
-        //     }
-        // }
-
         for (auto &entity: entities) {
             if (entity->hasComponent<BossHealthBar>() && entity->hasComponent<Sprite>() &&
                 entity->hasComponent<Children>() && entity->hasComponent<Fade>() && entity->hasComponent<Toggleable>()) {
@@ -45,10 +37,10 @@ public:
                 }
 
                 auto &boss = bossEntity->getComponent<Boss>();
-                // auto &playerStats = playerEntity->getComponent<PlayerStats>(); // TODO: temp.
 
                 // If the health bar is not initialized (the boss has just spawned), initialize it first.
-                if (!bossHealthBar.isInitialized) {
+                // But don't initialize if the boss is dead.
+                if (!bossHealthBar.isInitialized && !bossEntity->hasComponent<DeadTag>()) {
                     bossHealthBar.timer += dt;
 
                     // Extend the bar to full.
@@ -57,14 +49,11 @@ public:
                     // Finish initialization.
                     if (bossHealthBar.timer >= bossHealthBar.initializationDuration) {
                         bossHealthBar.isInitialized = true;
+                        bossHealthBar.timer = 0.0f;
                     }
 
                     return;
                 }
-                // float healthPercentage = std::clamp(
-                //     static_cast<float>(boss.currentHealth) / boss.maxHealth, 0.0f, 1.0f
-                // );
-                // TODO: temporarily hooked up to player stats for testing.
                 float healthPercentage = std::clamp(
                     static_cast<float>(boss.currentHealth) / boss.maxHealth, 0.0f, 1.0f
                 );
@@ -72,19 +61,29 @@ public:
                 // Crop health bar destination to visibly lower the health bar.
                 sprite.dst.w = bossHealthBar.fullDstWidth * healthPercentage;
 
+                // If health hits 0, re-initialize.
+                if (healthPercentage == 0.0f) {
+                    bossHealthBar.isInitialized = false;
+                }
+
                 // Update children.
                 for (auto &child : children.children) {
                     if (child->hasComponent<Label>()) {
                         auto &label = child->getComponent<Label>();
-                        label.text = boss.bossName;
-                        label.dirty = true;
+
+                        // If boss is not dead, ensure the label displays their name, if they are dead clear the label.
+                        if (!bossEntity->hasComponent<DeadTag>()) {
+                            label.text = boss.bossName;
+                            label.dirty = true;
+                        } else {
+                            label.text = " ";
+                            label.dirty = true;
+                        }
                     }
 
                     if (child->hasComponent<IconCounter>()) {
                         auto &counter = child->getComponent<IconCounter>();
                         counter.currentNumber = boss.phasesLeft;
-                        // TODO: temporarily hooked up to player stats for testing.
-                        // counter.currentNumber = playerStats.currentHealth;
                         counter.dirty = true;
                     }
                 }

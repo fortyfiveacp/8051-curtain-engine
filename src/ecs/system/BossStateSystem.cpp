@@ -43,6 +43,7 @@ void BossStateSystem::update(World& world, float dt) {
                 decrementPhase(entity.get(), boss, world);
             }
             else if (boss.phasesLeft <= 0 || boss.phaseList.empty()) {
+                boss.phasesLeft = 0;
                 entity->addComponent<DeadTag>();
                 ComponentUtils::deactivateSpawners(entity.get());
 
