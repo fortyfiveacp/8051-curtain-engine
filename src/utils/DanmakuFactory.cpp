@@ -25,7 +25,7 @@ void DanmakuFactory::initRadialPattern(Entity& entity, World& world, const Danma
             bullet.addComponent<AngularVelocity>(danmakuPattern.bulletAngularVel);
             bullet.addComponent<ProjectileTag>();
 
-            // TODO: If multiple bullet types are implemented, should probably move this to a helper method.
+            // If multiple bullet types are implemented, this block of code should probably be moved to a helper method.
             SDL_Texture* tex = TextureManager::load("../asset/bullet4.png");
             SDL_FRect src {192, 0, 64, 64};
             SDL_FRect dst {spawnPos.x, spawnPos.y, 64, 64};
@@ -59,7 +59,7 @@ void DanmakuFactory::initLinearPattern(Entity &entity, World &world, const Danma
             bullet.addComponent<Velocity>(direction, speed, false);
             bullet.addComponent<ProjectileTag>();
 
-            // TODO: If multiple bullet types are implemented, should probably move this to a helper method.
+            // If multiple bullet types are implemented, this block of code should probably be moved to a helper method.
             SDL_Texture* tex = TextureManager::load("../asset/bullet4.png");
             SDL_FRect src {192, 0, 64, 64};
             SDL_FRect dst {position.x, position.y, 32, 32};
@@ -75,6 +75,7 @@ void DanmakuFactory::initLinearPattern(Entity &entity, World &world, const Danma
     );
 }
 
+// Initialize the timeline for an entity that will use the Radial Danmaku pattern.
 void DanmakuFactory::buildRadialDanmaku(Entity& entity, World& world, const DanmakuPattern& danmakuPattern) {
     auto& timeline = entity.hasComponent<Timeline>() ? entity.getComponent<Timeline>() : entity.addComponent<Timeline>();
 
@@ -91,6 +92,7 @@ void DanmakuFactory::buildRadialDanmaku(Entity& entity, World& world, const Danm
     });
 }
 
+// Initialize the timeline for an entity that will use the Linear Danmaku pattern.
 void DanmakuFactory::buildLinearDanmaku(Entity& entity, World& world, const DanmakuPattern& danmakuPattern) {
     auto& timeline = entity.hasComponent<Timeline>() ? entity.getComponent<Timeline>() : entity.addComponent<Timeline>();
 
