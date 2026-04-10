@@ -20,8 +20,8 @@ public:
             // Change velocity to local space, ensure correct direction and increase speed.
             itemVelocity.isLocalSpace = true;
             itemVelocity.direction = Vector2D(0, 1);
-            itemVelocity.baseSpeed = 550.0f;
-            itemVelocity.currentSpeed = 550.0f;
+            itemVelocity.baseSpeed = 1000.0f;
+            itemVelocity.currentSpeed = 1000.0f;
         }
     }
 };
