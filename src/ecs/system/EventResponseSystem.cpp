@@ -24,16 +24,6 @@ EventResponseSystem::EventResponseSystem(World &world) {
     });
 
     world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
-        if (e.type != EventType::PlayerAction) {
-            return;
-        }
-
-        const auto& playerAction = static_cast<const PlayerActionEvent&>(e);
-
-        // TODO: onPlayerAction
-    });
-
-    world.getEventManager().subscribe([this, &world](const BaseEvent& e) {
         if (e.type != EventType::UIInteraction) {
             return;
         }
@@ -111,21 +101,6 @@ void EventResponseSystem::onCollision(const CollisionEvent& e, const char* other
                     break;
             }
         }
-
-        // TODO: purge.
-        // for (auto& entity : world.getEntities()) {
-        //     if (!entity->hasComponent<SceneState>()) {
-        //         continue;
-        //     }
-        //
-        //     Scene state
-        //     auto& sceneState = entity->getComponent<SceneState>();
-        //     sceneState.coinsCollected++;
-        //
-        //     if (sceneState.coinsCollected > 1) {
-        //         Game::onSceneChangeRequest("level2");
-        //     }
-        // }
 
         other->destroy();
     }
@@ -269,7 +244,6 @@ void EventResponseSystem::onBombCollision(const CollisionEvent& e, World& world)
     }
 }
 
-// TODO: Generalize implementation so onBombCollision implementation can be simplified.
 bool EventResponseSystem::getCollisionEntities(const CollisionEvent &e, const char *otherTag, Entity *&player,
 Entity *&other) {
     if (e.entityA == nullptr || e.entityB == nullptr) {

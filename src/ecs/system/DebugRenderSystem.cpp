@@ -16,7 +16,7 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>>& entit
         if (entity->hasComponent<RectCollider>()) {
             auto& c = entity->getComponent<RectCollider>();
 
-            SDL_Texture* tex = TextureManager::load("../asset/tileset.png");
+            SDL_Texture* tex = TextureManager::load("../asset/debug/tileset.png");
             SDL_FRect colSrc {32, 32, 32, 32};
 
             TextureManager::draw(tex, &colSrc, &c.rect);
@@ -24,7 +24,7 @@ void DebugRenderSystem::render(const std::vector<std::unique_ptr<Entity>>& entit
         if (entity->hasComponent<CircleCollider>()) {
             auto& c = entity->getComponent<CircleCollider>();
 
-            SDL_Texture* tex = TextureManager::load("../asset/ui/debug-circle.png");
+            SDL_Texture* tex = TextureManager::load("../asset/debug/debug-circle.png");
             SDL_FRect colSrc {0, 0, 32, 32};
 
             float colliderTopLeftX = c.centerPosition.x - c.radius;

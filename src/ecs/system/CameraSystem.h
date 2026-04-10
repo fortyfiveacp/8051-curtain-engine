@@ -5,10 +5,10 @@
 #include "Component.h"
 #include "Entity.h"
 
+// This system is unused by the current engine due to the fixed position camera, but this is kept for potential future use.
 class CameraSystem {
 public:
     void update(const std::vector<std::unique_ptr<Entity>>& entities) {
-        // TODO: this entire system may be pointless if we only want a fixed camera.
         Entity* playerEntity = nullptr;
 
         // Find the player
@@ -30,8 +30,8 @@ public:
                 auto& cam = e->getComponent<Camera>();
 
                 // This positions the camera so the player is at the center of its view.
-                // cam.view.x = playerTransform.position.x - cam.view.w / 2;
-                // cam.view.y = playerTransform.position.y - cam.view.h / 2;
+                cam.view.x = playerTransform.position.x - cam.view.w / 2;
+                cam.view.y = playerTransform.position.y - cam.view.h / 2;
 
                 // Clamp the camera.
                 // The camera is positioning itself so the player is centered, but the player could walk off the screen

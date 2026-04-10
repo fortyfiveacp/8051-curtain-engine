@@ -12,7 +12,7 @@ public:
         bomb.addComponent<Transform>(position, 0.0f, 1.0f);
         bomb.addComponent<Velocity>(Vector2D(0, -1), 100.0f);
 
-        SDL_Texture* tex = TextureManager::load("../asset/bomb.png");
+        SDL_Texture* tex = TextureManager::load("../asset/objects/bomb.png");
         SDL_FRect src = {0, 0, 64, 64};
         SDL_FRect dst = {0, 0, size, size};
         bomb.addComponent<Sprite>(tex, src, dst, RenderLayer::WorldBackground);

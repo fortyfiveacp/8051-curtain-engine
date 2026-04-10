@@ -26,7 +26,7 @@ void DanmakuFactory::initRadialPattern(Entity& entity, World& world, const Danma
             bullet.addComponent<ProjectileTag>();
 
             // TODO: If multiple bullet types are implemented, should probably move this to a helper method.
-            SDL_Texture* tex = TextureManager::load("../asset/bullet4.png");
+            SDL_Texture* tex = TextureManager::load("../asset/objects/bullet4.png");
             SDL_FRect src {192, 0, 64, 64};
             SDL_FRect dst {spawnPos.x, spawnPos.y, 64, 64};
             Vector2D pivotOffset = Vector2D(dst.w / 2.0f, dst.h / 2.0f);
@@ -60,7 +60,7 @@ void DanmakuFactory::initLinearPattern(Entity &entity, World &world, const Danma
             bullet.addComponent<ProjectileTag>();
 
             // TODO: If multiple bullet types are implemented, should probably move this to a helper method.
-            SDL_Texture* tex = TextureManager::load("../asset/bullet4.png");
+            SDL_Texture* tex = TextureManager::load("../asset/objects/bullet4.png");
             SDL_FRect src {192, 0, 64, 64};
             SDL_FRect dst {position.x, position.y, 32, 32};
             Vector2D pivotOffset = Vector2D(dst.w / 2.0f, dst.h / 2.0f);

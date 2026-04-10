@@ -29,6 +29,11 @@ Scene::Scene(SceneType sceneType, const char* sceneName, const char* stageDataPa
 }
 
 void Scene::initMainMenu(int windowWidth, int windowHeight) {
+	AudioManager::playMusic("menu-theme");
+
+	// Ensure game state is reset when back on the main menu.
+	resetGameState();
+
 	// Camera.
 	auto& cam = world.createEntity();
 	cam.addComponent<Camera>();
@@ -50,11 +55,11 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40,
 		{240, 240, 240, 255}, "pop1", "0.000fps", "fpsCounter", LabelType::FPSCounter);
 	fpsCounter.addComponent<FPSCounter>();
-
-	AudioManager::playMusic("menu-theme");
 }
 
 void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight) {
+	AudioManager::playMusic("stage-theme");
+
 	// Subscribe to event for pausing the game.
 	world.getEventManager().subscribe([this](const BaseEvent& e) {
 		if (e.type != EventType::Pause) {
@@ -81,9 +86,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		isDebugging = debugEvent.isDebugging;
 	});
 
-	AudioManager::playMusic("stage-theme");
-
-	SDL_Texture* backgroundTex = TextureManager::load("../asset/background.png");
+	SDL_Texture* backgroundTex = TextureManager::load("../asset/ui/background.png");
 	float texWidth = backgroundTex->w;
 	float texHeight = backgroundTex->h;
 
@@ -128,9 +131,11 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	auto& player (world.createEntity());
 	player.addComponent<Velocity>(Vector2D(0.0f, 0.0f), 380.0f);
 
+	// Player animation.
 	Animation anim = AssetManager::getAnimation("player");
 	player.addComponent<Animation>(anim);
 
+	// Player size and positioning.
 	SDL_Texture* texture = TextureManager::load("../asset/animations/reimu_anim.png");
 	SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0];
 
@@ -144,6 +149,7 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 	Vector2D playerPivotOffset = Vector2D(playerDst.w / 2.0f, playerDst.h / 2.0f);
 	player.addComponent<Sprite>(texture, playerSrc, playerDst, RenderLayer::World, playerPivotOffset);
 
+	// Player gameplay components.
 	auto& playerCircleCollider = player.addComponent<CircleCollider>("player");
 	playerCircleCollider.radius = 4;
 	player.addComponent<DeathBombState>();
@@ -166,159 +172,6 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 
 	// Attach player shooting components.
 	PlayerShotFactory::buildPlayerDanmaku(player, world, { playerStartingX, playerStartingY }, playerStats);
-
-	// Test spawners for items. TODO: remove when no longer needed.
-	// auto& pointSpawner(world.createEntity());
-	// Transform pointSpawnerTransform = pointSpawner.addComponent<Transform>(Vector2D(50, 250), 0.0f, 1.0f);
-	// pointSpawner.addComponent<TimedSpawner>(3.0f, [this, pointSpawnerTransform] {
-	// 	auto& itemEntity(world.createDeferredEntity());
-	// 	ItemFactory::createItem(itemEntity, Point, pointSpawnerTransform.position);
-	// });
-	//
-	// auto& smallPowerSpawner(world.createEntity());
-	// Transform smallPowerSpawnerTransform = smallPowerSpawner.addComponent<Transform>(Vector2D(125, 250), 0.0f, 1.0f);
-	// smallPowerSpawner.addComponent<TimedSpawner>(3.0f, [this, smallPowerSpawnerTransform] {
-	// 	auto& itemEntity(world.createDeferredEntity());
-	// 	ItemFactory::createItem(itemEntity, SmallPower, smallPowerSpawnerTransform.position);
-	// });
-	//
-	// auto& largePowerSpawner(world.createEntity());
-	// Transform largePowerSpawnerTransform = largePowerSpawner.addComponent<Transform>(Vector2D(200, 250), 0.0f, 1.0f);
-	// largePowerSpawner.addComponent<TimedSpawner>(3.0f, [this, largePowerSpawnerTransform] {
-	// 	auto& itemEntity(world.createDeferredEntity());
-	// 	ItemFactory::createItem(itemEntity, LargePower, largePowerSpawnerTransform.position);
-	// });
-	//
-	// auto& bombSpawner(world.createEntity());
-	// Transform bombSpawnerTransform = bombSpawner.addComponent<Transform>(Vector2D(275, 250), 0.0f, 1.0f);
-	// bombSpawner.addComponent<TimedSpawner>(3.0f, [this, bombSpawnerTransform] {
-	// 	auto& itemEntity(world.createDeferredEntity());
-	// 	ItemFactory::createItem(itemEntity, Bomb, bombSpawnerTransform.position);
-	// });
-
-	// Radial danmaku spawner.
-	// auto& radialDanmaku(world.createEntity());
-	// auto radialDanmakuTransform = radialDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
-	//
-	// float rotationSpeed = 50.0f;
-	// radialDanmaku.addComponent<AngularVelocity>(rotationSpeed);
-	//
-	// float frequency = 0.17f;
-	// float bulletEmissionSpeed = 150.0f;
-	// float bulletEmissionAngularVelocity = 20.0f;
-	// float radius = 30.0f;
-	// int bulletsPerBurst = 6;
-
-	// RadialSpawner component takes a callback which spawns individual bullets.
-	// auto& radialSpawner = radialDanmaku.addComponent<RadialSpawner>(false, rotationSpeed, frequency, bulletEmissionSpeed, bulletEmissionAngularVelocity,
-	// 	radius, bulletsPerBurst,
-	// 	[this, radialDanmakuTransform, bulletEmissionSpeed, bulletEmissionAngularVelocity, radius](Vector2D direction) {
-	// 		auto& e(world.createDeferredEntity());
-	//
-	// 		Vector2D bulletSpawnPositionOffset = direction * radius;
-	//
-	// 		e.addComponent<Transform>(radialDanmakuTransform.position + bulletSpawnPositionOffset, 0.0f, 1.0f);
-	// 		e.addComponent<Velocity>(direction, bulletEmissionSpeed, true);
-	//
-	// 		e.addComponent<AngularVelocity>(bulletEmissionAngularVelocity);
-	//
-	// 		Animation anim = AssetManager::getAnimation("redFairy");
-	// 		e.addComponent<Animation>(anim);
-	//
-	// 		SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
-	// 		SDL_FRect src = {0, 31, 32, 31};
-	// 		SDL_FRect dest { radialDanmakuTransform.position.x, radialDanmakuTransform.position.y, 32, 31 };
-	// 		e.addComponent<Sprite>(tex, src, dest);
-	//
-	// 		auto& c = e.addComponent<CircleCollider>("projectile");
-	// 		c.centerPosition = radialDanmakuTransform.position + bulletSpawnPositionOffset;
-	// 		c.radius = 10;
-	//
-	// 		e.addComponent<ProjectileTag>();
-	// 	});
-	//
-	// // Linear danmaku spawner.
-	// auto& linearDanmaku(world.createEntity());
-	// linearDanmaku.addComponent<Transform>(Vector2D(400, 400), 0.0f, 1.0f);
-	// linearDanmaku.addComponent<LookAtRotator>(playerTransform, 0.0f);
-	//
-	// bool isFanPattern = false;
-	// float bulletEmissionSpeedMultiplier = 1.0f;
-	//
-	// std::vector<Vector2D> bulletSpawnPositions;
-	// bulletSpawnPositions.emplace_back(0, 30);
-	// bulletSpawnPositions.emplace_back(0, 40);
-	// bulletSpawnPositions.emplace_back(0, 50);
-	// bulletSpawnPositions.emplace_back(10, 20);
-	// bulletSpawnPositions.emplace_back(-10, 20);
-	// bulletSpawnPositions.emplace_back(15, 20);
-	// bulletSpawnPositions.emplace_back(-15, 20);
-	//
-	// auto& linearSpawner = linearDanmaku.addComponent<LinearSpawner>(false, isFanPattern, bulletEmissionSpeed, bulletEmissionSpeedMultiplier,
-	// 	bulletSpawnPositions, frequency,
-	// 	[this](Vector2D position, Vector2D direction, float speed) {
-	// 		auto& e(world.createDeferredEntity());
-	//
-	// 		e.addComponent<Transform>(position, 0.0f, 1.0f);
-	// 		e.addComponent<Velocity>(direction, speed, false);
-	//
-	// 		Animation anim = AssetManager::getAnimation("blueFairy");
-	// 		e.addComponent<Animation>(anim);
-	//
-	// 		SDL_Texture* tex = TextureManager::load("../asset/animations/small_fairies_anim.png");
-	// 		SDL_FRect src = {0, 31, 32, 31};
-	// 		SDL_FRect dest { position.x, position.y, 32, 31 };
-	// 		e.addComponent<Sprite>(tex, src, dest);
-	//
-	// 		auto& c = e.addComponent<CircleCollider>("projectile");
-	// 		c.centerPosition = position;
-	// 		c.radius = 10;
-	//
-	// 		e.addComponent<ProjectileTag>();
-	// 	});
-
-
-	// Add timeline object (for testing danmaku scripting).
-	// auto& timelineManager(world.createEntity());
-	// auto& debugTimeline = timelineManager.addComponent<Timeline>();
-	//
-	// debugTimeline.timeline.emplace_back(1.0, [&radialSpawner] {
-	// 	std::cout << "Radial start!" << std::endl;
-	// 	radialSpawner.isActive = true;
-	// });
-	// debugTimeline.timeline.emplace_back(2.0, [&linearSpawner] {
-	// 	std::cout << "Linear start!" << std::endl;
-	// 	linearSpawner.isActive = true;
-	// });
-	// debugTimeline.timeline.emplace_back(10.0, [&radialSpawner] {
-	// 	std::cout << "Radial end!" << std::endl;
-	// 	radialSpawner.isActive = false;
-	// });
-	// debugTimeline.timeline.emplace_back(11.0, [&linearSpawner] {
-	// 	std::cout << "Linear end!" << std::endl;
-	// 	linearSpawner.isActive = false;
-	// });
-	// TODO: debug for simulating boss spawn, remove later.
-	// debugTimeline.timeline.emplace_back(1.25, [this, &player] {
-	// 	player.addComponent<Boss>("Reimu Hakurei");
-	//
-	// 	for (auto& entity : world.getEntities()) {
-	// 		if (entity->hasComponent<BossHealthBar>()) {
-	// 			entity->getComponent<Toggleable>().toggle();
-	// 		}
-	// 	}
-	// });
-	// // TODO: debug for win screen, remove later.
-	// debugTimeline.timeline.emplace_back(90.0, [this] {
-	// 	for (auto& entity : world.getEntities()) {
-	// 		if (entity->hasComponent<WinGameMenuTag>()) {
-	// 			entity->getComponent<Toggleable>().toggle();
-	// 		}
-	// 	}
-	//
-	// 	// TODO: play credits theme when boss is defeated.
-	// 	AudioManager::playMusic("credits-theme");
-	// });
 
 	// Add scene state.
 	auto& state(world.createEntity());
@@ -411,6 +264,8 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 }
 
 void Scene::initCredits(int windowWidth, int windowHeight) {
+	AudioManager::playMusic("credits-theme");
+
 	float width = static_cast<float>(windowWidth);
 	float height = static_cast<float>(windowHeight);
 
@@ -536,7 +391,7 @@ void Scene::createSidebarUILabels(int windowWidth, int windowHeight, float stage
 	UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 4 + paddingY * 2, offWhite, dynamicLabelFont,
 		"0", "Power", LabelType::Power);
 
-	// Graze static and dynamic labels. Currently hidden since not implemented.
+	// Graze static and dynamic labels. Currently hidden since not implemented, kept for potential future use.
 	// UIUtils::createLabel(world, staticLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, hotPink, staticLabelFont,
 	// 	"Graze", "GrazeLabel", LabelType::Static);
 	// UIUtils::createLabel(world, dynamicLeftPadding, (fontHeight + leading) * 5 + paddingY * 2, offWhite, dynamicLabelFont,
@@ -572,9 +427,6 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 	// Create quit to title button.
 	auto& quitTitleButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
 		"Quit To Title", "PauseQuitTitleButton", [this] {
-			// Reset game state.
-			resetGameState();
-
 			// Request scene change to main menu.
 			Game::onSceneChangeRequest("mainmenu");
 		});
@@ -641,9 +493,6 @@ void Scene::createContinueGameUIComponents(Entity& overlay, int windowWidth, int
 	// Create quit to title button.
 	auto& quitButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
 		"Quit To Title", "ContinueQuitTitleButton", [this] {
-			// Reset game state.
-			resetGameState();
-
 			// Request scene change to main menu.
 			Game::onSceneChangeRequest("mainmenu");
 		});
@@ -687,9 +536,6 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 	// Create quit to title button.
 	auto& creditButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
 		"View Credits", "CreditsButton", [this] {
-			// Reset game state.
-			resetGameState();
-
 			// Request scene change to credits.
 			Game::onSceneChangeRequest("credits");
 		});
@@ -697,9 +543,6 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 	// Create quit to title button.
 	auto& quitTitleButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
 		"Quit To Title", "WinQuitTitleButton", [this] {
-			// Reset game state.
-			resetGameState();
-
 			// Request scene change to main menu.
 			Game::onSceneChangeRequest("mainmenu");
 		});

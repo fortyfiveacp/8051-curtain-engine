@@ -22,7 +22,7 @@ public:
     }
 
     void render(SDL_Renderer* renderer, int windowWidth, int windowHeight) {
-        world.render(renderer, windowWidth, windowHeight, isDebugging);
+        world.render(renderer, windowWidth, windowHeight, isPaused, isDebugging);
     }
 
     World world;
@@ -35,8 +35,8 @@ private:
     SceneType type;
     bool isPaused = false;
     bool isDebugging = false;
-    //void createProjectile(Vector2D pos, Vector2D dir, int speed); TODO: commented out during tutorial, not needed?
 
+    // Init scene types.
     void initMainMenu(int windowWidth, int windowHeight);
     void initGameplay(const char* stageDataPath, const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight);
     void initCredits(int windowWidth, int windowHeight);
