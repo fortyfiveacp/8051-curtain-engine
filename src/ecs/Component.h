@@ -454,7 +454,7 @@ struct Boss {
 
     std::vector<Vector2D> movementPoints{};
     float movementTimer = 0.0f;
-    float movementInterval = 2.0f;
+    const float movementInterval = 3.5f;
 
     std::vector<PhaseData> phaseList{};
 };

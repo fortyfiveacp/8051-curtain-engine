@@ -2,6 +2,10 @@
 #include "World.h"
 
 void DanmakuFactory::initRadialPattern(Entity& entity, World& world, const DanmakuPattern& danmakuPattern) {
+    if (danmakuPattern.rotationSpeed != 0.0f) {
+        entity.addComponent<AngularVelocity>(danmakuPattern.rotationSpeed);
+    }
+
     entity.addComponent<RadialSpawner>(
         true,
         danmakuPattern.rotationSpeed,
