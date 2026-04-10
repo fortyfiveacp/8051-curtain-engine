@@ -15,4 +15,10 @@ private:
     static BulletType stringToBulletType(const std::string& name);
 
     static DanmakuPattern parseDanmakuPattern(tinyxml2::XMLElement *elem);
+
+    static void loadPaths(tinyxml2::XMLElement* pathsRoot, World& world);
+    static void loadWaves(tinyxml2::XMLElement* wavesRoot, World& world, Timeline& timelineComponent);
+    static void loadBoss(tinyxml2::XMLElement* bossElem, World& world, Timeline& timelineComponent);
+
+    static void initBossIntro(World& world);
 };

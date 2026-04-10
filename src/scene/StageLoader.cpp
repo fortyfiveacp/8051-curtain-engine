@@ -8,12 +8,26 @@ void StageLoader::loadStage(const char *path, World &world) {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
     auto* root = doc.FirstChildElement("Stage");
+    if (!root) {
+        return;
+    }
 
-    auto* pathsRoot = root->FirstChildElement("Paths");
+    loadPaths(root->FirstChildElement("Paths"), world);
+
+    auto& timelineEntity = world.createEntity();
+    timelineEntity.addComponent<Timeline>();
+    auto& timeline = timelineEntity.getComponent<Timeline>();
+
+    loadWaves(root->FirstChildElement("Waves"), world, timeline);
+    loadBoss(root->FirstChildElement("Boss"), world, timeline);
+}
+
+void StageLoader::loadPaths(tinyxml2::XMLElement* pathsRoot, World& world) {
+    if (!pathsRoot) return;
+
     for (auto* pathElem = pathsRoot->FirstChildElement("Path");
         pathElem;
         pathElem = pathElem->NextSiblingElement("Path")) {
-
         int id = pathElem->IntAttribute("id");
         Path path;
 
@@ -29,11 +43,11 @@ void StageLoader::loadStage(const char *path, World &world) {
         }
         world.getPathLibrary()[id] = path;
     }
+}
 
-    auto& timelineEntity = world.createEntity();
-    timelineEntity.addComponent<Timeline>();
+void StageLoader::loadWaves(tinyxml2::XMLElement* wavesRoot, World& world, Timeline& timelineComponent) {
+    if (!wavesRoot) return;
 
-    auto* wavesRoot = root->FirstChildElement("Waves");
     for (auto* convoyElement = wavesRoot->FirstChildElement("Convoy");
         convoyElement;
         convoyElement = convoyElement->NextSiblingElement("Convoy")) {
@@ -51,112 +65,119 @@ void StageLoader::loadStage(const char *path, World &world) {
             data.danmakuPattern = parseDanmakuPattern(danmakuPatternElem);
         }
 
-        timelineEntity.getComponent<Timeline>().timeline.emplace_back(startTime, [&world, data]() {
+        timelineComponent.timeline.emplace_back(startTime, [&world, data]() {
             auto& spawner = world.createDeferredEntity();
             spawner.addComponent<Convoy>(data);
         });
     }
+}
 
-    auto* bossElem = root->FirstChildElement("Boss");
-    if (bossElem) {
-        float startTime = bossElem->FloatAttribute("start");
-        Boss data;
-        data.bossName = bossElem->Attribute("name");
-        data.maxHealth = bossElem->IntAttribute("maxHealth");
-        data.currentHealth = data.maxHealth;
-        data.phasesLeft = bossElem->IntAttribute("phases");
+void StageLoader::loadBoss(tinyxml2::XMLElement* bossElem, World& world, Timeline& timelineComponent) {
+    if (!bossElem) return;
 
-        std::vector<Vector2D> emitterOffsets;
-        auto* emittersRoot = bossElem->FirstChildElement("Emitters");
-        if (emittersRoot) {
-            for (auto* e = emittersRoot->FirstChildElement("Emitter"); e; e = e->NextSiblingElement("Emitter")) {
-                emitterOffsets.emplace_back( e->FloatAttribute("x"), e->FloatAttribute("y") );
+    float startTime = bossElem->FloatAttribute("start");
+    Boss data;
+    data.bossName = bossElem->Attribute("name");
+    data.maxHealth = bossElem->IntAttribute("maxHealth");
+    data.currentHealth = data.maxHealth;
+    data.phasesLeft = bossElem->IntAttribute("phases");
+
+    std::vector<Vector2D> emitterOffsets;
+    auto* emittersRoot = bossElem->FirstChildElement("Emitters");
+    if (emittersRoot) {
+        for (auto* e = emittersRoot->FirstChildElement("Emitter"); e; e = e->NextSiblingElement("Emitter")) {
+            emitterOffsets.emplace_back(e->FloatAttribute("x"), e->FloatAttribute("y"));
+        }
+    }
+
+    auto* movePointsRoot = bossElem->FirstChildElement("MovementPoints");
+    if (movePointsRoot) {
+        for (auto* p = movePointsRoot->FirstChildElement("Point"); p; p = p->NextSiblingElement("Point")) {
+            data.movementPoints.emplace_back(p->FloatAttribute("x"), p->FloatAttribute("y"));
+        }
+    }
+
+    auto* phasesRoot = bossElem->FirstChildElement("Phases");
+    if (phasesRoot) {
+        for (auto* phaseElem = phasesRoot->FirstChildElement("Phase");
+             phaseElem;
+             phaseElem = phaseElem->NextSiblingElement("Phase")) {
+
+            PhaseData pData;
+            pData.phaseId = phaseElem->IntAttribute("id");
+
+            const char* trigger = phaseElem->Attribute("trigger");
+            if (trigger && std::string(trigger) == "death") {
+                pData.triggerType = PhaseTrigger::Death;
+                pData.healthThreshold = 0.0f;
+            } else {
+                pData.triggerType = PhaseTrigger::HealthThreshold;
+                pData.healthThreshold = phaseElem->FloatAttribute("healthThreshold");
             }
+
+            const char* targetStr = phaseElem->Attribute("target");
+            if (targetStr && std::string(targetStr) == "emitters") {
+                pData.target = DanmakuPatternTarget::Emitters;
+            } else {
+                pData.target = DanmakuPatternTarget::Boss;
+            }
+
+            for (auto* patternElem = phaseElem->FirstChildElement("Pattern");
+                 patternElem;
+                 patternElem = patternElem->NextSiblingElement("Pattern")) {
+                pData.patterns.push_back(parseDanmakuPattern(patternElem));
+            }
+
+            data.phaseList.push_back(pData);
+        }
+    }
+
+    auto* initPosElem = bossElem->FirstChildElement("InitialPosition");
+    Vector2D startPos{ initPosElem->FloatAttribute("x"), initPosElem->FloatAttribute("y") };
+
+    timelineComponent.timeline.emplace_back(startTime,
+        [&world, data, startPos, emitterOffsets]() {
+            auto& boss = world.createDeferredEntity();
+            BossFactory::buildStageBoss(boss, world, data, startPos, emitterOffsets);
+            AudioManager::playMusic("boss-theme");
+
+            initBossIntro(world);
+        }
+    );
+}
+
+// In Touhou games, all enemy Danmaku are destroyed when the boss spawns.
+// Destroyed bullets spawn Star items that are automatically collected by the player.
+void StageLoader::initBossIntro(World& world) {
+    // Find the player.
+    Entity* playerEntity = nullptr;
+    for (auto& e : world.getEntities()) {
+        if (e->hasComponent<PlayerTag>() && e->hasComponent<Transform>()) {
+            playerEntity = e.get();
+            break;
+        }
+    }
+
+    for (auto& entity : world.getEntities()) {
+        if (entity->hasComponent<BossHealthBar>()) {
+            entity->getComponent<Toggleable>().toggle();
         }
 
-        auto* movePointsRoot = bossElem->FirstChildElement("MovementPoints");
-        if (movePointsRoot) {
-            for (auto* p = movePointsRoot->FirstChildElement("Point"); p; p = p->NextSiblingElement("Point")) {
-                data.movementPoints.emplace_back( p->FloatAttribute("x"), p->FloatAttribute("y") );
+        if (entity->hasComponent<ProjectileTag>() || entity->hasComponent<EnemyTag>()) {
+            // If the player was found and the bullet has a transform, create a star item at its location that homes to
+            // the player.
+            if (playerEntity != nullptr && entity->hasComponent<Transform>()) {
+                auto& itemEntity = world.createDeferredEntity();
+                ItemFactory::createItem(itemEntity, Star, entity->getComponent<Transform>().position);
+                ItemUtils::enableItemHoming(itemEntity, *playerEntity);
             }
+            entity->destroy();
         }
-
-        auto* phasesRoot = bossElem->FirstChildElement("Phases");
-        if (phasesRoot) {
-            for (auto* phaseElem = phasesRoot->FirstChildElement("Phase");
-                 phaseElem;
-                 phaseElem = phaseElem->NextSiblingElement("Phase")) {
-
-                PhaseData pData;
-                pData.phaseId = phaseElem->IntAttribute("id");
-
-                const char* trigger = phaseElem->Attribute("trigger");
-                if (trigger && std::string(trigger) == "death") {
-                    pData.triggerType = PhaseTrigger::Death;
-                    pData.healthThreshold = 0.0f;
-                } else {
-                    pData.triggerType = PhaseTrigger::HealthThreshold;
-                    pData.healthThreshold = phaseElem->FloatAttribute("healthThreshold");
-                }
-
-                const char* targetStr = phaseElem->Attribute("target");
-                if (targetStr && std::string(targetStr) == "emitters") {
-                    pData.target = PatternTarget::Emitters;
-                } else {
-                    pData.target = PatternTarget::Boss;
-                }
-
-                for (auto* patternElem = phaseElem->FirstChildElement("Pattern");
-                     patternElem;
-                     patternElem = patternElem->NextSiblingElement("Pattern")) {
-                    pData.patterns.push_back(parseDanmakuPattern(patternElem));
-                }
-
-                data.phaseList.push_back(pData);
-            }
-        }
-
-        auto* initPosElem = bossElem->FirstChildElement("InitialPosition");
-        Vector2D startPos{ initPosElem->FloatAttribute("x"), initPosElem->FloatAttribute("y") };
-
-        timelineEntity.getComponent<Timeline>().timeline.emplace_back(startTime,
-            [&world, data, startPos, emitterOffsets]() {
-                auto& boss = world.createDeferredEntity();
-                BossFactory::buildStageBoss(boss, world, data, startPos, emitterOffsets);
-                AudioManager::playMusic("boss-theme");
-
-                for (auto& entity : world.getEntities()) {
-                    if (entity->hasComponent<BossHealthBar>()) {
-                        entity->getComponent<Toggleable>().toggle();
-                    }
-
-                    if (entity->hasComponent<ProjectileTag>() || entity->hasComponent<EnemyTag>()) {
-                        // Find the player.
-                        Entity* playerEntity = nullptr;
-                        for (auto& e : world.getEntities()) {
-                            if (e->hasComponent<PlayerTag>() && e->hasComponent<Transform>()) {
-                                playerEntity = e.get();
-                                break;
-                            }
-                        }
-
-                        // If the player was found and the bullet has a transform, create a star item at its location that homes to
-                        // the player.
-                        if (playerEntity != nullptr && entity->hasComponent<Transform>()) {
-                            auto& itemEntity = world.createDeferredEntity();
-                            ItemFactory::createItem(itemEntity, Star, entity->getComponent<Transform>().position);
-                            ItemUtils::enableItemHoming(itemEntity, *playerEntity);
-                        }
-
-                        entity->destroy();
-                    }
-                }
-            }
-        );
     }
 }
 
 EnemyType StageLoader::stringToEnemyType(const std::string &name) {
+    // If more enemy types are implemented, simply add a new check here.
     if (name == "SmallBlueFairy") {
         return EnemyType::SmallBlueFairy;
     }
@@ -165,14 +186,11 @@ EnemyType StageLoader::stringToEnemyType(const std::string &name) {
         return EnemyType::SmallRedFairy;
     }
 
-    if (name == "LargeFairy") {
-        return EnemyType::LargeFairy;
-    }
-
-    return EnemyType::Boss;
+    return EnemyType::LargeFairy;
 }
 
 DanmakuType StageLoader::stringToDanmakuType(const std::string &name) {
+    // If more danmaku types are implemented, simply add a new check here.
     if (name == "Linear") {
         return DanmakuType::Linear;
     }
@@ -181,7 +199,7 @@ DanmakuType StageLoader::stringToDanmakuType(const std::string &name) {
 }
 
 BulletType StageLoader::stringToBulletType(const std::string &name) {
-    // TODO: Implement more bullet types, if we have time.
+    // If more bullet types are implemented, simply add a new check here.
     if (name == "LargeOrb") {
         return BulletType::LargeOrb;
     }
