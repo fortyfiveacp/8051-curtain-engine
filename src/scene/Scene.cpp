@@ -29,6 +29,11 @@ Scene::Scene(SceneType sceneType, const char* sceneName, const char* stageDataPa
 }
 
 void Scene::initMainMenu(int windowWidth, int windowHeight) {
+	AudioManager::playMusic("menu-theme");
+
+	// Ensure game state is reset when back on the main menu.
+	resetGameState();
+
 	// Camera.
 	auto& cam = world.createEntity();
 	cam.addComponent<Camera>();
@@ -50,11 +55,11 @@ void Scene::initMainMenu(int windowWidth, int windowHeight) {
 	auto& fpsCounter = UIUtils::createLabel(world, windowWidth - 170, windowHeight - 40,
 		{240, 240, 240, 255}, "pop1", "0.000fps", "fpsCounter", LabelType::FPSCounter);
 	fpsCounter.addComponent<FPSCounter>();
-
-	AudioManager::playMusic("menu-theme");
 }
 
 void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundPath, const char* foregroundPath, int windowWidth, int windowHeight) {
+	AudioManager::playMusic("stage-theme");
+
 	// Subscribe to event for pausing the game.
 	world.getEventManager().subscribe([this](const BaseEvent& e) {
 		if (e.type != EventType::Pause) {
@@ -80,8 +85,6 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 		const auto& debugEvent = dynamic_cast<const DebugEvent&>(e);
 		isDebugging = debugEvent.isDebugging;
 	});
-
-	AudioManager::playMusic("stage-theme");
 
 	SDL_Texture* backgroundTex = TextureManager::load("../asset/background.png");
 	float texWidth = backgroundTex->w;
@@ -411,6 +414,8 @@ void Scene::initGameplay(const char* stageDataPath, const char* stageBackgroundP
 }
 
 void Scene::initCredits(int windowWidth, int windowHeight) {
+	AudioManager::playMusic("credits-theme");
+
 	float width = static_cast<float>(windowWidth);
 	float height = static_cast<float>(windowHeight);
 
@@ -572,9 +577,6 @@ void Scene::createPauseMenuUComponents(Entity& overlay, int windowWidth, int win
 	// Create quit to title button.
 	auto& quitTitleButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
 		"Quit To Title", "PauseQuitTitleButton", [this] {
-			// Reset game state.
-			resetGameState();
-
 			// Request scene change to main menu.
 			Game::onSceneChangeRequest("mainmenu");
 		});
@@ -641,9 +643,6 @@ void Scene::createContinueGameUIComponents(Entity& overlay, int windowWidth, int
 	// Create quit to title button.
 	auto& quitButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
 		"Quit To Title", "ContinueQuitTitleButton", [this] {
-			// Reset game state.
-			resetGameState();
-
 			// Request scene change to main menu.
 			Game::onSceneChangeRequest("mainmenu");
 		});
@@ -687,9 +686,6 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 	// Create quit to title button.
 	auto& creditButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
 		"View Credits", "CreditsButton", [this] {
-			// Reset game state.
-			resetGameState();
-
 			// Request scene change to credits.
 			Game::onSceneChangeRequest("credits");
 		});
@@ -697,9 +693,6 @@ void Scene::createWinGameMenuUComponents(Entity& overlay, int windowWidth, int w
 	// Create quit to title button.
 	auto& quitTitleButton =  UIUtils::createSelectableButton(world, font, selectedColour, unselectedColour,
 		"Quit To Title", "WinQuitTitleButton", [this] {
-			// Reset game state.
-			resetGameState();
-
 			// Request scene change to main menu.
 			Game::onSceneChangeRequest("mainmenu");
 		});
