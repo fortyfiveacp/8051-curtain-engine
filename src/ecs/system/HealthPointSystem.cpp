@@ -1,9 +1,9 @@
-#include "EnemyHealthSystem.h"
+#include "HealthPointSystem.h"
 
 #include "ItemFactory.h"
 #include "World.h"
 
-void EnemyHealthSystem::update(World &world) {
+void HealthPointSystem::update(World &world) {
     for (auto& entity : world.getEntities()) {
         if (!entity->hasComponent<EnemyHealth>()) {
             continue;

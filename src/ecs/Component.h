@@ -101,9 +101,6 @@ struct RadialSpawner {
     // Whether to emit projectiles.
     bool isActive{};
 
-    // The spawner's rotation speed.
-    float rotationSpeed{};
-
     // The frequency (sec) that one burst of bullets is emitted.
     float frequency{};
 

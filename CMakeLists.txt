@@ -75,8 +75,8 @@ set(SRC_FILES
         src/ecs/system/DeathBombSystem.cpp
         src/utils/TransformUtils.h
         src/utils/BossFactory.h
-        src/ecs/system/EnemyHealthSystem.h
-        src/ecs/system/EnemyHealthSystem.cpp
+        src/ecs/system/HealthPointSystem.h
+        src/ecs/system/HealthPointSystem.cpp
         src/utils/BossFactory.cpp
         src/ecs/system/BossMovementSystem.h
         src/ecs/system/BossMovementSystem.cpp
