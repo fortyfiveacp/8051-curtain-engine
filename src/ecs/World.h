@@ -120,7 +120,7 @@ public:
                 pauseMenuSystem.update(entities, event);
                 selectableUISystem.update(entities, *this, event);
 
-                // Only update gameplay systems if the game isn't paused.
+                // Only update these systems if the game isn't paused.
                 if (!isPaused) {
                     movementSystem.update(entities, dt);
                     collisionSystem.update(*this);
@@ -162,7 +162,7 @@ public:
                 break;
         }
 
-        // Systems available to all scenes.
+        // Systems that run for all scenes.
         fpsCounterSystem.update(entities, dt);
         audioEventQueue.process(); // Process all the audio events.
         preRenderSystem.update(entities);
@@ -175,7 +175,7 @@ public:
     void render(SDL_Renderer* renderer, int windowWidth, int windowHeight, bool isPaused, bool isDebugging) {
         backgroundRenderSystem.render(entities);
 
-        // Set up stage viewport.
+        // Set up stage viewport for rendering the world layers.
         int stageWidth = StageUtils::CalculateStageWidth(windowWidth);
         int stageHeight = StageUtils::CalculateStageHeight(windowHeight);
         int paddingX = StageUtils::CalculateStagePaddingX(windowWidth);
