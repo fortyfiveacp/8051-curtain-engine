@@ -2,7 +2,7 @@
 
 class World;
 
-class EnemyHealthSystem {
+class HealthPointSystem {
 public:
     void update(World& world);
 };
